@@ -112,8 +112,8 @@ paths:
         - authen:
           - write:items
           - read:items
-  /post_Review:
-    post:
+  /reviews:
+    put:
       tags:
         - user
       summary: Adds a user review to an item
@@ -298,7 +298,24 @@ paths:
         - authen:
           - write:items
           - read:items
-  /add_Item:
+  /items:
+    get:
+      tags:
+        - user
+      summary: Gets all items
+      description: Can only be done by logged user
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '400':
+          description: Bad response
     post:
       tags:
         - store
@@ -332,40 +349,14 @@ paths:
         - authen:
           - write:items
           - read:items
-  /remove_Item/{itemID}:
-    delete:
-      tags:
-        - store
-      summary: Deletes an item from the store
-      description: Deletes an item from the store using an ID
-      operationId: remove_Item
-      parameters:
-        - name: itemID 
-          in: path
-          description: Item ID to delete
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: Succesful Deletion
-        '404':
-          description: Invalid item ID
-        '422':
-          description: Validation Exception
-      security:
-        - authen:
-          - write:items
-          - read:items
-  /item/{itemId}:
+  /items/{itemID}:
     get:
       tags:
-        - store
+        - user
       summary: Gets a single item
       description: Can only be done by logged user
       parameters:
-        - name: itemId
+        - name: itemID
           in: path
           description: Items id
           required: true
@@ -391,29 +382,10 @@ paths:
         - authen:
           - write:items
           - read:items
-  /items:
-    get:
-      tags:
-        - store
-      summary: Gets all items
-      description: Can only be done by logged user
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Item'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Item'
-        '400':
-          description: Bad response
-  /update_Sale/{itemID}/{salePrice}:
     put:
       tags:
         - store
-      summary: Allows management to update the sale of an item
+      summary: Allows management to update an item
       description: Allows management to update the sale of an item using an item ID
       parameters:
         - name: itemID
@@ -424,7 +396,7 @@ paths:
             type: integer
             format: int64
         - name: salePrice
-          in: path
+          in: query
           description: The new price of the item of the corresponding ID
           required: true
           schema:
@@ -441,34 +413,27 @@ paths:
         - authen:
           - write:items
           - read:items
-  /view_Item/{itemID}:
-    get:
+    delete:
       tags:
-        - user
-      summary: Gets a specific item
-      description: Gets a specific item from a ID
-      operationId: view_Item
+        - store
+      summary: Deletes an item from the store
+      description: Deletes an item from the store using an ID
+      operationId: remove_Item
       parameters:
-        - name: itemID
+        - name: itemID 
           in: path
-          description: ID of item to get
+          description: Item ID to delete
           required: true
-          explode: true
           schema:
             type: integer
-            format: integer64
+            format: int64
       responses:
         '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Item'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Item'
+          description: Succesful Deletion
         '404':
-          description: Invalid item
+          description: Invalid item ID
+        '422':
+          description: Validation Exception
       security:
         - authen:
           - write:items
