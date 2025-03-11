@@ -77,7 +77,7 @@ paths:
       responses:
         default:
           description: successful operation
-  /customer/register:
+  /account/register:
     put:
       tags:
         - user
@@ -112,6 +112,23 @@ paths:
         - authen:
           - write:items
           - read:items
+  /account/verify:
+    post:
+      tags:
+        - user
+      summary: Allows a user to verify their account
+      description: Sends a verification hash that given to the user in order to verify their email
+      parameters:
+        - name: verifyHash
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User verified successfully
+        '400':
+          description: Bad Request
   /reviews:
     put:
       tags:
