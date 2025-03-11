@@ -82,7 +82,8 @@ paths:
       tags:
         - user
       summary: Creates a new customer account
-      description: Creates a new customer account, by a username, an email, and a password
+      description: Creates a new customer account, by a username, an email, and a password.
+                   Manager code given to customers is always 0.  New managers will be added to the database directly.
       requestBody:
         description: Created a new user object
         content:
@@ -111,7 +112,7 @@ paths:
         - authen:
           - write:items
           - read:items
-  /customer/post_Review:
+  /post_Review:
     post:
       tags:
         - user
@@ -493,6 +494,10 @@ components:
         lastname:
           type: string
           example: Lewis
+        managerCode:
+          type: integer
+          format: int64
+          example: 0
       xml:
         name: customer
     Item:
@@ -538,24 +543,6 @@ components:
             wrapped: true
           items:
             $ref: '#/components/schemas/Item'
-    Manager:
-      type: object
-      properties:
-        email:
-          type: string
-          example: mharris29@gmail.com
-        managername:
-          type: string
-          example: Mike Harris
-        password:
-          type: string
-          example: imanage129
-        managerCode:
-          type: integer
-          format: int64
-          example: 801
-      xml:
-        name: manager
     Review:
       type: object
       properties:
