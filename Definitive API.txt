@@ -1,0 +1,525 @@
+openapi: 3.0.3
+info:
+  title: Shop API
+  description: |-
+    This is sample api of a online buy and sell webpage. General queries given: Sort which will sort by name, price, rating and limits which will limit amount of items shown.
+  contact:
+    email: iodonnel@unb.ca
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: https://cs3103.unb.ca
+    description: server
+tags:
+  - name: customer
+    description: Every operation a customer can do
+  - name: management
+    description: Every operation management can do to the store
+paths:
+  /customer/log_In:
+    post: 
+      tags:
+        - customer
+      summary: Logs user into the system
+      description: ''
+      operationId: loginCustomer
+      parameters:
+        - name: username
+          in: query
+          description: The user name for login
+          required: true
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: The password for login in clear text
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+            description: successful operation
+            headers:
+              X-Rate-Limit:
+                description: calls per hour allowed by the user
+                schema:
+                  type: integer
+                  format: int32
+              X-Expires-After:
+                description: date in UTC when token expires
+                schema:
+                  type: string
+                  format: date-time
+            content:
+              application/xml:
+                schema:
+                  type: string
+              application/json:
+                schema:
+                  type: string
+        '400':
+          description: Invalid username/password supplied
+  /customer/log_out:
+    get:
+      tags:
+        - customer
+      summary: Logs out current logged in user session
+      description: ''
+      operationId: logoutCustomer
+      parameters: []
+      responses:
+        default:
+          description: successful operation
+  /customer/register:
+    put:
+      tags:
+        - customer
+      summary: Creates a new customer account
+      description: Creates a new customer account, by a username, an email, and a password
+      requestBody:
+        description: Created a new user object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Customer'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          description: Bad Request
+        '422':
+          description: Validation Exception
+      security:
+        - authen:
+          - write:items
+          - read:items
+  /customer/post_Review:
+    post:
+      tags:
+        - customer
+      summary: Adds a user review to an item
+      description: Adds a user review to an item including an item ID, a user ID, the review body and a star rating
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Review'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Review'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '400':
+          description: Bad Request
+        '422':
+          description: Validation Exception
+      security:
+        - authen:
+          - write:items
+          - read:items
+  /customer/add_Item_To_Cart:
+    post:
+      tags:
+        - customer
+      summary: Adds an item to a user's cart
+      description: Adds an item to a user's cart using the user ID and an item ID
+      operationId: add_Item_To_Cart
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cart'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Cart'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        '400':
+          description: Bad Request
+        '404':
+          description: Item not found
+        '422':
+          description: Validation Exception
+      security:
+        - authen:
+          - write:items
+          - read:items
+  /customer/remove_Item_From_Cart/{userID}/{itemID}:
+    delete:
+      tags:
+        - customer
+      summary: Removes a item from a user's cart
+      description: Removes a item to a user's cart using the user ID and the item ID 
+      operationId: remove_Item_From_Cart
+      parameters:
+        - name: userID
+          in: path
+          description: user ID that needs to be fetched
+          required: true 
+          schema:
+            type: integer
+            format: int64
+        - name: itemID
+          in: path
+          description: item ID that needs to be fetched
+          required: true 
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful deletion
+        '404':
+          description: Item not found
+        '422':
+          description: Validation Exception
+      security:
+        - authen:
+          - write:items
+          - read:items
+  /management/log_In:
+    post: 
+      tags:
+        - management
+      summary: Logs user into the system
+      description: ''
+      operationId: loginManagement
+      parameters:
+        - name: username
+          in: query
+          description: The user name for login
+          required: true
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: The password for login in clear text
+          required: true
+          schema:
+            type: string
+        - name: managerCode
+          in: query
+          description: The manager code
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+            description: successful operation
+            headers:
+              X-Rate-Limit:
+                description: calls per hour allowed by the user
+                schema:
+                  type: integer
+                  format: int32
+              X-Expires-After:
+                description: date in UTC when token expires
+                schema:
+                  type: string
+                  format: date-time
+            content:
+              application/xml:
+                schema:
+                  type: string
+              application/json:
+                schema:
+                  type: string
+        '400':
+          description: Invalid username/password supplied
+  /management/log_out:
+    get:
+      tags:
+        - management
+      summary: Logs out current logged in user session
+      description: ''
+      operationId: logoutManagement
+      parameters: []
+      responses:
+        default:
+          description: successful operation
+  /management/add_Item:
+    put:
+      tags:
+        - management
+      summary: Adds a new item to the store
+      description: Adds a new item to the store using a name, a description, an image, a price and how much of the item is in stock
+      operationId: add_Item
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Item'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Item'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+      security:
+        - authen:
+          - write:items
+          - read:items
+  /management/remove_Item/{itemID}:
+    delete:
+      tags:
+        - management
+      summary: Deletes an item from the store
+      description: Deletes an item from the store using an ID
+      operationId: remove_Item
+      parameters:
+        - name: itemID 
+          in: path
+          description: Item ID to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Succesful Deletion
+        '404':
+          description: Invalid item ID
+        '422':
+          description: Validation Exception
+      security:
+        - authen:
+          - write:items
+          - read:items
+  /management/update_Sale/{itemID}/{salePrice}:
+    post:
+      tags:
+        - management
+      summary: Allows management to update the sale of an item
+      description: Allows management to update the sale of an item using an item ID
+      parameters:
+        - name: itemID
+          in: path
+          description: ID of the item to be updated
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: salePrice
+          in: path
+          description: The new price of the item of the corresponding ID
+          required: true
+          schema:
+            type: number
+            format: float64
+      responses:
+        '200':
+          description: Succesful update
+        '404':
+          description: Invalid item ID
+        '422':
+          description: Validation exception
+      security:
+        - authen:
+          - write:items
+          - read:items
+  /view_Item/{itemID}:
+    get:
+      tags:
+        - customer
+        - management
+      summary: Gets a specific item
+      description: Gets a specific item from a ID
+      operationId: view_Item
+      parameters:
+        - name: itemID
+          in: path
+          description: ID of item to get
+          required: true
+          explode: true
+          schema:
+            type: integer
+            format: integer64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '404':
+          description: Invalid item
+      security:
+        - authen:
+          - write:items
+          - read:items
+components:
+  schemas:
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        uname:
+          type: string
+          example: JuiceBuyer18
+        email:
+          type: string
+          example: jb18@gmail.com
+        firstname:
+          type: string
+          example: John
+        lastname:
+          type: string
+          example: Lewis
+      xml:
+        name: customer
+    Item:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 18
+        item_Name:
+          type: string
+          example: Great Value Orange Juice
+        item_Description:
+          type: string
+          example: 500 ml. High in Vitamin C and Potassium
+        item_Image:
+          type: string
+          example: greatValleyOJ.jpg
+        price:
+          type: number
+          format: float64
+          example: $6.99
+        stock:
+          type: integer
+          format: int64
+          example: 7
+        reviews:
+          type: array
+          xml:
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/Review'
+    Cart:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 18
+        quantity:
+          type: array
+          xml:
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/Item'
+    Manager:
+      type: object
+      properties:
+        email:
+          type: string
+          example: mharris29@gmail.com
+        managername:
+          type: string
+          example: Mike Harris
+        password:
+          type: string
+          example: imanage129
+        managerCode:
+          type: integer
+          format: int64
+          example: 801
+      xml:
+        name: manager
+    Review:
+      type: object
+      properties:
+        reviewID:
+          type: integer
+          format: int64
+          example: 6
+        userID:
+          type: integer
+          format: int64
+          example: 8
+        review:
+          type: string
+          example: I sure do love my Great Valley Orange Juice first thing in the morning
+        stars:
+          type: number
+          example: 5.0
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
+      xml:
+        name: '##default'
+  securitySchemes:
+    authen:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://petstore3.swagger.io/oauth/authorize
+          scopes:
+            write:items: modify items in your account
+            read:items: read your items
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
