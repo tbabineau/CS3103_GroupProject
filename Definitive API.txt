@@ -104,6 +104,8 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Customer'
+	'201':
+	  description: Account created
         '400':
           description: Bad Request
         '422':
@@ -154,6 +156,8 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Review'
+	'201':
+	  description: Review created
         '400':
           description: Bad Request
         '422':
@@ -248,6 +252,8 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Cart'
+	'201':
+	  description: Cart item created
         '400':
           description: Bad Request
         '401':
@@ -280,6 +286,8 @@ paths:
       responses:
         '200':
           description: Quantity updated successfully
+	'204:
+	  description: Request Succeeded
         '400':
           description: Bad request
         '401':
@@ -307,6 +315,8 @@ paths:
       responses:
         '200':
           description: Successful deletion
+	'204':
+	  description: Request succeeded
         '401':
           description: User does not own the cart
         '404':
@@ -358,6 +368,8 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Item'
+	'201':
+	  description: Item created
         '400':
           description: Invalid input
         '422':
@@ -422,6 +434,8 @@ paths:
       responses:
         '200':
           description: Succesful update
+	'204':
+	  description: Request succeeded
         '404':
           description: Invalid item ID
         '422':
@@ -447,6 +461,8 @@ paths:
       responses:
         '200':
           description: Succesful Deletion
+	'204':
+	  description: Request succeeded
         '404':
           description: Invalid item ID
         '422':
