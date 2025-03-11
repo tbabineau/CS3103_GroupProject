@@ -23,11 +23,11 @@ tags:
   - name: cart
     description: Every operation a user can do to a cart
 paths:
-  /log_In/customer:
+  /log_In:
     post: 
       tags:
         - user
-      summary: Logs customer into the system
+      summary: Logs a user into the system
       description: ''
       operationId: loginCustomer
       parameters:
@@ -43,56 +43,6 @@ paths:
           required: true
           schema:
             type: string
-      responses:
-        '200':
-            description: successful operation
-            headers:
-              X-Rate-Limit:
-                description: calls per hour allowed by the user
-                schema:
-                  type: integer
-                  format: int32
-              X-Expires-After:
-                description: date in UTC when token expires
-                schema:
-                  type: string
-                  format: date-time
-            content:
-              application/xml:
-                schema:
-                  type: string
-              application/json:
-                schema:
-                  type: string
-        '400':
-          description: Invalid username/password supplied
-  /log_In/management:
-    post: 
-      tags:
-        - user
-      summary: Logs management into the system
-      description: ''
-      operationId: loginManagement
-      parameters:
-        - name: username
-          in: query
-          description: The user name for login
-          required: true
-          schema:
-            type: string
-        - name: password
-          in: query
-          description: The password for login in clear text
-          required: true
-          schema:
-            type: string
-        - name: managerCode
-          in: query
-          description: The manager code
-          required: true
-          schema:
-            type: integer
-            format: int64
       responses:
         '200':
             description: successful operation
@@ -194,13 +144,73 @@ paths:
         - authen:
           - write:items
           - read:items
-  /add_Item_To_Cart:
+  /cart:
+    get:
+      tags:
+        - cart
+      summary: Returns the items in a user's cart
+      description: Gets a list of all items in the current user's cart
+      operationId: get_cart
+      parameters:
+        - name: quantity
+          description: Search for items by specific quantity
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: maxQuantity
+          description: Search for items by a maximum quantity
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: minQuantity
+          description: Search for items by a minimum quantity
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: price
+          description: Search for items by specific price
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: maxPrice
+          description: Search for items by a maximum price
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: minPrice
+          description: Search for items by a minimum price
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Items have been returned successfully
+        '400':
+          description: Bad request
     post:
       tags:
         - cart
       summary: Adds an item to a user's cart
       description: Adds an item to a user's cart using the user ID and an item ID
       operationId: add_Item_To_Cart
+      parameters:
+        - name: itemID
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: quantity
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
       requestBody:
         content:
           application/json:
@@ -222,15 +232,46 @@ paths:
                 $ref: '#/components/schemas/Cart'
         '400':
           description: Bad Request
+        '401':
+          description: User does not own this cart
         '404':
           description: Item not found
-        '422':
-          description: Validation Exception
       security:
         - authen:
           - write:items
           - read:items
-  /remove_Item_From_Cart/{userID}/{itemID}:
+  /cart/{itemID}:
+    post:
+      tags:
+        - cart
+      summary: Updates an item in a user's cart
+      description: Updates the quantity of items in a users cart
+      operationId: Update_cart_item
+      parameters:
+        - name: itemID
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: quantity
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+      responses:
+        '200':
+          description: Quantity updated successfully
+        '400':
+          description: Bad request
+        '401':
+          description: Current user does not own cart
+        '404':
+          description: Could not find item in cart
+      security:
+        - authen:
+          - write:items
+          - read:items
     delete:
       tags:
         - cart
@@ -238,13 +279,6 @@ paths:
       description: Removes a item to a user's cart using the user ID and the item ID 
       operationId: remove_Item_From_Cart
       parameters:
-        - name: userID
-          in: path
-          description: user ID that needs to be fetched
-          required: true 
-          schema:
-            type: integer
-            format: int64
         - name: itemID
           in: path
           description: item ID that needs to be fetched
@@ -255,10 +289,10 @@ paths:
       responses:
         '200':
           description: Successful deletion
+        '401':
+          description: User does not own the cart
         '404':
           description: Item not found
-        '422':
-          description: Validation Exception
       security:
         - authen:
           - write:items
@@ -356,7 +390,7 @@ paths:
         - authen:
           - write:items
           - read:items
-  /items/:
+  /items:
     get:
       tags:
         - store
