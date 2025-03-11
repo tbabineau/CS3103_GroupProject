@@ -23,7 +23,7 @@ tags:
   - name: cart
     description: Every operation a user can do to a cart
 paths:
-  /log_In/customer:
+  /log_In:
     post: 
       tags:
         - user
@@ -66,56 +66,6 @@ paths:
                   type: string
         '400':
           description: Invalid username/password supplied
-  /log_In/management:
-    post: 
-      tags:
-        - user
-      summary: Logs management into the system
-      description: ''
-      operationId: loginManagement
-      parameters:
-        - name: username
-          in: query
-          description: The user name for login
-          required: true
-          schema:
-            type: string
-        - name: password
-          in: query
-          description: The password for login in clear text
-          required: true
-          schema:
-            type: string
-        - name: managerCode
-          in: query
-          description: The manager code
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-            description: successful operation
-            headers:
-              X-Rate-Limit:
-                description: calls per hour allowed by the user
-                schema:
-                  type: integer
-                  format: int32
-              X-Expires-After:
-                description: date in UTC when token expires
-                schema:
-                  type: string
-                  format: date-time
-            content:
-              application/xml:
-                schema:
-                  type: string
-              application/json:
-                schema:
-                  type: string
-        '400':
-          description: Invalid username/password supplied
   /log_out:
     get:
       tags:
@@ -132,7 +82,8 @@ paths:
       tags:
         - user
       summary: Creates a new customer account
-      description: Creates a new customer account, by a username, an email, and a password
+      description: Creates a new customer account, by a username, an email, and a password.
+                   Manager code given to customers is always 0.  New managers will be added to the database directly.
       requestBody:
         description: Created a new user object
         content:
@@ -161,7 +112,7 @@ paths:
         - authen:
           - write:items
           - read:items
-  /customer/post_Review:
+  /post_Review:
     post:
       tags:
         - user
@@ -459,6 +410,10 @@ components:
         lastname:
           type: string
           example: Lewis
+        managerCode:
+          type: integer
+          format: int64
+          example: 0
       xml:
         name: customer
     Item:
@@ -504,24 +459,6 @@ components:
             wrapped: true
           items:
             $ref: '#/components/schemas/Item'
-    Manager:
-      type: object
-      properties:
-        email:
-          type: string
-          example: mharris29@gmail.com
-        managername:
-          type: string
-          example: Mike Harris
-        password:
-          type: string
-          example: imanage129
-        managerCode:
-          type: integer
-          format: int64
-          example: 801
-      xml:
-        name: manager
     Review:
       type: object
       properties:
