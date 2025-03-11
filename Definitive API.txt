@@ -16,16 +16,18 @@ servers:
   - url: https://cs3103.unb.ca
     description: server
 tags:
-  - name: customer
-    description: Every operation a customer can do
-  - name: management
+  - name: user
+    description: Every operation a user can do
+  - name: store
     description: Every operation management can do to the store
+  - name: cart
+    description: Every operation a user can do to a cart
 paths:
-  /customer/log_In:
+  /log_In/customer:
     post: 
       tags:
-        - customer
-      summary: Logs user into the system
+        - user
+      summary: Logs customer into the system
       description: ''
       operationId: loginCustomer
       parameters:
@@ -64,158 +66,11 @@ paths:
                   type: string
         '400':
           description: Invalid username/password supplied
-  /customer/log_out:
-    get:
-      tags:
-        - customer
-      summary: Logs out current logged in user session
-      description: ''
-      operationId: logoutCustomer
-      parameters: []
-      responses:
-        default:
-          description: successful operation
-  /customer/register:
-    put:
-      tags:
-        - customer
-      summary: Creates a new customer account
-      description: Creates a new customer account, by a username, an email, and a password
-      requestBody:
-        description: Created a new user object
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Customer'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/Customer'
-        required: true
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Customer'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Customer'
-        '400':
-          description: Bad Request
-        '422':
-          description: Validation Exception
-      security:
-        - authen:
-          - write:items
-          - read:items
-  /customer/post_Review:
-    post:
-      tags:
-        - customer
-      summary: Adds a user review to an item
-      description: Adds a user review to an item including an item ID, a user ID, the review body and a star rating
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Review'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/Review'
-        required: true
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Review'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Review'
-        '400':
-          description: Bad Request
-        '422':
-          description: Validation Exception
-      security:
-        - authen:
-          - write:items
-          - read:items
-  /customer/add_Item_To_Cart:
-    post:
-      tags:
-        - customer
-      summary: Adds an item to a user's cart
-      description: Adds an item to a user's cart using the user ID and an item ID
-      operationId: add_Item_To_Cart
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Cart'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/Cart'
-        required: true
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Cart'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Cart'
-        '400':
-          description: Bad Request
-        '404':
-          description: Item not found
-        '422':
-          description: Validation Exception
-      security:
-        - authen:
-          - write:items
-          - read:items
-  /customer/remove_Item_From_Cart/{userID}/{itemID}:
-    delete:
-      tags:
-        - customer
-      summary: Removes a item from a user's cart
-      description: Removes a item to a user's cart using the user ID and the item ID 
-      operationId: remove_Item_From_Cart
-      parameters:
-        - name: userID
-          in: path
-          description: user ID that needs to be fetched
-          required: true 
-          schema:
-            type: integer
-            format: int64
-        - name: itemID
-          in: path
-          description: item ID that needs to be fetched
-          required: true 
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: Successful deletion
-        '404':
-          description: Item not found
-        '422':
-          description: Validation Exception
-      security:
-        - authen:
-          - write:items
-          - read:items
-  /management/log_In:
+  /log_In/management:
     post: 
       tags:
-        - management
-      summary: Logs user into the system
+        - user
+      summary: Logs management into the system
       description: ''
       operationId: loginManagement
       parameters:
@@ -261,21 +116,157 @@ paths:
                   type: string
         '400':
           description: Invalid username/password supplied
-  /management/log_out:
+  /log_out:
     get:
       tags:
-        - management
+        - user
       summary: Logs out current logged in user session
       description: ''
-      operationId: logoutManagement
+      operationId: logoutCustomer
       parameters: []
       responses:
         default:
           description: successful operation
-  /management/add_Item:
+  /customer/register:
     put:
       tags:
-        - management
+        - user
+      summary: Creates a new customer account
+      description: Creates a new customer account, by a username, an email, and a password
+      requestBody:
+        description: Created a new user object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Customer'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          description: Bad Request
+        '422':
+          description: Validation Exception
+      security:
+        - authen:
+          - write:items
+          - read:items
+  /customer/post_Review:
+    post:
+      tags:
+        - user
+      summary: Adds a user review to an item
+      description: Adds a user review to an item including an item ID, a user ID, the review body and a star rating
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Review'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Review'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '400':
+          description: Bad Request
+        '422':
+          description: Validation Exception
+      security:
+        - authen:
+          - write:items
+          - read:items
+  /add_Item_To_Cart:
+    post:
+      tags:
+        - cart
+      summary: Adds an item to a user's cart
+      description: Adds an item to a user's cart using the user ID and an item ID
+      operationId: add_Item_To_Cart
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cart'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Cart'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        '400':
+          description: Bad Request
+        '404':
+          description: Item not found
+        '422':
+          description: Validation Exception
+      security:
+        - authen:
+          - write:items
+          - read:items
+  /remove_Item_From_Cart/{userID}/{itemID}:
+    delete:
+      tags:
+        - cart
+      summary: Removes a item from a user's cart
+      description: Removes a item to a user's cart using the user ID and the item ID 
+      operationId: remove_Item_From_Cart
+      parameters:
+        - name: userID
+          in: path
+          description: user ID that needs to be fetched
+          required: true 
+          schema:
+            type: integer
+            format: int64
+        - name: itemID
+          in: path
+          description: item ID that needs to be fetched
+          required: true 
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful deletion
+        '404':
+          description: Item not found
+        '422':
+          description: Validation Exception
+      security:
+        - authen:
+          - write:items
+          - read:items
+  /add_Item:
+    post:
+      tags:
+        - store
       summary: Adds a new item to the store
       description: Adds a new item to the store using a name, a description, an image, a price and how much of the item is in stock
       operationId: add_Item
@@ -306,10 +297,10 @@ paths:
         - authen:
           - write:items
           - read:items
-  /management/remove_Item/{itemID}:
+  /remove_Item/{itemID}:
     delete:
       tags:
-        - management
+        - store
       summary: Deletes an item from the store
       description: Deletes an item from the store using an ID
       operationId: remove_Item
@@ -332,10 +323,61 @@ paths:
         - authen:
           - write:items
           - read:items
-  /management/update_Sale/{itemID}/{salePrice}:
-    post:
+  /item/{itemId}:
+    get:
       tags:
-        - management
+        - store
+      summary: Gets a single item
+      description: Can only be done by logged user
+      parameters:
+        - name: itemId
+          in: path
+          description: Items id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '400':
+          description: Bad request
+        '404':
+          description: Invalid item ID
+        '422':
+          description: Validation Exception
+      security:
+        - authen:
+          - write:items
+          - read:items
+  /items/:
+    get:
+      tags:
+        - store
+      summary: Gets all items
+      description: Can only be done by logged user
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '400':
+          description: Bad response
+  /update_Sale/{itemID}/{salePrice}:
+    put:
+      tags:
+        - store
       summary: Allows management to update the sale of an item
       description: Allows management to update the sale of an item using an item ID
       parameters:
@@ -367,8 +409,7 @@ paths:
   /view_Item/{itemID}:
     get:
       tags:
-        - customer
-        - management
+        - user
       summary: Gets a specific item
       description: Gets a specific item from a ID
       operationId: view_Item
