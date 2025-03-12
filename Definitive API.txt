@@ -133,8 +133,8 @@ paths:
           description: Account created
         '400':
           description: Bad Request
-		'401'
-		  description: Unauthorized
+        '401':
+          description: Unauthorized
       security:
         - authen:
           - write:items
@@ -440,7 +440,7 @@ paths:
         '400':
           description: Invalid input
         '401':
-		  description: User does not own item
+          description: User does not own item
       security:
         - authen:
           - write:items
@@ -501,8 +501,8 @@ paths:
           description: Succesful update
         '204':
           description: Request succeeded
-		'401':
-		  description: User does not own item
+        '401':
+          description: User does not own item
         '404':
           description: Invalid item ID
       security:
@@ -524,10 +524,10 @@ paths:
             type: integer
             format: int64
       responses:
-		'204':
-		  description: Request succeeded
-		'401':
-		  description: Unauthorized
+        '204':
+          description: Request succeeded
+        '401':
+          description: Unauthorized
         '404':
           description: Invalid item ID
       security:
@@ -619,7 +619,7 @@ components:
           type: string
           example: I sure do love my Great Valley Orange Juice first thing in the morning
         stars:
-          type: float
+          type: number
           example: 5.0
     ApiResponse:
       type: object
