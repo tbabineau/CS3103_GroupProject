@@ -90,7 +90,7 @@ paths:
         '201':
           description: Account created
         '400':
-          description: Bad Request
+          description: Account could not be created
       security:
         - authen:
           - write:items
@@ -111,7 +111,7 @@ paths:
         '200':
           description: User verified successfully
         '400':
-          description: Bad Request
+          description: User could not be verified
   /reviews:
     get:
       tags:
@@ -197,8 +197,6 @@ paths:
                 $ref: '#/components/schemas/Review'
         '201':
           description: Review created
-        '400':
-          description: Bad Request
         '404':
           description: Could not find an item with a matching ID
       security:
@@ -326,6 +324,8 @@ paths:
       responses:
         '200':
           description: Items have been returned successfully
+		'400':
+          description: Invalid parameter(s) provided
         '401':
           description: User does not own the cart
     post:
@@ -368,7 +368,7 @@ paths:
         '201':
           description: Cart item created
         '400':
-          description: Bad Request
+          description: Invalid itemID / quantity provided
         '401':
           description: User does not own this cart
         '404':
@@ -402,7 +402,7 @@ paths:
         '204':
           description: Request Succeeded
         '400':
-          description: Bad request
+          description: Invalid itemID / quantity provided
         '401':
           description: Current user does not own cart
         '404':
@@ -498,7 +498,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Item'
         '400':
-          description: Bad response
+          description: Invalid parameter(s) provided
     post:
       tags:
         - store
@@ -558,7 +558,7 @@ paths:
         '201':
           description: Item created
         '400':
-          description: Invalid input
+          description: Invalid input. Could not create item
         '401':
           description: User does not own item
       security:
@@ -588,8 +588,6 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Item'
-        '400':
-          description: Bad request
         '404':
           description: Invalid item ID
       security:
