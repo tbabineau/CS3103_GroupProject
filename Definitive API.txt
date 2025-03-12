@@ -61,7 +61,7 @@ paths:
         '401':
           description: Not logged in
   /account/register:
-    put:
+    post:
       tags:
         - user
       summary: Creates a new customer account
@@ -113,7 +113,46 @@ paths:
         '400':
           description: Bad Request
   /reviews:
-    put:
+    get:
+      tags:
+        - user
+      summary: Gets user reviews
+      description: Gets user reviews, can be sorted by itemID, userID, and star rating
+      parameters:
+        - name: itemID
+          in: query
+          description: The ID of the item that the review was left on
+          required: false
+          schema:
+            type: integer
+        - name: userID
+          in: query
+          description: The ID of the user which posted the review
+          required: false
+          schema:
+            type: integer
+        - name: rating
+          in: query
+          description: A specific item star rating
+          required: false
+          schema:
+            type: number
+        - name: maxRating
+          in: query
+          description: A maximum item star rating (no higher than 5)
+          required: false
+          schema:
+            type: number
+        - name: minRating
+          in: query
+          description: A minimum item star rating (no lower than 0)
+          required: false
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Reviews returned successfully
+    post:
       tags:
         - user
       summary: Adds a user review to an item
@@ -166,6 +205,74 @@ paths:
         - authen:
           - write:items
           - read:items
+  /reviews/{reviewID}:
+    get:
+      tags:
+        - user
+      summary: Gets a specific review
+      description: Gets a specific review by reviewID
+      parameters:
+        - name: reviewID
+          description: ID associated with a review
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Review returned successfully
+        '404':
+          description: Review with matching ID could not be located
+    put:
+      tags:
+        - user
+      summary: Allows the user to update a review
+      description: Updates the entire review as long as the user posted it
+      parameters:
+        - name: reviewID
+          description: ID associated with a review
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: reviewBody
+          description: The user's review
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: starRate
+          description: The user's star rating for an item
+          in: query
+          required: true
+          schema:
+            type: number
+      responses:
+        '204':
+          description: Review successfully updated
+        '401':
+          description: User did not post the review
+        '404':
+          description: Review with matching ID could not be located
+    delete:
+      tags:
+        - user
+      summary: Allows the user to delete a review
+      description: Allows the user which posted the review to delete it
+      parameters:
+        - name: reviewID
+          description: ID associated with a review
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Review successfully deleted
+        '401':
+          description: User did not post the review
+        '404':
+          description: Review with matching ID could not be located
   /cart:
     get:
       tags:
@@ -271,7 +378,7 @@ paths:
           - write:items
           - read:items
   /cart/{itemID}:
-    post:
+    put:
       tags:
         - cart
       summary: Updates an item in a user's cart
