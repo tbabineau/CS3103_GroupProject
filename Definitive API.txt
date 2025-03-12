@@ -46,7 +46,7 @@ paths:
       responses:
         '204':
             description: successful login
-        '400':
+        '401':
           description: Invalid username/password supplied
     delete:
       tags:
