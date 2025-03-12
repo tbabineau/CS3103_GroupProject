@@ -365,6 +365,43 @@ paths:
         - user
       summary: Gets all items
       description: Can only be done by logged user
+      parameters:
+        - name: quantity
+          description: Search for items by specific quantity
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: maxQuantity
+          description: Search for items by a maximum quantity
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: minQuantity
+          description: Search for items by a minimum quantity
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: price
+          description: Search for items by specific price
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: maxPrice
+          description: Search for items by a maximum price
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: minPrice
+          description: Search for items by a minimum price
+          in: query
+          required: false
+          schema:
+            type: integer
       responses:
         '200':
           description: Success
