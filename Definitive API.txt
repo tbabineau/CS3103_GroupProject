@@ -648,7 +648,8 @@ components:
           type: string
           example: I sure do love my Great Valley Orange Juice first thing in the morning
         stars:
-          type: float
+          type: number
+          format: float64
           example: 5.0
     ApiResponse:
       type: object
