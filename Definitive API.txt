@@ -78,7 +78,7 @@ paths:
         default:
           description: successful operation
   /account/register:
-    put:
+    post:
       tags:
         - user
       summary: Creates a new customer account
@@ -132,7 +132,7 @@ paths:
         '400':
           description: Bad Request
   /reviews:
-    put:
+    post:
       tags:
         - user
       summary: Adds a user review to an item
@@ -265,7 +265,7 @@ paths:
           - write:items
           - read:items
   /cart/{itemID}:
-    post:
+    put:
       tags:
         - cart
       summary: Updates an item in a user's cart
