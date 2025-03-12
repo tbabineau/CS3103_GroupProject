@@ -94,6 +94,31 @@ paths:
             schema:
               $ref: '#/components/schemas/Customer'
         required: true
+      parameters:
+        - name: fname
+          in: query
+          description: The user's first name
+          required: true
+          schema:
+            type: string
+        - name: lname
+          in: query
+          description: The user's last name
+          required: true
+          schema:
+            type: string
+        - name: uname
+          in: query
+          description: The user's chosen username
+          required: true
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: The user's password
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: Successful operation
@@ -106,10 +131,10 @@ paths:
                 $ref: '#/components/schemas/Customer'
         '201':
           description: Account created
-		'401'
-		  description: Unauthorized
         '400':
           description: Bad Request
+		'401'
+		  description: Unauthorized
       security:
         - authen:
           - write:items
@@ -146,6 +171,19 @@ paths:
             schema:
               $ref: '#/components/schemas/Review'
         required: true
+      parameters:
+        - name: reviewBody
+          in: query
+          description: The user's review
+          required: true
+          schema:
+            type: string
+        - name: starRate
+          in: query
+          description: The user's star rating for an item
+          required: true
+          schema:
+            type: number
       responses:
         '200':
           description: Successful operation
@@ -160,8 +198,6 @@ paths:
           description: Review created
         '400':
           description: Bad Request
-        '422':
-          description: Validation Exception
       security:
         - authen:
           - write:items
@@ -358,6 +394,37 @@ paths:
             schema:
               $ref: '#/components/schemas/Item'
         required: true
+      parameters:
+        - name: itemName
+          in: query
+          description: The item's name
+          required: true
+          schema:
+            type: string
+        - name: itemDescript
+          in: query
+          description: The item's description
+          required: true
+          schema:
+            type: string
+        - name: itemImage
+          in: query
+          description: A url depicting the item
+          required: true
+          schema:
+            type: string
+        - name: price
+          in: query
+          description: The item's price
+          required: true
+          schema:
+            type: number
+        - name: itemStock
+          in: query
+          description: How much of the item is currently available
+          required: true
+          schema:
+            type: integer
       responses:
         '200':
           description: Successful operation
@@ -405,8 +472,6 @@ paths:
           description: Bad request
         '404':
           description: Invalid item ID
-        '422':
-          description: Validation Exception
       security:
         - authen:
           - write:items
@@ -554,7 +619,7 @@ components:
           type: string
           example: I sure do love my Great Valley Orange Juice first thing in the morning
         stars:
-          type: number
+          type: float
           example: 5.0
     ApiResponse:
       type: object
