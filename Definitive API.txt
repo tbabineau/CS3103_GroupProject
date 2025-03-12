@@ -104,11 +104,8 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Customer'
-<<<<<<< Updated upstream
-=======
         '201':
           description: Account created
->>>>>>> Stashed changes
         '400':
           description: Bad Request
         '422':
@@ -142,11 +139,8 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Review'
-<<<<<<< Updated upstream
-=======
         '201':
           description: Review created
->>>>>>> Stashed changes
         '400':
           description: Bad Request
         '422':
@@ -181,11 +175,8 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Cart'
-<<<<<<< Updated upstream
-=======
         '201':
           description: Cart item created
->>>>>>> Stashed changes
         '400':
           description: Bad Request
         '404':
@@ -196,9 +187,6 @@ paths:
         - authen:
           - write:items
           - read:items
-<<<<<<< Updated upstream
-  /remove_Item_From_Cart/{userID}/{itemID}:
-=======
   /cart/{itemID}:
     post:
       tags:
@@ -233,7 +221,7 @@ paths:
         - authen:
           - write:items
           - read:items
->>>>>>> Stashed changes
+  /remove_Item_From_Cart/{userID}/{itemID}:
     delete:
       tags:
         - cart
@@ -258,13 +246,10 @@ paths:
       responses:
         '200':
           description: Successful deletion
-<<<<<<< Updated upstream
-=======
         '204':
           description: Request succeeded
         '401':
           description: User does not own the cart
->>>>>>> Stashed changes
         '404':
           description: Item not found
         '422':
@@ -299,11 +284,8 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Item'
-<<<<<<< Updated upstream
-=======
         '201':
           description: Item created
->>>>>>> Stashed changes
         '400':
           description: Invalid input
         '422':
@@ -413,11 +395,8 @@ paths:
       responses:
         '200':
           description: Succesful update
-<<<<<<< Updated upstream
-=======
         '204':
           description: Request succeeded
->>>>>>> Stashed changes
         '404':
           description: Invalid item ID
         '422':
@@ -444,7 +423,6 @@ paths:
             format: integer64
       responses:
         '200':
-<<<<<<< Updated upstream
           description: Successful operation
           content:
             application/json:
@@ -453,11 +431,8 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Item'
-=======
-          description: Succesful Deletion
         '204':
           description: Request succeeded
->>>>>>> Stashed changes
         '404':
           description: Invalid item
       security:
