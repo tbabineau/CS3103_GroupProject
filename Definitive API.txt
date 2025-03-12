@@ -27,7 +27,7 @@ paths:
     post: 
       tags:
         - user
-      summary: Logs customer into the system
+      summary: Logs a user into the system
       description: ''
       operationId: loginCustomer
       parameters:
@@ -77,7 +77,7 @@ paths:
       responses:
         default:
           description: successful operation
-  /customer/register:
+  /account/register:
     put:
       tags:
         - user
@@ -104,8 +104,8 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Customer'
-        '201':
-          description: Account created
+	'201':
+	  description: Account created
         '400':
           description: Bad Request
         '422':
@@ -114,8 +114,25 @@ paths:
         - authen:
           - write:items
           - read:items
-  /post_Review:
+  /account/verify:
     post:
+      tags:
+        - user
+      summary: Allows a user to verify their account
+      description: Sends a verification hash that given to the user in order to verify their email
+      parameters:
+        - name: verifyHash
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User verified successfully
+        '400':
+          description: Bad Request
+  /reviews:
+    put:
       tags:
         - user
       summary: Adds a user review to an item
@@ -139,8 +156,8 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Review'
-        '201':
-          description: Review created
+	'201':
+	  description: Review created
         '400':
           description: Bad Request
         '422':
@@ -149,13 +166,73 @@ paths:
         - authen:
           - write:items
           - read:items
-  /add_Item_To_Cart:
+  /cart:
+    get:
+      tags:
+        - cart
+      summary: Returns the items in a user's cart
+      description: Gets a list of all items in the current user's cart
+      operationId: get_cart
+      parameters:
+        - name: quantity
+          description: Search for items by specific quantity
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: maxQuantity
+          description: Search for items by a maximum quantity
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: minQuantity
+          description: Search for items by a minimum quantity
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: price
+          description: Search for items by specific price
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: maxPrice
+          description: Search for items by a maximum price
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: minPrice
+          description: Search for items by a minimum price
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Items have been returned successfully
+        '400':
+          description: Bad request
     post:
       tags:
         - cart
       summary: Adds an item to a user's cart
       description: Adds an item to a user's cart using the user ID and an item ID
       operationId: add_Item_To_Cart
+      parameters:
+        - name: itemID
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: quantity
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
       requestBody:
         content:
           application/json:
@@ -175,14 +252,14 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Cart'
-        '201':
-          description: Cart item created
+	'201':
+	  description: Cart item created
         '400':
           description: Bad Request
+        '401':
+          description: User does not own this cart
         '404':
           description: Item not found
-        '422':
-          description: Validation Exception
       security:
         - authen:
           - write:items
@@ -209,8 +286,8 @@ paths:
       responses:
         '200':
           description: Quantity updated successfully
-        '204':
-          description: Request Succeeded
+	'204:
+	  description: Request Succeeded
         '400':
           description: Bad request
         '401':
@@ -221,7 +298,6 @@ paths:
         - authen:
           - write:items
           - read:items
-  /remove_Item_From_Cart/{userID}/{itemID}:
     delete:
       tags:
         - cart
@@ -229,13 +305,6 @@ paths:
       description: Removes a item to a user's cart using the user ID and the item ID 
       operationId: remove_Item_From_Cart
       parameters:
-        - name: userID
-          in: path
-          description: user ID that needs to be fetched
-          required: true 
-          schema:
-            type: integer
-            format: int64
         - name: itemID
           in: path
           description: item ID that needs to be fetched
@@ -246,19 +315,34 @@ paths:
       responses:
         '200':
           description: Successful deletion
-        '204':
-          description: Request succeeded
+	'204':
+	  description: Request succeeded
         '401':
           description: User does not own the cart
         '404':
           description: Item not found
-        '422':
-          description: Validation Exception
       security:
         - authen:
           - write:items
           - read:items
-  /add_Item:
+  /items:
+    get:
+      tags:
+        - user
+      summary: Gets all items
+      description: Can only be done by logged user
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '400':
+          description: Bad response
     post:
       tags:
         - store
@@ -284,8 +368,8 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Item'
-        '201':
-          description: Item created
+	'201':
+	  description: Item created
         '400':
           description: Invalid input
         '422':
@@ -294,40 +378,14 @@ paths:
         - authen:
           - write:items
           - read:items
-  /remove_Item/{itemID}:
-    delete:
-      tags:
-        - store
-      summary: Deletes an item from the store
-      description: Deletes an item from the store using an ID
-      operationId: remove_Item
-      parameters:
-        - name: itemID 
-          in: path
-          description: Item ID to delete
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: Succesful Deletion
-        '404':
-          description: Invalid item ID
-        '422':
-          description: Validation Exception
-      security:
-        - authen:
-          - write:items
-          - read:items
-  /item/{itemId}:
+  /items/{itemID}:
     get:
       tags:
-        - store
+        - user
       summary: Gets a single item
       description: Can only be done by logged user
       parameters:
-        - name: itemId
+        - name: itemID
           in: path
           description: Items id
           required: true
@@ -353,29 +411,10 @@ paths:
         - authen:
           - write:items
           - read:items
-  /items/:
-    get:
-      tags:
-        - store
-      summary: Gets all items
-      description: Can only be done by logged user
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Item'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Item'
-        '400':
-          description: Bad response
-  /update_Sale/{itemID}/{salePrice}:
     put:
       tags:
         - store
-      summary: Allows management to update the sale of an item
+      summary: Allows management to update an item
       description: Allows management to update the sale of an item using an item ID
       parameters:
         - name: itemID
@@ -386,7 +425,7 @@ paths:
             type: integer
             format: int64
         - name: salePrice
-          in: path
+          in: query
           description: The new price of the item of the corresponding ID
           required: true
           schema:
@@ -395,8 +434,8 @@ paths:
       responses:
         '200':
           description: Succesful update
-        '204':
-          description: Request succeeded
+	'204':
+	  description: Request succeeded
         '404':
           description: Invalid item ID
         '422':
@@ -405,36 +444,29 @@ paths:
         - authen:
           - write:items
           - read:items
-  /view_Item/{itemID}:
-    get:
+    delete:
       tags:
-        - user
-      summary: Gets a specific item
-      description: Gets a specific item from a ID
-      operationId: view_Item
+        - store
+      summary: Deletes an item from the store
+      description: Deletes an item from the store using an ID
+      operationId: remove_Item
       parameters:
-        - name: itemID
+        - name: itemID 
           in: path
-          description: ID of item to get
+          description: Item ID to delete
           required: true
-          explode: true
           schema:
             type: integer
-            format: integer64
+            format: int64
       responses:
         '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Item'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Item'
-        '204':
-          description: Request succeeded
+          description: Succesful Deletion
+	'204':
+	  description: Request succeeded
         '404':
-          description: Invalid item
+          description: Invalid item ID
+        '422':
+          description: Validation Exception
       security:
         - authen:
           - write:items
