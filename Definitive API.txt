@@ -104,12 +104,12 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Customer'
-	'201':
-	  description: Account created
+        '201':
+          description: Account created
+		'401'
+		  description: Unauthorized
         '400':
           description: Bad Request
-        '422':
-          description: Validation Exception
       security:
         - authen:
           - write:items
@@ -156,8 +156,8 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Review'
-	'201':
-	  description: Review created
+        '201':
+          description: Review created
         '400':
           description: Bad Request
         '422':
@@ -252,8 +252,8 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Cart'
-	'201':
-	  description: Cart item created
+        '201':
+          description: Cart item created
         '400':
           description: Bad Request
         '401':
@@ -286,8 +286,8 @@ paths:
       responses:
         '200':
           description: Quantity updated successfully
-	'204:
-	  description: Request Succeeded
+        '204':
+          description: Request Succeeded
         '400':
           description: Bad request
         '401':
@@ -315,8 +315,8 @@ paths:
       responses:
         '200':
           description: Successful deletion
-	'204':
-	  description: Request succeeded
+        '204':
+          description: Request succeeded
         '401':
           description: User does not own the cart
         '404':
@@ -368,12 +368,12 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Item'
-	'201':
-	  description: Item created
+        '201':
+          description: Item created
         '400':
           description: Invalid input
-        '422':
-          description: Validation exception
+        '401':
+		  description: User does not own item
       security:
         - authen:
           - write:items
@@ -434,12 +434,12 @@ paths:
       responses:
         '200':
           description: Succesful update
-	'204':
-	  description: Request succeeded
+        '204':
+          description: Request succeeded
+		'401':
+		  description: User does not own item
         '404':
           description: Invalid item ID
-        '422':
-          description: Validation exception
       security:
         - authen:
           - write:items
@@ -459,14 +459,12 @@ paths:
             type: integer
             format: int64
       responses:
-        '200':
-          description: Succesful Deletion
-	'204':
-	  description: Request succeeded
+		'204':
+		  description: Request succeeded
+		'401':
+		  description: Unauthorized
         '404':
           description: Invalid item ID
-        '422':
-          description: Validation Exception
       security:
         - authen:
           - write:items
