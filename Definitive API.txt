@@ -23,7 +23,7 @@ tags:
   - name: cart
     description: Every operation a user can do to a cart
 paths:
-  /account:
+  /account/login:
     post: 
       tags:
         - user
@@ -112,6 +112,8 @@ paths:
           description: User verified successfully
         '400':
           description: User could not be verified
+        '401':
+          description: User is not logged in
   /reviews:
     get:
       tags:
@@ -186,8 +188,8 @@ paths:
           schema:
             type: number
       responses:
-        '200':
-          description: Successful operation
+        '201':
+          description: Review created
           content:
             application/json:
               schema:
@@ -195,8 +197,6 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Review'
-        '201':
-          description: Review created
         '404':
           description: Could not find an item with a matching ID
       security:
@@ -324,7 +324,7 @@ paths:
       responses:
         '200':
           description: Items have been returned successfully
-		'400':
+        '400':
           description: Invalid parameter(s) provided
         '401':
           description: User does not own the cart
@@ -356,8 +356,8 @@ paths:
               $ref: '#/components/schemas/Cart'
         required: true
       responses:
-        '200':
-          description: Successful operation
+        '201':
+          description: Cart item created
           content:
             application/json:
               schema:
@@ -365,8 +365,6 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Cart'
-        '201':
-          description: Cart item created
         '400':
           description: Invalid itemID / quantity provided
         '401':
@@ -397,12 +395,10 @@ paths:
             type: integer
             default: 1
       responses:
-        '200':
-          description: Quantity updated successfully
         '204':
-          description: Request Succeeded
+          description: Quantity updated successfully
         '400':
-          description: Invalid itemID / quantity provided
+          description: Invalid quantity provided
         '401':
           description: Current user does not own cart
         '404':
@@ -426,10 +422,8 @@ paths:
             type: integer
             format: int64
       responses:
-        '200':
-          description: Successful deletion
         '204':
-          description: Request succeeded
+          description: Successful deletion
         '401':
           description: User does not own the cart
         '404':
@@ -546,8 +540,8 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
-          description: Successful operation
+        '201':
+          description: Item created
           content:
             application/json:
               schema:
@@ -555,8 +549,6 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Item'
-        '201':
-          description: Item created
         '400':
           description: Invalid input. Could not create item
         '401':
@@ -598,7 +590,7 @@ paths:
       tags:
         - store
       summary: Allows management to update an item
-      description: Allows management to update the sale of an item using an item ID
+      description: Allows management to update the item using an item ID
       parameters:
         - name: itemID
           in: path
@@ -607,6 +599,24 @@ paths:
           schema:
             type: integer
             format: int64
+        - name: itemName
+          in: query
+          description: The item's name
+          required: true
+          schema:
+            type: string
+        - name: itemDescription
+          in: query
+          description: The item's description
+          required: true
+          schema:
+            type: string
+        - name: itemImage
+          in: query
+          description: A url depicting the item
+          required: true
+          schema:
+            type: string
         - name: salePrice
           in: query
           description: The new price of the item of the corresponding ID
@@ -614,11 +624,15 @@ paths:
           schema:
             type: number
             format: float64
+        - name: itemStock
+          in: query
+          description: How much of the item is currently available
+          schema:
+            type: integer
+            format: int64
       responses:
         '200':
-          description: Succesful update
-        '204':
-          description: Request succeeded
+          description: Succesful update of item
         '401':
           description: User does not own item
         '404':
@@ -654,25 +668,6 @@ paths:
           - read:items
 components:
   schemas:
-    Customer:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-          example: 10
-        uname:
-          type: string
-          example: JuiceBuyer18
-        email:
-          type: string
-          example: jb18@gmail.com
-        managerCode:
-          type: integer
-          format: int64
-          example: 0
-      xml:
-        name: customer
     Item:
       type: object
       properties:
@@ -738,18 +733,6 @@ components:
           type: number
           format: float64
           example: 5.0
-    ApiResponse:
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-        type:
-          type: string
-        message:
-          type: string
-      xml:
-        name: '##default'
   securitySchemes:
     authen:
       type: oauth2
