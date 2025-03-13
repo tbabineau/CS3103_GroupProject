@@ -44,7 +44,7 @@ paths:
           schema:
             type: string
       responses:
-        '204':
+        '200':
             description: successful login
         '401':
           description: Invalid username/password supplied
