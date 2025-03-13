@@ -736,6 +736,7 @@ components:
           example: I sure do love my Great Valley Orange Juice first thing in the morning
         stars:
           type: number
+          format: float64
           example: 5.0
     ApiResponse:
       type: object
