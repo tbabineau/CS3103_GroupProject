@@ -57,13 +57,13 @@ class login(Resource):
         try:
             print(getUser(request_params['username']))
         except:
-            abort(500) #bad username
+           abort(500) #bad username
 
 
 
 api.add_resource(Root,'/')
+api.add_resource(login, '/login')
 api = Api(app)
-#api.add_resource(Solver, '/')
 
 
 #############################################################################
