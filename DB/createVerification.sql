@@ -3,5 +3,7 @@ CREATE TABLE verification (
   userId INT NOT NULL,
   verificationHash varchar(256) NOT NULL,
   timeStamp datetime,
-  PRIMARY KEY (userId)
+  PRIMARY KEY (userId),
+  FOREIGN KEY (userId)
+	REFERENCES users (userID)
 );

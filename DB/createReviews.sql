@@ -5,6 +5,9 @@ CREATE TABLE reviews (
   userId INT NOT NULL,
   reviewText varchar(250) NOT NULL,
   reviewRating decimal(2,1) NOT NULL,
-  PRIMARY KEY (userId)
-  FOREIGN KEY (itemId, userId)
+  PRIMARY KEY (reviewId),
+  FOREIGN KEY (itemId)
+	REFERENCES storeItems (itemId),
+  FOREIGN KEY (userId)
+	REFERENCES users (userId)
 );
