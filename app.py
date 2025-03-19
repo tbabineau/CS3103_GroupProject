@@ -1,0 +1,73 @@
+#!/usr/bin/env python3
+
+from flask import Flask, jsonify, abort, request, make_response, session
+from flask_restful import Resource, Api, reqparse
+from flask_session import Session
+import json
+import hashlib
+
+import settings # Our server and db settings, stored in settings.py
+from db_util import getUser# Database connection helper
+
+app = Flask(__name__, static_url_path='/static')
+api = Api(app)
+
+
+####################################################################################
+#
+# Error handlers
+#
+@app.errorhandler(400) # decorators to add to 400 response
+def not_found(error):
+    return make_response(jsonify( { "status": "Bad request" } ), 400)
+
+@app.errorhandler(404) # decorators to add to 404 response
+def not_found(error):
+    return make_response(jsonify( { "status": "Resource not found" } ), 404)
+
+####################################################################################
+#
+# Static Endpoints for humans
+#
+class Root(Resource):
+   # get method. What might others be aptly named? (hint: post)
+    def get(self):
+        return app.send_static_file('log_in_page.html')
+
+#Login endpoint
+class login(Resource):
+    def get(self):
+        return app.send_static_file('log_in_page.html')
+
+    def post(self):
+        if not request.json:
+            abort(400) #bad request
+        parser = reqparse.RequestParser()
+        try:
+            parser.add_argument('username', type=str, required=True)
+            parser.add_argument('password', type=str, required=True)
+            request_params = parser.parse_args()
+        except:
+            abort(400) #bad request
+        
+        #if request_params['username'] in session:
+            #response = {'status': 'success}
+            #responseCode = 200
+        #else:
+        try:
+            print(getUser(request_params['username']))
+        except:
+            abort(500) #bad username
+
+
+
+api.add_resource(Root,'/')
+api = Api(app)
+#api.add_resource(Solver, '/')
+
+
+#############################################################################
+# xxxxx= last 5 digits of your studentid. If xxxxx > 65535, subtract 30000
+if __name__ == "__main__":
+#    app.run(host="cs3103.cs.unb.ca", port=xxxx, debug=True)
+    app.run(host=settings.APP_HOST, port=settings.APP_PORT, debug=settings.APP_DEBUG)
