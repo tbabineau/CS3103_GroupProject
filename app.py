@@ -78,6 +78,7 @@ class register(Resource):
 
 api.add_resource(Root,'/')
 api.add_resource(login, '/login')
+api.add_resource(register, "/register")
 api = Api(app)
 
 
