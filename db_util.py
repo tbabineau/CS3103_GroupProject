@@ -27,7 +27,7 @@ def getUser(username): #DONT FORGET TO ADD DATA SANITIZATION
 def addUser(uname, email, fname, lname, pwd):
     salt = secrets.token_bytes(32)
     hash = hashlib.sha512()
-    hash.update(pwd + salt)
+    hash.update((pwd).encode("utf-8") + salt)
     hashed_pwd = hash.digest()
     print(hashed_pwd)
     try:

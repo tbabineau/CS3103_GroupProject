@@ -73,7 +73,7 @@ class register(Resource):
         except:
             abort(400) #bad request
 
-        print(addUser(request_params['username']), request_params['email'], request_params['firstname'], request_params['lastname'], request_params['password'])
+        print(addUser(request_params['username'], request_params['email'], request_params['firstname'], request_params['lastname'], request_params['password']))
         
 
 api.add_resource(Root,'/')
