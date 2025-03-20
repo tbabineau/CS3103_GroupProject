@@ -28,11 +28,6 @@ def not_found(error):
 #
 # Static Endpoints for humans
 #
-class Root(Resource):
-   # get method. What might others be aptly named? (hint: post)
-    def get(self):
-        return app.send_static_file('log_in_page.html')
-
 #Login endpoint
 class login(Resource):
     def get(self):
@@ -61,9 +56,11 @@ class register(Resource):
         return app.send_static_file("register_page.html")
     def post(self):
         if not request.json:
+            print("NOT JSON")
             abort(400) #bad request
         parser = reqparse.RequestParser()
         try:
+            print(request.json)
             parser.add_argument('username', type=str, required=True)
             parser.add_argument('email', type=str, required=True)
             parser.add_argument('firstname', type=str, required=True)
@@ -71,12 +68,13 @@ class register(Resource):
             parser.add_argument('password', type=str, required=True)
             request_params = parser.parse_args()
         except:
+            print("BAD PARSING")
             abort(400) #bad request
 
-        print(addUser(request_params['username'], request_params['email'], request_params['firstname'], request_params['lastname'], request_params['password']))
+        addUser(request_params['username'], request_params['email'], request_params['firstname'], request_params['lastname'], request_params['password'])
         
 
-api.add_resource(Root,'/')
+#api.add_resource(login,'/') #What should be the default landing page?
 api.add_resource(login, '/login')
 api.add_resource(register, "/register")
 api = Api(app)

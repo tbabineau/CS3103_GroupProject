@@ -1,6 +1,6 @@
 login = function(){
-    let uname = document.getElementById("username");
-    let pwd = document.getElementById("password");
+    let uname = document.getElementById("username").value;
+    let pwd = document.getElementById("password").value;
 
     if(uname != null && pwd != null){
         fetch("/login",
@@ -22,18 +22,20 @@ login = function(){
 }
 
 register = function(){
-    let fname = document.getElementById("firstname");
-    let lname = document.getElementById("lastname");
-    let uname = document.getElementById("username");
-    let pwd = document.getElementById("password");
+    let fname = document.getElementById("firstname").value;
+    let lname = document.getElementById("lastname").value;
+    let mail = document.getElementById("email").value;
+    let uname = document.getElementById("username").value;
+    let pwd = document.getElementById("password").value;
 
-    if(fname != null && lname != null && uname != null && pwd != null){
+    if(fname != null && lname != null && mail != null && uname != null && pwd != null){
         fetch("/register",
             {
                 method: "POST",
                 body: JSON.stringify({
                     firstname: fname,
                     lastname: lname,
+                    email: mail,
                     username: uname,
                     password: pwd
                 }),

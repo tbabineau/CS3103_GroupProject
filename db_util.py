@@ -25,12 +25,11 @@ def getUser(username): #DONT FORGET TO ADD DATA SANITIZATION
         dbConnection.close()
 
 def addUser(uname, email, fname, lname, pwd):
-    result = ""
     salt = secrets.token_bytes(32)
     hash = hashlib.sha512()
     hash.update((pwd).encode("utf-8") + salt)
     hashed_pwd = hash.digest()
-    print(hashed_pwd)
+    print(str(hashed_pwd))
     try:
         dbConnection = pymysql.connect(
                 host=settings.MYSQL_HOST,
@@ -42,7 +41,6 @@ def addUser(uname, email, fname, lname, pwd):
         cursor = dbConnection.cursor()
         sql = "INSERT INTO users (username, email, fname, lname, password_hash) VALUES (%s, %s, %s, %s, %s);"
         cursor.execute(sql, (uname, email, fname, lname, hashed_pwd))
-        result = cursor.fetchall()
         return make_response(jsonify( {"status": "Successfully Registered"}), 201)
     except:
         return make_response(jsonify( { "status": "Database Error" } ), 500)
