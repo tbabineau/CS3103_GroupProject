@@ -1,3 +1,4 @@
 info.py
 settings.py
 *.tar
+__pycache__/*

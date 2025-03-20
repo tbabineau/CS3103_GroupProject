@@ -42,7 +42,9 @@ register = function(){
                 headers: {"Content-Type": "application/json; charset = UTF-8"}
             }
         )
-        .then((Response) => Response.json())
+        .then((Response) =>{
+		console.log(Response);
+		return Response.json();})
         .then((json) => console.log(json));
     }
     else{
