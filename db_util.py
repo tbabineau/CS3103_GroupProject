@@ -25,6 +25,7 @@ def getUser(username): #DONT FORGET TO ADD DATA SANITIZATION
         dbConnection.close()
 
 def addUser(uname, email, fname, lname, pwd):
+    result = ""
     salt = secrets.token_bytes(32)
     hash = hashlib.sha512()
     hash.update((pwd).encode("utf-8") + salt)
@@ -42,7 +43,7 @@ def addUser(uname, email, fname, lname, pwd):
         sql = "INSERT INTO users (username, email, fname, lname, password_hash) VALUES (%s, %s, %s, %s, %s);"
         cursor.execute(sql, (uname, email, fname, lname, hashed_pwd))
         result = cursor.fetchall()
-        return result
+        return make_response(jsonify( {"status": "Successfully Registered"}), 201)
     except:
         return make_response(jsonify( { "status": "Database Error" } ), 500)
     finally:
