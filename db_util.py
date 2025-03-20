@@ -1,11 +1,8 @@
 import pymysql
 import pymysql.cursors
 import settings
-import hashlib
-import secrets
-from flask import jsonify, make_response
 
-def getUser(username): #DONT FORGET TO ADD DATA SANITIZATION
+def callStatement(sql, params):
     try:
         dbConnection = pymysql.connect(
                 host=settings.MYSQL_HOST,
@@ -15,21 +12,15 @@ def getUser(username): #DONT FORGET TO ADD DATA SANITIZATION
                 charset='utf8mb4',
                 cursorclass= pymysql.cursors.DictCursor)
         cursor = dbConnection.cursor()
-        sql = "SELECT * FROM users WHERE username = %s;"
-        cursor.execute(sql, username)
-        result = cursor.fetchall()
-        return result
-    except:
-        return make_response(jsonify( { "status": "Database Error" } ), 500)
+        cursor.execute(sql, params)
+        return cursor.fetchall()
+    except pymysql.MySQLError as e:
+        raise Exception('Database Error: ' + str(e))
     finally:
+        dbConnection.commit()
         dbConnection.close()
 
-def addUser(uname, email, fname, lname, pwd):
-    salt = secrets.token_hex(32)
-    hash = hashlib.sha512()
-    hash.update((pwd + salt).encode("utf-8"))
-    hashed_pwd = hash.hexdigest()
-    print(len(salt), len(str(salt)), len(hashed_pwd), len(str(hashed_pwd)))
+def callProc(proc, params):
     try:
         dbConnection = pymysql.connect(
                 host=settings.MYSQL_HOST,
@@ -39,14 +30,10 @@ def addUser(uname, email, fname, lname, pwd):
                 charset='utf8mb4',
                 cursorclass= pymysql.cursors.DictCursor)
         cursor = dbConnection.cursor()
-        sql = "INSERT INTO users (username, email, fname, lname, password_hash, salt) VALUES (%s, %s, %s, %s, %s, %s);"
-        cursor.execute(sql, (uname, email, fname, lname, str(hashed_pwd), str(salt)))
-        return make_response(jsonify( {"status": "Successfully Registered"}), 201)
+        cursor.callproc(proc, params)
+        return cursor.fetchall()
     except pymysql.MySQLError as e:
-        print(e)
-    except:
-        print("SOMETHING ELSE")
-        return make_response(jsonify( { "status": "Database Error" } ), 500)
+        raise Exception('Database Error: ' + str(e))
     finally:
         dbConnection.commit()
         dbConnection.close()

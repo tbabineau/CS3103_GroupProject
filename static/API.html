@@ -1,0 +1,1196 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Shop API</title>
+    <style type="text/css">
+      body {
+      	font-family: Trebuchet MS, sans-serif;
+      	font-size: 15px;
+      	color: #444;
+      	margin-right: 24px;
+      }
+      
+      h1	{
+      	font-size: 25px;
+      }
+      h2	{
+      	font-size: 20px;
+      }
+      h3	{
+      	font-size: 16px;
+      	font-weight: bold;
+      }
+      hr	{
+      	height: 1px;
+      	border: 0;
+      	color: #ddd;
+      	background-color: #ddd;
+      }
+      
+      .app-desc {
+        clear: both;
+        margin-left: 20px;
+      }
+      .param-name {
+        width: 100%;
+      }
+      .license-info {
+        margin-left: 20px;
+      }
+      
+      .license-url {
+        margin-left: 20px;
+      }
+      
+      .model {
+        margin: 0 0 0px 20px;
+      }
+      
+      .method {
+        margin-left: 20px;
+      }
+      
+      .method-notes	{
+      	margin: 10px 0 20px 0;
+      	font-size: 90%;
+      	color: #555;
+      }
+      
+      pre {
+        padding: 10px;
+        margin-bottom: 2px;
+      }
+      
+      .http-method {
+       text-transform: uppercase;
+      }
+      
+      pre.get {
+        background-color: #0f6ab4;
+      }
+      
+      pre.post {
+        background-color: #10a54a;
+      }
+      
+      pre.put {
+        background-color: #c5862b;
+      }
+      
+      pre.delete {
+        background-color: #a41e22;
+      }
+      
+      .huge	{
+      	color: #fff;
+      }
+      
+      pre.example {
+        background-color: #f3f3f3;
+        padding: 10px;
+        border: 1px solid #ddd;
+      }
+      
+      code {
+        white-space: pre;
+      }
+      
+      .nickname {
+        font-weight: bold;
+      }
+      
+      .method-path {
+        font-size: 1.5em;
+        background-color: #0f6ab4;
+      }
+      
+      .up {
+        float:right;
+      }
+      
+      .parameter {
+        width: 500px;
+      }
+      
+      .param {
+        width: 500px;
+        padding: 10px 0 0 20px;
+        font-weight: bold;
+      }
+      
+      .param-desc {
+        width: 700px;
+        padding: 0 0 0 20px;
+        color: #777;
+      }
+      
+      .param-type {
+        font-style: italic;
+      }
+      
+      .param-enum-header {
+      width: 700px;
+      padding: 0 0 0 60px;
+      color: #777;
+      font-weight: bold;
+      }
+      
+      .param-enum {
+      width: 700px;
+      padding: 0 0 0 80px;
+      color: #777;
+      font-style: italic;
+      }
+      
+      .field-label {
+        padding: 0;
+        margin: 0;
+        clear: both;
+      }
+      
+      .field-items	{
+      	padding: 0 0 15px 0;
+      	margin-bottom: 15px;
+      }
+      
+      .return-type {
+        clear: both;
+        padding-bottom: 10px;
+      }
+      
+      .param-header {
+        font-weight: bold;
+      }
+      
+      .method-tags {
+        text-align: right;
+      }
+      
+      .method-tag {
+        background: none repeat scroll 0% 0% #24A600;
+        border-radius: 3px;
+        padding: 2px 10px;
+        margin: 2px;
+        color: #FFF;
+        display: inline-block;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+  <h1>Shop API</h1>
+    <div class="app-desc">This is sample api of a online buy and sell webpage. General queries given: Sort which will sort by name, price, rating and limits which will limit amount of items shown.</div>
+    <div class="app-desc">More information: <a href="https://helloreverb.com">https://helloreverb.com</a></div>
+    <div class="app-desc">Contact Info:
+		<ul>
+			<li><a href="iodonnel@unb.ca">iodonnel@unb.ca</a></li>
+			<li><a href="tbabine1@unb.ca">tbabine1@unb.ca</a></li>
+			<li><a href="wyoung3@unb.ca">wyoung3@unb.ca</a></li>
+		</ul>
+	</div>
+    <div class="app-desc">Version: 1.0.11</div>
+    
+    <div class="license-info">Apache 2.0</div>
+    <div class="license-url">http://www.apache.org/licenses/LICENSE-2.0.html</div>
+  <h2>Access</h2>
+    <ol>
+      <li>APIKey KeyParamName:api_key KeyInQuery:false KeyInHeader:true</li>
+      <li>OAuth AuthorizationUrl:https://petstore3.swagger.io/oauth/authorizeTokenUrl:</li>
+    </ol>
+
+  <h2><a name="__Methods">Methods</a></h2>
+  [ Jump to <a href="#__Models">Models</a> ]
+
+  <h3>Table of Contents </h3>
+  <div class="method-summary"></div>
+  <h4><a href="#Cart">Cart</a></h4>
+  <ul>
+  <li><a href="#addItemToCart"><code><span class="http-method">post</span> /cart</code></a></li>
+  <li><a href="#getCart"><code><span class="http-method">get</span> /cart</code></a></li>
+  <li><a href="#removeItemFromCart"><code><span class="http-method">delete</span> /cart/{itemID}</code></a></li>
+  <li><a href="#updateCartItem"><code><span class="http-method">put</span> /cart/{itemID}</code></a></li>
+  </ul>
+  <h4><a href="#Store">Store</a></h4>
+  <ul>
+  <li><a href="#addItem"><code><span class="http-method">post</span> /items</code></a></li>
+  <li><a href="#itemsItemIDPut"><code><span class="http-method">put</span> /items/{itemID}</code></a></li>
+  <li><a href="#removeItem"><code><span class="http-method">delete</span> /items/{itemID}</code></a></li>
+  </ul>
+  <h4><a href="#User">User</a></h4>
+  <ul>
+  <li><a href="#accountRegisterPost"><code><span class="http-method">post</span> /account/register</code></a></li>
+  <li><a href="#accountVerifyPost"><code><span class="http-method">post</span> /account/verify</code></a></li>
+  <li><a href="#itemsGet"><code><span class="http-method">get</span> /items</code></a></li>
+  <li><a href="#itemsItemIDGet"><code><span class="http-method">get</span> /items/{itemID}</code></a></li>
+  <li><a href="#loginCustomer"><code><span class="http-method">post</span> /account/login</code></a></li>
+  <li><a href="#logoutCustomer"><code><span class="http-method">delete</span> /account/login</code></a></li>
+  <li><a href="#reviewsGet"><code><span class="http-method">get</span> /reviews</code></a></li>
+  <li><a href="#reviewsPost"><code><span class="http-method">post</span> /reviews</code></a></li>
+  <li><a href="#reviewsReviewIDDelete"><code><span class="http-method">delete</span> /reviews/{reviewID}</code></a></li>
+  <li><a href="#reviewsReviewIDGet"><code><span class="http-method">get</span> /reviews/{reviewID}</code></a></li>
+  <li><a href="#reviewsReviewIDPut"><code><span class="http-method">put</span> /reviews/{reviewID}</code></a></li>
+  </ul>
+
+  <h1><a name="Cart">Cart</a></h1>
+  <div class="method"><a name="addItemToCart"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /cart</code></pre></div>
+    <div class="method-summary">Adds an item to a user's cart (<span class="nickname">addItemToCart</span>)</div>
+    <div class="method-notes">Adds an item to a user's cart using the user ID and an item ID</div>
+
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="header">Content-Type</span> request header:
+    <ul>
+      <li><code>application/json</code></li>
+      <li><code>application/xml</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#Cart">Cart</a> (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash;  </div>
+                </div>  <!-- field-items -->
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">itemID (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash;  </div>      <div class="param">quantity (optional)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash;  default: 1 </div>    </div>  <!-- field-items -->
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#Cart">Cart</a>
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "quantity" : [ {
+    "reviews" : [ {
+      "itemID" : 18,
+      "review" : "I sure do love my Great Valley Orange Juice first thing in the morning",
+      "stars" : 5,
+      "reviewID" : 6,
+      "userID" : 8
+    }, {
+      "itemID" : 18,
+      "review" : "I sure do love my Great Valley Orange Juice first thing in the morning",
+      "stars" : 5,
+      "reviewID" : 6,
+      "userID" : 8
+    } ],
+    "item_Description" : "500 ml. High in Vitamin C and Potassium",
+    "price" : 0.8008281904610115,
+    "item_Name" : "Great Value Orange Juice",
+    "id" : 18,
+    "item_Image" : "greatValleyOJ.jpg",
+    "stock" : 7
+  }, {
+    "reviews" : [ {
+      "itemID" : 18,
+      "review" : "I sure do love my Great Valley Orange Juice first thing in the morning",
+      "stars" : 5,
+      "reviewID" : 6,
+      "userID" : 8
+    }, {
+      "itemID" : 18,
+      "review" : "I sure do love my Great Valley Orange Juice first thing in the morning",
+      "stars" : 5,
+      "reviewID" : 6,
+      "userID" : 8
+    } ],
+    "item_Description" : "500 ml. High in Vitamin C and Potassium",
+    "price" : 0.8008281904610115,
+    "item_Name" : "Great Value Orange Juice",
+    "id" : 18,
+    "item_Image" : "greatValleyOJ.jpg",
+    "stock" : 7
+  } ],
+  "id" : 18
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json</code></li>
+      <li><code>application/xml</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">201</h4>
+    Cart item created
+        <a href="#Cart">Cart</a>
+    <h4 class="field-label">400</h4>
+    Invalid itemID / quantity provided
+        <a href="#"></a>
+    <h4 class="field-label">401</h4>
+    User does not own this cart
+        <a href="#"></a>
+    <h4 class="field-label">404</h4>
+    Item not found
+        <a href="#"></a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="getCart"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /cart</code></pre></div>
+    <div class="method-summary">Returns the items in a user's cart (<span class="nickname">getCart</span>)</div>
+    <div class="method-notes">Gets a list of all items in the current user's cart</div>
+
+
+
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">search (optional)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Search for an item with a matching title </div>      <div class="param">quantity (optional)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Search for items by specific quantity </div>      <div class="param">maxQuantity (optional)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Search for items by a maximum quantity </div>      <div class="param">minQuantity (optional)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Search for items by a minimum quantity </div>      <div class="param">price (optional)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Search for items by specific price </div>      <div class="param">maxPrice (optional)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Search for items by a maximum price </div>      <div class="param">minPrice (optional)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Search for items by a minimum price </div>    </div>  <!-- field-items -->
+
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    Items have been returned successfully
+        <a href="#"></a>
+    <h4 class="field-label">400</h4>
+    Invalid parameter(s) provided
+        <a href="#"></a>
+    <h4 class="field-label">401</h4>
+    User does not own the cart
+        <a href="#"></a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="removeItemFromCart"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="delete"><code class="huge"><span class="http-method">delete</span> /cart/{itemID}</code></pre></div>
+    <div class="method-summary">Removes a item from a user's cart (<span class="nickname">removeItemFromCart</span>)</div>
+    <div class="method-notes">Removes a item to a user's cart using the user ID and the item ID</div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">itemID (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; item ID that needs to be fetched format: int64</div>    </div>  <!-- field-items -->
+
+
+
+
+
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">204</h4>
+    Successful deletion
+        <a href="#"></a>
+    <h4 class="field-label">401</h4>
+    User does not own the cart
+        <a href="#"></a>
+    <h4 class="field-label">404</h4>
+    Item not found
+        <a href="#"></a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="updateCartItem"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="put"><code class="huge"><span class="http-method">put</span> /cart/{itemID}</code></pre></div>
+    <div class="method-summary">Updates an item in a user's cart (<span class="nickname">updateCartItem</span>)</div>
+    <div class="method-notes">Updates the quantity of items in a users cart</div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">itemID (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  </div>    </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">quantity (optional)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash;  default: 1 </div>    </div>  <!-- field-items -->
+
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">204</h4>
+    Quantity updated successfully
+        <a href="#"></a>
+    <h4 class="field-label">400</h4>
+    Invalid quantity provided
+        <a href="#"></a>
+    <h4 class="field-label">401</h4>
+    Current user does not own cart
+        <a href="#"></a>
+    <h4 class="field-label">404</h4>
+    Could not find item in cart
+        <a href="#"></a>
+  </div> <!-- method -->
+  <hr/>
+  <h1><a name="Store">Store</a></h1>
+  <div class="method"><a name="addItem"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /items</code></pre></div>
+    <div class="method-summary">Adds a new item to the store (<span class="nickname">addItem</span>)</div>
+    <div class="method-notes">Adds a new item to the store using a name, a description, an image, a price and how much of the item is in stock</div>
+
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="header">Content-Type</span> request header:
+    <ul>
+      <li><code>application/json</code></li>
+      <li><code>application/xml</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#Item">Item</a> (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash;  </div>
+                </div>  <!-- field-items -->
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">itemName (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; The item&#x27;s name </div>      <div class="param">itemDescript (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; The item&#x27;s description </div>      <div class="param">itemImage (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; A url depicting the item </div>      <div class="param">price (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; The item&#x27;s price </div>      <div class="param">itemStock (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; How much of the item is currently available </div>    </div>  <!-- field-items -->
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#Item">Item</a>
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "reviews" : [ {
+    "itemID" : 18,
+    "review" : "I sure do love my Great Valley Orange Juice first thing in the morning",
+    "stars" : 5,
+    "reviewID" : 6,
+    "userID" : 8
+  }, {
+    "itemID" : 18,
+    "review" : "I sure do love my Great Valley Orange Juice first thing in the morning",
+    "stars" : 5,
+    "reviewID" : 6,
+    "userID" : 8
+  } ],
+  "item_Description" : "500 ml. High in Vitamin C and Potassium",
+  "price" : 0.8008281904610115,
+  "item_Name" : "Great Value Orange Juice",
+  "id" : 18,
+  "item_Image" : "greatValleyOJ.jpg",
+  "stock" : 7
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json</code></li>
+      <li><code>application/xml</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">201</h4>
+    Item created
+        <a href="#Item">Item</a>
+    <h4 class="field-label">400</h4>
+    Invalid input. Could not create item
+        <a href="#"></a>
+    <h4 class="field-label">401</h4>
+    User does not own item
+        <a href="#"></a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="itemsItemIDPut"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="put"><code class="huge"><span class="http-method">put</span> /items/{itemID}</code></pre></div>
+    <div class="method-summary">Allows management to update an item (<span class="nickname">itemsItemIDPut</span>)</div>
+    <div class="method-notes">Allows management to update the item using an item ID</div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">itemID (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; ID of the item to be updated format: int64</div>    </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">itemName (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; The item&#x27;s name </div>      <div class="param">itemDescription (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; The item&#x27;s description </div>      <div class="param">itemImage (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; A url depicting the item </div>      <div class="param">salePrice (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; The new price of the item of the corresponding ID format: float64</div>      <div class="param">itemStock (optional)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; How much of the item is currently available format: int64</div>    </div>  <!-- field-items -->
+
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    Succesful update of item
+        <a href="#"></a>
+    <h4 class="field-label">401</h4>
+    User does not own item
+        <a href="#"></a>
+    <h4 class="field-label">404</h4>
+    Invalid item ID
+        <a href="#"></a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="removeItem"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="delete"><code class="huge"><span class="http-method">delete</span> /items/{itemID}</code></pre></div>
+    <div class="method-summary">Deletes an item from the store (<span class="nickname">removeItem</span>)</div>
+    <div class="method-notes">Deletes an item from the store using an ID</div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">itemID (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; Item ID to delete format: int64</div>    </div>  <!-- field-items -->
+
+
+
+
+
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">204</h4>
+    Request succeeded
+        <a href="#"></a>
+    <h4 class="field-label">401</h4>
+    Unauthorized
+        <a href="#"></a>
+    <h4 class="field-label">404</h4>
+    Invalid item ID
+        <a href="#"></a>
+  </div> <!-- method -->
+  <hr/>
+  <h1><a name="User">User</a></h1>
+  <div class="method"><a name="accountRegisterPost"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /account/register</code></pre></div>
+    <div class="method-summary">Creates a new customer account (<span class="nickname">accountRegisterPost</span>)</div>
+    <div class="method-notes">Creates a new customer account, by a username, an email, and a password. Manager code given to customers is always 0.  New managers will be added to the database directly.</div>
+
+
+
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">uname (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; The user&#x27;s chosen username </div>      <div class="param">email (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; The user&#x27;s email </div>      <div class="param">password (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; The user&#x27;s password </div>    </div>  <!-- field-items -->
+
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">201</h4>
+    Account created
+        <a href="#"></a>
+    <h4 class="field-label">400</h4>
+    Account could not be created
+        <a href="#"></a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="accountVerifyPost"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /account/verify</code></pre></div>
+    <div class="method-summary">Allows a user to verify their account (<span class="nickname">accountVerifyPost</span>)</div>
+    <div class="method-notes">Sends a verification hash that given to the user in order to verify their email</div>
+
+
+
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">verifyHash (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash;  </div>    </div>  <!-- field-items -->
+
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    User verified successfully
+        <a href="#"></a>
+    <h4 class="field-label">400</h4>
+    User could not be verified
+        <a href="#"></a>
+    <h4 class="field-label">401</h4>
+    User is not logged in
+        <a href="#"></a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="itemsGet"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /items</code></pre></div>
+    <div class="method-summary">Gets all items (<span class="nickname">itemsGet</span>)</div>
+    <div class="method-notes">Can only be done by logged user</div>
+
+
+
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">search (optional)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Search for an item with a matching title </div>      <div class="param">quantity (optional)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Search for items by specific quantity </div>      <div class="param">maxQuantity (optional)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Search for items by a maximum quantity </div>      <div class="param">minQuantity (optional)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Search for items by a minimum quantity </div>      <div class="param">price (optional)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Search for items by specific price </div>      <div class="param">maxPrice (optional)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Search for items by a maximum price </div>      <div class="param">minPrice (optional)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Search for items by a minimum price </div>    </div>  <!-- field-items -->
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#Item">Item</a>
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "reviews" : [ {
+    "itemID" : 18,
+    "review" : "I sure do love my Great Valley Orange Juice first thing in the morning",
+    "stars" : 5,
+    "reviewID" : 6,
+    "userID" : 8
+  }, {
+    "itemID" : 18,
+    "review" : "I sure do love my Great Valley Orange Juice first thing in the morning",
+    "stars" : 5,
+    "reviewID" : 6,
+    "userID" : 8
+  } ],
+  "item_Description" : "500 ml. High in Vitamin C and Potassium",
+  "price" : 0.8008281904610115,
+  "item_Name" : "Great Value Orange Juice",
+  "id" : 18,
+  "item_Image" : "greatValleyOJ.jpg",
+  "stock" : 7
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json</code></li>
+      <li><code>application/xml</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    Success
+        <a href="#Item">Item</a>
+    <h4 class="field-label">400</h4>
+    Invalid parameter(s) provided
+        <a href="#"></a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="itemsItemIDGet"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /items/{itemID}</code></pre></div>
+    <div class="method-summary">Gets a single item (<span class="nickname">itemsItemIDGet</span>)</div>
+    <div class="method-notes">Can only be done by logged user</div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">itemID (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; Items id </div>    </div>  <!-- field-items -->
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#Item">Item</a>
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "reviews" : [ {
+    "itemID" : 18,
+    "review" : "I sure do love my Great Valley Orange Juice first thing in the morning",
+    "stars" : 5,
+    "reviewID" : 6,
+    "userID" : 8
+  }, {
+    "itemID" : 18,
+    "review" : "I sure do love my Great Valley Orange Juice first thing in the morning",
+    "stars" : 5,
+    "reviewID" : 6,
+    "userID" : 8
+  } ],
+  "item_Description" : "500 ml. High in Vitamin C and Potassium",
+  "price" : 0.8008281904610115,
+  "item_Name" : "Great Value Orange Juice",
+  "id" : 18,
+  "item_Image" : "greatValleyOJ.jpg",
+  "stock" : 7
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json</code></li>
+      <li><code>application/xml</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    Success
+        <a href="#Item">Item</a>
+    <h4 class="field-label">404</h4>
+    Invalid item ID
+        <a href="#"></a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="loginCustomer"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /account/login</code></pre></div>
+    <div class="method-summary">Logs a user into the system (<span class="nickname">loginCustomer</span>)</div>
+    <div class="method-notes"></div>
+
+
+
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">username (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; The user name for login </div>      <div class="param">password (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; The password for login in clear text </div>    </div>  <!-- field-items -->
+
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    successful login
+        <a href="#"></a>
+    <h4 class="field-label">401</h4>
+    Invalid username/password supplied
+        <a href="#"></a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="logoutCustomer"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="delete"><code class="huge"><span class="http-method">delete</span> /account/login</code></pre></div>
+    <div class="method-summary">Logs out current logged in user session (<span class="nickname">logoutCustomer</span>)</div>
+    <div class="method-notes"></div>
+
+
+
+
+
+
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">204</h4>
+    Successfully logged out
+        <a href="#"></a>
+    <h4 class="field-label">400</h4>
+    Bad request
+        <a href="#"></a>
+    <h4 class="field-label">401</h4>
+    Not logged in
+        <a href="#"></a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="reviewsGet"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /reviews</code></pre></div>
+    <div class="method-summary">Gets user reviews (<span class="nickname">reviewsGet</span>)</div>
+    <div class="method-notes">Gets user reviews, can be sorted by itemID, userID, and star rating</div>
+
+
+
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">itemID (optional)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; The ID of the item that the review was left on </div>      <div class="param">userID (optional)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; The ID of the user which posted the review </div>      <div class="param">rating (optional)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; A specific item star rating </div>      <div class="param">maxRating (optional)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; A maximum item star rating (no higher than 5) </div>      <div class="param">minRating (optional)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; A minimum item star rating (no lower than 0) </div>    </div>  <!-- field-items -->
+
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    Reviews returned successfully
+        <a href="#"></a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="reviewsPost"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /reviews</code></pre></div>
+    <div class="method-summary">Adds a user review to an item (<span class="nickname">reviewsPost</span>)</div>
+    <div class="method-notes">Adds a user review to an item including an item ID, a user ID, the review body and a star rating</div>
+
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="header">Content-Type</span> request header:
+    <ul>
+      <li><code>application/json</code></li>
+      <li><code>application/xml</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#Review">Review</a> (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash;  </div>
+                </div>  <!-- field-items -->
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">itemID (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; The ID for the review subject ID </div>      <div class="param">reviewBody (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; The user&#x27;s review </div>      <div class="param">starRate (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; The user&#x27;s star rating for an item </div>    </div>  <!-- field-items -->
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#Review">Review</a>
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "itemID" : 18,
+  "review" : "I sure do love my Great Valley Orange Juice first thing in the morning",
+  "stars" : 5,
+  "reviewID" : 6,
+  "userID" : 8
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json</code></li>
+      <li><code>application/xml</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">201</h4>
+    Review created
+        <a href="#Review">Review</a>
+    <h4 class="field-label">404</h4>
+    Could not find an item with a matching ID
+        <a href="#"></a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="reviewsReviewIDDelete"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="delete"><code class="huge"><span class="http-method">delete</span> /reviews/{reviewID}</code></pre></div>
+    <div class="method-summary">Allows the user to delete a review (<span class="nickname">reviewsReviewIDDelete</span>)</div>
+    <div class="method-notes">Allows the user which posted the review to delete it</div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">reviewID (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; ID associated with a review </div>    </div>  <!-- field-items -->
+
+
+
+
+
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">204</h4>
+    Review successfully deleted
+        <a href="#"></a>
+    <h4 class="field-label">401</h4>
+    User did not post the review
+        <a href="#"></a>
+    <h4 class="field-label">404</h4>
+    Review with matching ID could not be located
+        <a href="#"></a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="reviewsReviewIDGet"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /reviews/{reviewID}</code></pre></div>
+    <div class="method-summary">Gets a specific review (<span class="nickname">reviewsReviewIDGet</span>)</div>
+    <div class="method-notes">Gets a specific review by reviewID</div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">reviewID (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; ID associated with a review </div>    </div>  <!-- field-items -->
+
+
+
+
+
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    Review returned successfully
+        <a href="#"></a>
+    <h4 class="field-label">404</h4>
+    Review with matching ID could not be located
+        <a href="#"></a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="reviewsReviewIDPut"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="put"><code class="huge"><span class="http-method">put</span> /reviews/{reviewID}</code></pre></div>
+    <div class="method-summary">Allows the user to update a review (<span class="nickname">reviewsReviewIDPut</span>)</div>
+    <div class="method-notes">Updates the entire review as long as the user posted it</div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">reviewID (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; ID associated with a review </div>    </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">reviewBody (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; The user&#x27;s review </div>      <div class="param">starRate (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; The user&#x27;s star rating for an item </div>    </div>  <!-- field-items -->
+
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">204</h4>
+    Review successfully updated
+        <a href="#"></a>
+    <h4 class="field-label">401</h4>
+    User did not post the review
+        <a href="#"></a>
+    <h4 class="field-label">404</h4>
+    Review with matching ID could not be located
+        <a href="#"></a>
+  </div> <!-- method -->
+  <hr/>
+
+  <h2><a name="__Models">Models</a></h2>
+  [ Jump to <a href="#__Methods">Methods</a> ]
+
+  <h3>Table of Contents</h3>
+  <ol>
+    <li><a href="#Cart"><code>Cart</code></a></li>
+    <li><a href="#Item"><code>Item</code></a></li>
+    <li><a href="#Review"><code>Review</code></a></li>
+  </ol>
+
+  <div class="model">
+    <h3><a name="Cart"><code>Cart</code></a> <a class="up" href="#__Models">Up</a></h3>
+    
+    <div class="field-items">
+      <div class="param">id (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span>  format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 18</span></div>
+<div class="param">quantity (optional)</div><div class="param-desc"><span class="param-type"><a href="#Item">array[Item]</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="Item"><code>Item</code></a> <a class="up" href="#__Models">Up</a></h3>
+    
+    <div class="field-items">
+      <div class="param">id (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span>  format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 18</span></div>
+<div class="param">item_Name (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: Great Value Orange Juice</span></div>
+<div class="param">item_Description (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: 500 ml. High in Vitamin C and Potassium</span></div>
+<div class="param">item_Image (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: greatValleyOJ.jpg</span></div>
+<div class="param">price (optional)</div><div class="param-desc"><span class="param-type"><a href="#BigDecimal">BigDecimal</a></span>  format: float64</div>
+<div class="param">stock (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span>  format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 7</span></div>
+<div class="param">reviews (optional)</div><div class="param-desc"><span class="param-type"><a href="#Review">array[Review]</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="Review"><code>Review</code></a> <a class="up" href="#__Models">Up</a></h3>
+    
+    <div class="field-items">
+      <div class="param">reviewID (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span>  format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 6</span></div>
+<div class="param">itemID (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span>  format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 18</span></div>
+<div class="param">userID (optional)</div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span>  format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 8</span></div>
+<div class="param">review (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: I sure do love my Great Valley Orange Juice first thing in the morning</span></div>
+<div class="param">stars (optional)</div><div class="param-desc"><span class="param-type"><a href="#BigDecimal">BigDecimal</a></span>  format: float64</div>
+          <div class="param-desc"><span class="param-type">example: 5</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  </body>
+</html>

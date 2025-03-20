@@ -21,6 +21,21 @@ login = function(){
     }
 }
 
+logout = function(){
+    fetch("/login",
+        {
+            method: "DELETE",
+            body: "",
+            headers: {"Content-Type": "application/json; charset = UTF-8"}
+        }
+    )
+    .then((Response) => {
+        if(Response.json()){
+            console.log(json);
+        }
+    });
+}
+
 register = function(){
     let fname = document.getElementById("firstname").value;
     let lname = document.getElementById("lastname").value;
@@ -42,9 +57,7 @@ register = function(){
                 headers: {"Content-Type": "application/json; charset = UTF-8"}
             }
         )
-        .then((Response) =>{
-		console.log(Response);
-		return Response.json();})
+        .then((Response) => Response.json())
         .then((json) => console.log(json));
     }
     else{

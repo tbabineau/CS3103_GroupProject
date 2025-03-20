@@ -1,4 +1,5 @@
 info.py
 settings.py
 *.tar
-__pycache__/*
+__pycache__/
+flask_session/
