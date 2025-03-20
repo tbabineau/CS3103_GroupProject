@@ -3,7 +3,7 @@ CREATE TABLE reviews (
   reviewId INT NOT NULL AUTO_INCREMENT,
   itemId INT NOT NULL,
   userId INT NOT NULL,
-  reviewText varchar(250) NOT NULL,
+  reviewText varchar(255) NOT NULL,
   reviewRating decimal(2,1) NOT NULL,
   PRIMARY KEY (reviewId),
   FOREIGN KEY (itemId)

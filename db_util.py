@@ -39,8 +39,8 @@ def addUser(uname, email, fname, lname, pwd):
                 charset='utf8mb4',
                 cursorclass= pymysql.cursors.DictCursor)
         cursor = dbConnection.cursor()
-        sql = "INSERT INTO users (username, email, fname, lname, password_hash) VALUES (%s, %s, %s, %s, %s);"
-        cursor.execute(sql, (uname, email, fname, lname, hashed_pwd))
+        sql = "INSERT INTO users (username, email, fname, lname, password_hash, salt) VALUES (%s, %s, %s, %s, %s, %s);"
+        cursor.execute(sql, (uname, email, fname, lname, str(hashed_pwd), str(salt)))
         return make_response(jsonify( {"status": "Successfully Registered"}), 201)
     except:
         return make_response(jsonify( { "status": "Database Error" } ), 500)

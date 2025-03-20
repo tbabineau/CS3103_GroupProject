@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS cart;
 CREATE TABLE cart (
   userId INT NOT NULL AUTO_INCREMENT,
   itemId INT NOT NULL,
-  quantity INT NOT NULL,
+  quantity INT NOT NULL DEFAULT 1,
   PRIMARY KEY (userId, itemId),
   FOREIGN KEY (userId) 
 	REFERENCES users (userId), 
