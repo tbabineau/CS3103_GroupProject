@@ -4,10 +4,9 @@ from flask import Flask, jsonify, abort, request, make_response, session
 from flask_restful import Resource, Api, reqparse
 from flask_session import Session
 import json
-import hashlib
 
 import settings # Our server and db settings, stored in settings.py
-from db_util import getUser# Database connection helper
+from db_util import getUser, addUser# Database connection helper
 
 app = Flask(__name__, static_url_path='/static')
 api = Api(app)
@@ -54,12 +53,28 @@ class login(Resource):
             #response = {'status': 'success}
             #responseCode = 200
         #else:
+        print(getUser(request_params['username']))
+
+#register endpoint
+class register(Resource):
+    def get(self):
+        return app.send_static_file("register_page.html")
+    def post(self):
+        if not request.json:
+            abort(400) #bad request
+        parser = reqparse.RequestParser()
         try:
-            print(getUser(request_params['username']))
+            parser.add_argument('username', type=str, required=True)
+            parser.add_argument('email', type=str, required=True)
+            parser.add_argument('firstname', type=str, required=True)
+            parser.add_argument('lastname', type=str, required=True)
+            parser.add_argument('password', type=str, required=True)
+            request_params = parser.parse_args()
         except:
-           abort(500) #bad username
+            abort(400) #bad request
 
-
+        print(addUser(request_params['username']), request_params['email'], request_params['firstname'], request_params['lastname'], request_params['password'])
+        
 
 api.add_resource(Root,'/')
 api.add_resource(login, '/login')
