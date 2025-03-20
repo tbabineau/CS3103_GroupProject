@@ -4,10 +4,10 @@ import settings
 
 def getUser(username): #DONT FORGET TO ADD DATA SANITIZATION
     dbConnection = pymysql.connect(
-            host=settings.DB_HOST,
-            user=settings.DB_USER,
-            password=settings.DB_PASSWD,
-            database=settings.DB_DATABASE,
+            host=settings.MYSQL_HOST,
+            user=settings.MYSQL_USER,
+            password=settings.MYSQL_PASSWD,
+            database=settings.MYSQL_DB,
             charset='utf8mb4',
             cursorclass= pymysql.cursors.DictCursor)
     cursor = dbConnection.cursor()
