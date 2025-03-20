@@ -48,7 +48,7 @@ class login(Resource):
             #response = {'status': 'success}
             #responseCode = 200
         #else:
-        print(getUser(request_params['username']))
+        return getUser(request_params['username'])
 
 #register endpoint
 class register(Resource):
@@ -71,7 +71,7 @@ class register(Resource):
             print("BAD PARSING")
             abort(400) #bad request
 
-        addUser(request_params['username'], request_params['email'], request_params['firstname'], request_params['lastname'], request_params['password'])
+        return addUser(request_params['username'], request_params['email'], request_params['firstname'], request_params['lastname'], request_params['password'])
         
 
 #api.add_resource(login,'/') #What should be the default landing page?
