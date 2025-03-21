@@ -30,6 +30,10 @@ def not_found(error):
 def not_found(error):
     return make_response(jsonify( { "status": "Resource not found" } ), 404)
 
+@app.errorhandler(500) # decorators to add to 500 response
+def not_found(error):
+	return make_response(jsonify( { 'status': 'Internal server error' } ), 500)
+
 ####################################################################################
 #
 # Static Endpoints for humans
