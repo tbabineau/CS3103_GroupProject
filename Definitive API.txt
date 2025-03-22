@@ -521,7 +521,7 @@ paths:
           required: true
           schema:
             type: string
-        - name: itemImage
+        - name: itemPhoto
           in: query
           description: A url depicting the item
           required: true
@@ -611,7 +611,7 @@ paths:
           required: true
           schema:
             type: string
-        - name: itemImage
+        - name: itemPhoto
           in: query
           description: A url depicting the item
           required: true

@@ -68,7 +68,7 @@ class login(Resource):
         except:
             abort(400) #bad request
         #Checking if the user is already logged in
-        if('userId' in session and user['userId'] == session['userId']):
+        if('userId' in session and session['expiry'] > time()):
             session['expiry'] = time() + 3600 #Updating session expiry if user is already logged in
             return make_response(jsonify( {"Status": "Logged in"} ), 200)
         
@@ -85,14 +85,14 @@ class login(Resource):
                     session['userId'] = user['userId']
                     session['expiry'] = time() + 3600 #Setting the session to time out in one hour
                     #Clear login attempts, update last login date using GMT
-                    callStatement("UPDATE users SET login_attempts = 0 WHERE userId = %i", (user['userId']))
+                    callStatement("UPDATE users SET login_attempts = 0 WHERE userId = %s", (user['userId']))
                     tempTime = gmtime()
                     datetime = f'{tempTime.tm_year}-{tempTime.tm_mon}-{tempTime.tm_mday} {tempTime.tm_hour}:{tempTime.tm_min}:{tempTime.tm_sec}'
-                    callStatement("UPDATE users SET last_login = %s WHERE userId = %i", (datetime, user['userId']))
+                    callStatement("UPDATE users SET last_login = %s WHERE userId = %s", (datetime, user['userId']))
                     return make_response(jsonify( {"Status": "Logged in"} ), 200)
                 else:
                     #Increase login_attempts by 1
-                    callStatement("UPDATE users SET login_attempts = login_attempts + 1 WHERE userId = %i", (user['userId']))
+                    callStatement("UPDATE users SET login_attempts = login_attempts + 1 WHERE userId = %s", (user['userId']))
                     return make_response(jsonify( {"Status": "Incorrect credentials"} ), 400)
 
                 
@@ -165,7 +165,31 @@ class items(Resource):
                 
         sql += "1 = 1;"
         itemList = callStatement(sql, ())
-        return make_response(jsonify( {"Items": itemList} ))
+        return make_response(jsonify( {"Items": itemList} ), 200)
+    
+    def post(self):
+        if not request.json:
+            abort(400) #bad request
+        parser = reqparse.RequestParser()
+        try:
+            parser.add_argument('itemName', type=str, required=True)
+            parser.add_argument('itemDescript', type=str, required=True)
+            parser.add_argument('itemPhoto', type=str, required=True)
+            parser.add_argument('price', type=float, required=True)
+            parser.add_argument('itemStock', type=int, required=True)
+            request_params = parser.parse_args()
+        except:
+            abort(400) #bad request
+        
+        if(True): #Should check for management flag here, currently not implemented
+            sql = "INSERT INTO storeItems (itemName, itemDescription, itemPrice, itemStock, itemPhoto) VALUES (%s, %s, %f, %s, %s)"
+            params = (request_params['itemName'], request_params['itemDescript'], round(float(request_params['price']), 2), request_params['itemStock'], request_params['itemPhoto'])
+            result = callStatement(sql, params)
+            print(result)
+            return make_response(jsonify( {"Status": "Item created"} ), 201)
+        else:
+            return make_response(jsonify( {"status": "User does not have permission"} ), 401)
+
 
 
 api = Api(app)

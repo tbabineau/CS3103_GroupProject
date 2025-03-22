@@ -13,15 +13,15 @@ login = function(){
                 headers: {"Content-Type": "application/json; charset = UTF-8"}
             }
         )
-        .then((Response) => Response.json())
-        .then((json) => {
-            if(json["Status"] == "Logged in"){
+        .then((Response) => {
+            if(Response.status == 200){
                 window.location.replace("/store"); //Sends the user to the store page if properly logged in
             }
             else{
-                console.log(json);
+                return Response.json();
             }
-        });
+        })
+        .then((json) => console.log(json));
     }
     else{
         console.log("WOMP WOMP");
@@ -64,17 +64,48 @@ register = function(){
                 headers: {"Content-Type": "application/json; charset = UTF-8"}
             }
         )
-        .then((Response) => Response.json())
-        .then((json) => {
-            if(json["Status"] == "Successfully Registered"){
-                window.location.replace("/store"); //Redirecting to the storefront if the register worked
+        .then((Response) => {
+            if(Response.status == 201){
+                window.Location.replace("/store");
             }
             else{
-                console.log(json);
+                return Response.json();
             }
-        });
+        })
+        .then((json) => console.log(json));
     }
     else{
         console.log("WOMP WOMP");
     }
+}
+
+addItem = function(){
+    let name = document.getElementById("itemName");
+    let desc = document.getElementById("itemDescript");
+    let pic = document.getElementById("itemPhoto");
+    let cost = document.getElementById("price");
+    let stock = document.getElementById("itemStock");
+    fetch("/items",
+        {
+            method: "POST",
+            body: JSON.stringify({
+                itemName: name,
+                itemDescript: desc,
+                itemPhoto: pic,
+                price: cost,
+                itemStock: stock
+            }),
+            headers: {"Content-Type": "application/json; charset = UTF-8"}
+        }
+    )
+    .then((Response) => {
+        if(Response.status == 201){
+            console.log("Item Created");
+        }
+        else{
+            return Response.json();
+        }
+    })
+    .then((json) => console.log(json));
+
 }
