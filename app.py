@@ -148,8 +148,21 @@ class items(Resource):
         qs = qs.split("&")
         sql = "SELECT * FROM storeItems WHERE "
         for q in qs:
-            if 'search' in q:
-                sql += f'itemName LIKE {q.split('=')[1]} AND'
+            if 'search=' in q:
+                sql += "(itemName LIKE '%%"+q.split('=')[1]+"%%'  OR itemDescription LIKE '%%"+q.split('=')[1]+"%%') AND "
+            if 'quantity=' in q:
+                sql += f"itemStock = {int(q.split('=')[1])} AND "
+            if 'maxQuantity=' in q:
+                sql += f"itemStock <= {int(q.split('=')[1])} AND "
+            if 'minQuantity=' in q:
+                sql += f"itemStock >= {int(q.split('=')[1])} AND "
+            if 'price=' in q:
+                sql += f"itemPrice = {float(q.split('=')[1])} AND "
+            if 'maxPrice=' in q:
+                sql += f"itemPrice <= {float(q.split('=')[1])} AND "
+            if 'minPrice=' in q:
+                sql += f"itemPrice >= {float(q.split('=')[1])} AND "
+                
         sql += "1 = 1;"
         itemList = callStatement(sql, ())
         return make_response(jsonify( {"Items": itemList} ))
