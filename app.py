@@ -131,7 +131,7 @@ class register(Resource):
 
 
 api = Api(app)
-#api.add_resource(login,'/') #What should be the default landing page?
+api.add_resource(root, '/')
 api.add_resource(login, '/login')
 api.add_resource(register, "/register")
 api.add_resource(dev, "/dev")
