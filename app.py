@@ -144,8 +144,13 @@ class register(Resource):
 #Items endpoint, no page associated with it
 class items(Resource):
     def get(self):
-        print(request.query_string, request.query_string.decode())
-        sql = "SELECT * FROM storeItems;"
+        qs = request.query_string.decode()
+        qs = qs.split("&")
+        sql = "SELECT * FROM storeItems WHERE "
+        for q in qs:
+            if 'search' in q:
+                sql += f'itemName LIKE {q.split('=')[1]} AND'
+        sql += "1 = 1;"
         itemList = callStatement(sql, ())
         return make_response(jsonify( {"Items": itemList} ))
 
