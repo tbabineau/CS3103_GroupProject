@@ -2,4 +2,5 @@ info.py
 settings.py
 *.tar
 __pycache__/
+*.pem
 flask_session/

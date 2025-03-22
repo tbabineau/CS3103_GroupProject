@@ -4,8 +4,10 @@ from flask import Flask, jsonify, abort, request, make_response, session, redire
 from flask_restful import Resource, Api, reqparse
 from flask_session import Session
 from secrets import token_hex
+from time import gmtime
 import hashlib
 import json
+import ssl
 
 import settings # Our server and db settings, stored in settings.py
 from db_util import callStatement, callProc# Database connection helper
@@ -38,6 +40,13 @@ def not_found(error):
 #
 # Static Endpoints for humans
 #
+#root endpoint
+class root(Resource):
+    def get(self):
+        if('userId' in session and session['expiry'] > gmtime()):
+            app.send_static_file("storefront.html")
+        else:
+            app.send_static_file("log_in_page.html")
 #API endpoint
 class dev(Resource):
     def get(self):
@@ -65,12 +74,14 @@ class login(Resource):
         if(len(matching) != 0):
             for user in matching:
                 if('userId' in session and user['userId'] == session['userId']):
+                    session['expiry'] = gmtime() + 3600
                     return make_response(jsonify( {"Status": "Logged in"} ), 200)
                 hash = hashlib.sha512()
                 hash.update((pwd + user['salt']).encode("utf-8"))
                 hashed_pwd = hash.hexdigest()
                 if(str(hashed_pwd) == user['password_hash']):
                     session['userId'] = user['userId']
+                    session['expiry'] = gmtime() + 3600
                     return make_response(jsonify( {"Status": "Logged in"} ), 200)
                 
         return make_response(jsonify( {"Status": "Incorrect credentials"} ), 400)
