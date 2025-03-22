@@ -119,5 +119,63 @@ addItem = function(){
             console.log(json);
         }
     });
+}
 
+updateItem = function(){
+    let itemId = document.getElementById("ItemId").value; //This is just for testing, will be fetched from the endpoint
+    let name = document.getElementById("itemName").value;
+    let desc = document.getElementById("itemDescript").value;
+    let pic = document.getElementById("itemPhoto").value;
+    let cost = document.getElementById("price").value;
+    let stock = document.getElementById("itemStock").value;
+    fetch("/items/" + itemId,
+        {
+            method: "PUT",
+            body: JSON.stringify({
+                itemName: name,
+                itemDescript: desc,
+                itemPhoto: pic,
+                price: cost,
+                itemStock: stock
+            }),
+            headers: {"Content-Type": "application/json; charset = UTF-8"}
+        }
+    )
+    .then((Response) => {
+        if(Response.status == 200){
+            console.log("Item updated");
+        }
+        else{
+            return Response.json();
+        }
+    })
+    .then((json) => {
+        if(json != null){
+            console.log(json);
+        }
+    });
+}
+
+deleteItem = function(){
+    let itemId = document.getElementById("ItemId").value; //This is just for testing, will be fetched from the endpoint
+    fetch("/items/" + itemId,
+        {
+            method: "PUT",
+            body: {},
+            headers: {"Content-Type": "application/json; charset = UTF-8"}
+        }
+    )
+    .then((Response) => {
+        if(Response.status == 204){
+            console.log("Item Deleted");
+        }
+        else{
+            return Response.json();
+        }
+    })
+    .then((json) => {
+        if(json != null){
+            console.log(json);
+        }
+    });
 }

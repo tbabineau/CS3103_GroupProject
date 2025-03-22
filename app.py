@@ -51,6 +51,11 @@ class root(Resource):
 class dev(Resource):
     def get(self):
         return app.send_static_file("API.html")
+
+#store page endpoint
+class store(Resource):
+    def get(self):
+        return app.send_static_file("storefront.html")
     
 #Login endpoint
 class login(Resource):
@@ -70,7 +75,7 @@ class login(Resource):
         #Checking if the user is already logged in
         if('userId' in session and session['expiry'] > time()):
             session['expiry'] = time() + 3600 #Updating session expiry if user is already logged in
-            return make_response(jsonify( {"Status": "Logged in"} ), 200)
+            return make_response(jsonify( {"status": "Logged in"} ), 200)
         
         sql = "SELECT * FROM users WHERE username = %s;"
         matching = callStatement(sql, (request_params['username']))
@@ -89,21 +94,21 @@ class login(Resource):
                     tempTime = gmtime()
                     datetime = f'{tempTime.tm_year}-{tempTime.tm_mon}-{tempTime.tm_mday} {tempTime.tm_hour}:{tempTime.tm_min}:{tempTime.tm_sec}'
                     callStatement("UPDATE users SET last_login = %s WHERE userId = %s", (datetime, user['userId']))
-                    return make_response(jsonify( {"Status": "Logged in"} ), 200)
+                    return make_response(jsonify( {"status": "Logged in"} ), 200)
                 else:
                     #Increase login_attempts by 1
                     callStatement("UPDATE users SET login_attempts = login_attempts + 1 WHERE userId = %s", (user['userId']))
-                    return make_response(jsonify( {"Status": "Incorrect credentials"} ), 400)
+                    return make_response(jsonify( {"status": "Incorrect credentials"} ), 400)
 
                 
-        return make_response(jsonify( {"Status": "Incorrect credentials"} ), 400)
+        return make_response(jsonify( {"status": "Incorrect credentials"} ), 400)
     
     def delete(self):
         if('userId' in session):
             session.pop('userId')
             return make_response({}, 204)
         else:
-            return make_response(jsonify( {"Status": "Not logged in"} ), 404)
+            return make_response(jsonify( {"status": "Not logged in"} ), 404)
             
 
 #register endpoint
@@ -139,7 +144,7 @@ class register(Resource):
             result = callStatement(sql, params)
             return make_response(jsonify( {"status": "Successfully registered"}), 201)
         else:
-            return make_response(jsonify( {"Status": "Username or email already in use"} ), 409)
+            return make_response(jsonify( {"status": "Username or email already in use"} ), 409)
         
 #Items endpoint, no page associated with it
 class items(Resource):
@@ -187,9 +192,60 @@ class items(Resource):
             params = (request_params['itemName'], request_params['itemDescript'], round(request_params['price'], 2), request_params['itemStock'], request_params['itemPhoto'])
             result = callStatement(sql, params)
             print(result)
-            return make_response(jsonify( {"Status": "Item created"} ), 201)
+            return make_response(jsonify( {"status": "Item created"} ), 201)
         else:
             return make_response(jsonify( {"status": "User does not have permission"} ), 401)
+
+#Specific item endpoint, no static page for it
+class item(Resource):
+    def get(self, itemId):
+        if(type(itemId) != type(int)):
+            abort(400)
+        retItem = callStatement("SELECT * FROM storeItems WHERE itemId = %i", (itemId))
+        if(len(retItem) == 1):
+            return make_response(jsonify( {"Item": retItem} ), 200)
+        else:
+            return make_response(jsonify( {"status": "Could not find item"} ), 404)
+
+    def put(self, itemId):
+        if not request.json or type(itemId) != type(int):
+            abort(400)
+        retItem = callStatement("SELECT * FROM storeItems WHERE itemId = %i", (itemId))
+        if(len(retItem) != 1):
+            return make_response(jsonify( {"status": "Could not find item"} ), 404)
+        
+        parser = reqparse.RequestParser()
+        try:
+            parser.add_argument('itemName', type=str, required=True)
+            parser.add_argument('itemDescript', type=str, required=True)
+            parser.add_argument('itemPhoto', type=str, required=True)
+            parser.add_argument('price', type=float, required=True)
+            parser.add_argument('itemStock', type=int, required=True)
+            request_params = parser.parse_args()
+        except:
+            abort(400) #bad request
+
+        sql = "UPDATE storeItems SET itemName = %s, itemDescription = %s, itemPrice = %s, itemStock = %s, itemPhoto = %s WHERE itemId = %i;"
+        params = (request_params['itemName'], request_params['itemDescript'], request_params['price'], request_params['itemStock'], request_params['itemPhoto'], itemId)
+        response = callStatement(sql, params)
+        if(len(response) != 0):
+            make_response(jsonify( {"status": "Item updated", "Item": response} ), 200)
+        else:
+            abort(500)
+
+    def delete(self, itemId):
+        if not request.json or type(itemId) != type(int):
+            abort(400)
+        if(True): #Again, checking for manager status
+            retItem = callStatement("SELECT * FROM storeItems WHERE itemId = %i", (itemId))
+            if(len(retItem) != 1):
+                return make_response(jsonify( {"status": "Could not find item"} ), 404)
+            
+            response = callStatement("DELETE FROM storeItems WHERE itemId = %i", (itemId))
+            return make_response(jsonify( {} ), 204)
+        else:
+            return make_response(jsonify( {"status": "Unauthorized user"} ), 401)
+
 
 
 
@@ -198,7 +254,9 @@ api.add_resource(root, '/')
 api.add_resource(login, '/login')
 api.add_resource(register, "/register")
 api.add_resource(dev, "/dev")
+api.add_resource(store, "/store")
 api.add_resource(items, "/items")
+api.add_resource(item, "/items/<int:itemId>")
 
 #############################################################################
 # xxxxx= last 5 digits of your studentid. If xxxxx > 65535, subtract 30000
