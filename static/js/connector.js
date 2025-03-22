@@ -122,7 +122,7 @@ addItem = function(){
 }
 
 updateItem = function(){
-    let itemId = document.getElementById("ItemId").value; //This is just for testing, will be fetched from the endpoint
+    let itemId = document.getElementById("itemId").value; //This is just for testing, will be fetched from the endpoint
     let name = document.getElementById("itemName").value;
     let desc = document.getElementById("itemDescript").value;
     let pic = document.getElementById("itemPhoto").value;
@@ -157,11 +157,11 @@ updateItem = function(){
 }
 
 deleteItem = function(){
-    let itemId = document.getElementById("ItemId").value; //This is just for testing, will be fetched from the endpoint
+    let itemId = document.getElementById("itemId").value; //This is just for testing, will be fetched from the endpoint
     fetch("/items/" + itemId,
         {
-            method: "PUT",
-            body: {},
+            method: "DELETE",
+            body: "",
             headers: {"Content-Type": "application/json; charset = UTF-8"}
         }
     )

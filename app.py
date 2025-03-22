@@ -199,18 +199,19 @@ class items(Resource):
 #Specific item endpoint, no static page for it
 class item(Resource):
     def get(self, itemId):
-        if(type(itemId) != type(int)):
+        if(type(itemId) != int):
+            print("NOT INT?")
             abort(400)
-        retItem = callStatement("SELECT * FROM storeItems WHERE itemId = %i", (itemId))
+        retItem = callStatement("SELECT * FROM storeItems WHERE itemId = %s", (itemId))
         if(len(retItem) == 1):
             return make_response(jsonify( {"Item": retItem} ), 200)
         else:
             return make_response(jsonify( {"status": "Could not find item"} ), 404)
 
     def put(self, itemId):
-        if not request.json or type(itemId) != type(int):
+        if not request.json or type(itemId) != int:
             abort(400)
-        retItem = callStatement("SELECT * FROM storeItems WHERE itemId = %i", (itemId))
+        retItem = callStatement("SELECT * FROM storeItems WHERE itemId = %s", (itemId))
         if(len(retItem) != 1):
             return make_response(jsonify( {"status": "Could not find item"} ), 404)
         
@@ -225,23 +226,24 @@ class item(Resource):
         except:
             abort(400) #bad request
 
-        sql = "UPDATE storeItems SET itemName = %s, itemDescription = %s, itemPrice = %s, itemStock = %s, itemPhoto = %s WHERE itemId = %i;"
+        sql = "UPDATE storeItems SET itemName = %s, itemDescription = %s, itemPrice = %s, itemStock = %s, itemPhoto = %s WHERE itemId = %s;"
         params = (request_params['itemName'], request_params['itemDescript'], request_params['price'], request_params['itemStock'], request_params['itemPhoto'], itemId)
         response = callStatement(sql, params)
-        if(len(response) != 0):
+        print(response)
+        if(len(response) == 0):
             make_response(jsonify( {"status": "Item updated", "Item": response} ), 200)
         else:
             abort(500)
 
     def delete(self, itemId):
-        if not request.json or type(itemId) != type(int):
+        if type(itemId) != int:
             abort(400)
         if(True): #Again, checking for manager status
-            retItem = callStatement("SELECT * FROM storeItems WHERE itemId = %i", (itemId))
+            retItem = callStatement("SELECT * FROM storeItems WHERE itemId = %s", (itemId))
             if(len(retItem) != 1):
                 return make_response(jsonify( {"status": "Could not find item"} ), 404)
             
-            response = callStatement("DELETE FROM storeItems WHERE itemId = %i", (itemId))
+            response = callStatement("DELETE FROM storeItems WHERE itemId = %s", (itemId))
             return make_response(jsonify( {} ), 204)
         else:
             return make_response(jsonify( {"status": "Unauthorized user"} ), 401)
