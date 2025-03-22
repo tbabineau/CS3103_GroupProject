@@ -44,9 +44,9 @@ def not_found(error):
 class root(Resource):
     def get(self):
         if('userId' in session and session['expiry'] > gmtime()):
-            app.send_static_file("storefront.html")
+            return app.send_static_file("storefront.html")
         else:
-            app.send_static_file("log_in_page.html")
+            return app.send_static_file("log_in_page.html")
 #API endpoint
 class dev(Resource):
     def get(self):
