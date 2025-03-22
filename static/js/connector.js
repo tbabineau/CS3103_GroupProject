@@ -14,7 +14,14 @@ login = function(){
             }
         )
         .then((Response) => Response.json())
-        .then((json) => console.log(json));
+        .then((json) => {
+            if(json["status"] == "Logged in"){
+                window.location.replace("/store"); //Sends the user to the store page if properly logged in
+            }
+            else{
+                console.log(json);
+            }
+        });
     }
     else{
         console.log("WOMP WOMP");
@@ -58,7 +65,14 @@ register = function(){
             }
         )
         .then((Response) => Response.json())
-        .then((json) => console.log(json));
+        .then((json) => {
+            if(json["status"] == "Successfully Registered"){
+                window.location.replace("/store"); //Redirecting to the storefront if the register worked
+            }
+            else{
+                console.log(json);
+            }
+        });
     }
     else{
         console.log("WOMP WOMP");
