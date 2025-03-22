@@ -15,7 +15,7 @@ login = function(){
         )
         .then((Response) => Response.json())
         .then((json) => {
-            if(json["status"] == "Logged in"){
+            if(json["Status"] == "Logged in"){
                 window.location.replace("/store"); //Sends the user to the store page if properly logged in
             }
             else{
@@ -66,7 +66,7 @@ register = function(){
         )
         .then((Response) => Response.json())
         .then((json) => {
-            if(json["status"] == "Successfully Registered"){
+            if(json["Status"] == "Successfully Registered"){
                 window.location.replace("/store"); //Redirecting to the storefront if the register worked
             }
             else{

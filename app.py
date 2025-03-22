@@ -128,6 +128,13 @@ class register(Resource):
             return make_response(jsonify( {"status": "Successfully Registered"}), 201)
         else:
             return make_response(jsonify( {"Status": "Username already in use"} ), 409)
+        
+#Items endpoint, no page associated with it
+class items(Resource):
+    def get(self):
+        sql = "SELECT * FROM storeItems;"
+        itemList = callStatement(sql, ())
+        return make_response(jsonify( {"Items": itemList} ))
 
 
 api = Api(app)
