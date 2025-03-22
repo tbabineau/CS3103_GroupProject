@@ -182,8 +182,9 @@ class items(Resource):
             abort(400) #bad request
         
         if(True): #Should check for management flag here, currently not implemented
-            sql = "INSERT INTO storeItems (itemName, itemDescription, itemPrice, itemStock, itemPhoto) VALUES (%s, %s, %f, %s, %s)"
-            params = (request_params['itemName'], request_params['itemDescript'], round(float(request_params['price']), 2), request_params['itemStock'], request_params['itemPhoto'])
+            print(type(request_params['price']))
+            sql = "INSERT INTO storeItems (itemName, itemDescription, itemPrice, itemStock, itemPhoto) VALUES (%s, %s, %s, %s, %s)"
+            params = (request_params['itemName'], request_params['itemDescript'], round(request_params['price'], 2), request_params['itemStock'], request_params['itemPhoto'])
             result = callStatement(sql, params)
             print(result)
             return make_response(jsonify( {"Status": "Item created"} ), 201)

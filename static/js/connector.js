@@ -21,7 +21,11 @@ login = function(){
                 return Response.json();
             }
         })
-        .then((json) => console.log(json));
+        .then((json) => {
+            if(json != null){
+                console.log(json);
+            }
+        });
     }
     else{
         console.log("WOMP WOMP");
@@ -72,7 +76,11 @@ register = function(){
                 return Response.json();
             }
         })
-        .then((json) => console.log(json));
+        .then((json) => {
+            if(json != null){
+                console.log(json);
+            }
+        });
     }
     else{
         console.log("WOMP WOMP");
@@ -80,11 +88,11 @@ register = function(){
 }
 
 addItem = function(){
-    let name = document.getElementById("itemName");
-    let desc = document.getElementById("itemDescript");
-    let pic = document.getElementById("itemPhoto");
-    let cost = document.getElementById("price");
-    let stock = document.getElementById("itemStock");
+    let name = document.getElementById("itemName").value;
+    let desc = document.getElementById("itemDescript").value;
+    let pic = document.getElementById("itemPhoto").value;
+    let cost = document.getElementById("price").value;
+    let stock = document.getElementById("itemStock").value;
     fetch("/items",
         {
             method: "POST",
@@ -106,6 +114,10 @@ addItem = function(){
             return Response.json();
         }
     })
-    .then((json) => console.log(json));
+    .then((json) => {
+        if(json != null){
+            console.log(json);
+        }
+    });
 
 }
