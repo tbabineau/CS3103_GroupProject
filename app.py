@@ -142,6 +142,7 @@ api.add_resource(root, '/')
 api.add_resource(login, '/login')
 api.add_resource(register, "/register")
 api.add_resource(dev, "/dev")
+api.add_resource(items, "/items")
 
 #############################################################################
 # xxxxx= last 5 digits of your studentid. If xxxxx > 65535, subtract 30000
