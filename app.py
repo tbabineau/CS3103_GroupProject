@@ -283,7 +283,24 @@ class cart(Resource):
         if 'cart' not in session or session['expiry'] <= time():
             session['cart'] = []
         cart.updateCart()
-        return(make_response(jsonify( {"cart": session['cart']} ), 200))
+        #Allows users to search in cart
+        def selector(item):
+            qs = request.query_string.decode()
+            qs = qs.split("&")
+            for q in qs:
+                if 'quantity=' in q:
+                    if(item['quantity'] != int(q.split("=")[1])):
+                        return False
+                if 'maxQuantity=' in q:
+                    if(item['quantity'] > int(q.split("=")[1])):
+                        return False
+                if 'minQuantity=' in q:
+                    if(item['quantity'] < int(q.split("=")[1])):
+                        return False
+            return True
+        toDisplay = list(filter(selector, session['cart']))
+                
+        return(make_response(jsonify( {"cart": toDisplay} ), 200))
     
     def post(self): #Adding an item to the cart
         if not request.json:
