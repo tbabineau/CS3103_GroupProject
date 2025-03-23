@@ -156,7 +156,7 @@ updateItem = function(){
     });
 }
 
-deleteItem = function(){
+deleteItem = function(){//ItemId will be at the endpoint, will just fetch from current url
     let itemId = document.getElementById("itemId").value; //This is just for testing, will be fetched from the endpoint
     fetch("/items/" + itemId,
         {
@@ -224,6 +224,57 @@ clearCart = function(){
     .then((Response) => {
         if(Response.status == 204){
             console.log("Cart cleared");
+        }
+        else{
+            return Response.json();
+        }
+    })
+    .then((json) => {
+        if(json != null){
+            console.log(json);
+        }
+    });
+}
+
+updateCartQuantity = function(){
+    let itemId = document.getElementById("itemId").value; //for testing, will be taken from endpoint
+    let quantity = document.getElementById("quantity").value;
+    fetch("/cart/" + itemId,
+        {
+            method: "DELETE",
+            body: JSON.stringify({
+                quantity: quantity
+            }),
+            headers: {"Content-Type": "application/json; charset = UTF-8"}
+        }
+    )
+    .then((Response) => {
+        if(Response.status == 200){
+            console.log("Item Updated");
+        }
+        else{
+            return Response.json();
+        }
+    })
+    .then((json) => {
+        if(json != null){
+            console.log(json);
+        }
+    });
+}
+
+removeFromCart = function(){
+    let itemId = document.getElementById("itemId").value; //for testing, will be taken from endpoint
+    fetch("/cart/" + itemId,
+        {
+            method: "DELETE",
+            body: JSON.stringify({}),
+            headers: {"Content-Type": "application/json; charset = UTF-8"}
+        }
+    )
+    .then((Response) => {
+        if(Response.status == 204){
+            console.log("Item removed");
         }
         else{
             return Response.json();

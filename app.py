@@ -358,13 +358,29 @@ class cartItem(Resource):
         for item in session['cart']:
             if(item['itemId'] == itemId):
                 item['quantity'] = request_params['quantity']
-                if 'user' in session: #Since cart is synced, if the item is in the session cart it will be in the DB cart
+                if 'userId' in session: #Since cart is synced, if the item is in the session cart it will be in the DB cart
                     sql = "UPDATE cart SET quantity = %s WHERE itemId = %s AND userId = %s;"
                     params = (request_params['quantity'], itemId, session['userId'])
                     result = callStatement(sql, params)
                     print(result)
                 return(make_response(jsonify( {"status": "Cart item updated"} ), 200))
         return(make_response(jsonify( {"status": "Item not in cart"} ), 404))
+    
+    def delete(self, itemId): #Removing an item from a cart
+        if not request.json:
+            abort(400) #Bad request
+        cart.updateCart() #Ensures DB and session carts are synced if logged in
+
+        for item in session['cart']:
+            if(item['itemId'] == itemId):
+                session['cart'].pop(item)
+                if 'userId' in session:
+                    sql = "DELETE FROM cart WHERE userId = %s AND itemId = %s;"
+                    params = (session['userId'], itemId)
+                    result = callStatement(sql, params)
+                return make_response(jsonify( {} ), 204)
+        return make_response(jsonify( {"status": "Item not in cart to remove"} ), 404)
+
                 
         
 api = Api(app)
@@ -376,6 +392,7 @@ api.add_resource(store, "/store")
 api.add_resource(items, "/items")
 api.add_resource(item, "/items/<int:itemId>")
 api.add_resource(cart, "/cart")
+api.add_resource(cartItem, "/cart/<int:itemId>")
 
 #############################################################################
 # xxxxx= last 5 digits of your studentid. If xxxxx > 65535, subtract 30000
