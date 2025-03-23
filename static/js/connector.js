@@ -234,6 +234,30 @@ clearCart = function(){
     });
 }
 
+addReview = function(){
+    let itemId = document.getElementById("itemId").value;
+    let review = document.getElementById("review").value;
+    let rating = document.getElementById("rating").value;
+    fetch("/reviews",
+        {
+            method: "POST", 
+            body: JSON.stringify({
+                itemId: itemId, 
+                review: review, 
+                rating: rating
+            }),
+            headers: {"Content-Type": "application/json; charset=UTF-8"}
+        }
+    )
+    .then((Response)=>{
+        if(Response.status == 201){
+            console.log("Review Created");
+        }else{
+            return Response.json();
+        }
+    })
+    .then((json)=>{
+        if(json!=null){
 updateCartQuantity = function(){
     let itemId = document.getElementById("itemId").value; //for testing, will be taken from endpoint
     let quantity = document.getElementById("quantity").value;

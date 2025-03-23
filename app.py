@@ -250,6 +250,46 @@ class item(Resource):
         else:
             return make_response(jsonify( {"status": "Unauthorized user"} ), 401)
         
+class Reviews(Resource):
+    def get(self):
+        qs=request.query_string.decode()
+        qs=qs.split("&")
+        sql="select * from reviews where "
+        for q in qs:
+            if 'itemId=' in q:
+                sql+=f"itemId = {int(q.split('=')[1])} and "
+            if 'userId=' in q:
+                sql+=f"userId = {int(q.split('=')[1])} and "
+            if 'rating=' in q:
+                sql+=f"reviewRating = {float(q.split('=')[1])} and "
+            if 'maxRating' in q:
+                sql+=f"reviewRating <= {float(q.split('=')[1])} and "
+            if 'minRating' in q:
+                sql+=f"reviewRating >= {float(q.split('=')[1])} and "
+        
+        sql+="1=1;"
+        itemList = callStatement(sql, [])
+        return make_response(jsonify({"Reviews": itemList}, 200))
+    
+    def post(self):
+        if not request.json:
+            abort(400)
+        
+        parser=reqparse.RequestParser()
+        try:
+            #user already in session
+            parser.add_argument('itemId', type=int, required=True)
+            parser.add_argument('review', type=str, required=True)
+            parser.add_argument('rating', type=float, required=True)
+            request_params=parser.parse_args()
+        except:
+            abort(400)
+
+        sql="insert into reviews (itemId, userId, reviewText, reviewRating) values (%s, %s, %s, %s)"
+        params=(request_params['itemId'], session['userId'], request_params['review'], round(request_params['rating'], 1))
+        result=callStatement(sql, params)
+        return make_response(jsonify({"status": "Review created"}), 201)
+        
 #Cart endpoint, used to communicate with the server on what is in the users cart
 class cart(Resource):
     def updateCart():#Ensures the session and DB cart are in sync if the user is logged in
@@ -389,6 +429,7 @@ api.add_resource(dev, "/dev")
 api.add_resource(store, "/store")
 api.add_resource(items, "/items")
 api.add_resource(item, "/items/<int:itemId>")
+api.add_resource(Reviews, '/reviews')
 api.add_resource(cart, "/cart")
 api.add_resource(cartItem, "/cart/<int:itemId>")
 
