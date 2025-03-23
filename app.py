@@ -290,6 +290,7 @@ class Reviews(Resource):
         result=callStatement(sql, params)
         return make_response(jsonify({"status": "Review created"}), 201)
     
+class Review(Resource):
     def get(self, reviewId):
         if(type(reviewId)!=int):
             abort(400)
@@ -472,7 +473,8 @@ api.add_resource(dev, "/dev")
 api.add_resource(store, "/store")
 api.add_resource(items, "/items")
 api.add_resource(item, "/items/<int:itemId>")
-api.add_resource(Reviews, '/reviews', '/reviews/<int:reviewId>')
+api.add_resource(Reviews, '/reviews')
+api.add_resource(Review, '/reviews/<int:reviewId>')
 api.add_resource(cart, "/cart")
 api.add_resource(cartItem, "/cart/<int:itemId>")
 
