@@ -215,9 +215,7 @@ clearCart = function(){
     fetch("/cart",
         {
             method: "DELETE",
-            body: JSON.stringify({
-
-            }),
+            body: "",
             headers: {"Content-Type": "application/json; charset = UTF-8"}
         }
     )
@@ -268,7 +266,7 @@ removeFromCart = function(){
     fetch("/cart/" + itemId,
         {
             method: "DELETE",
-            body: JSON.stringify({}),
+            body: "",
             headers: {"Content-Type": "application/json; charset = UTF-8"}
         }
     )
