@@ -200,7 +200,6 @@ class items(Resource):
 class item(Resource):
     def get(self, itemId):
         if(type(itemId) != int):
-            print("NOT INT?")
             abort(400)
         retItem = callStatement("SELECT * FROM storeItems WHERE itemId = %s", (itemId))
         if(len(retItem) == 1):
@@ -247,10 +246,72 @@ class item(Resource):
             return make_response(jsonify( {} ), 204)
         else:
             return make_response(jsonify( {"status": "Unauthorized user"} ), 401)
+        
+#Cart endpoint, used to communicate with the server on what is in the users cart
+class cart(Resource):
+    def get(self):
+        if 'cart' not in session or session['expiry'] <= time():
+            session['cart'] = []
+        if 'userId' in session and session['expiry'] > time(): #If the user is logged in, ensure saved cart matches session cart
+            cartItems = callStatement("SELECT * FROM cart WHERE userId = %s", (session['userId']))
+            for item in session['cart']:
+                if item['userId'] == None:
+                    item['userId'] = session['userId']
+                if item["itemId"] not in cartItems["itemId"]:
+                    sql = "INSERT INTO cart (userId, ItemId, quantity) VALUES (%s, %s, %s);"
+                    params = (session['userId'], item['itemId'], item['quantity'])
+                    cartItem = callStatement(sql, params)
+            for item in cartItems:
+                if item not in session['cart']:
+                    session['cart'].append(item)
+        return(make_response(jsonify( {"cart": session['cart']} ), 200))
+    
+    def post(self): #Adding an item to the cart
+        if not request.json:
+            abort(400)
+        parser = reqparse.RequestParser()
+        try:
+            parser.add_argument('itemId', type=int, required=True)
+            parser.add_argument('quantity', type=int, required=True)
+            request_params = parser.parse_args()
+        except:
+            abort(400) #Bad request
+        #Adding the cart to the session allows us to save a cart if the user starts shopping before they are logged in
+        if 'cart' not in session:
+            session['cart'] = []
+        
+        for item in session['cart']:
+            if item["itemId"] == request_params["itemId"]:
+                return make_response(jsonify( {"status": "Item already in cart"} ), 409)
+        
+        response = callStatement("SELECT * FROM storeItems WHERE itemId = %s", (request_params['itemId']))
+        if(len(response) != 0):
+            if('userId' in session):
+                response = callStatement("SELECT * FROM cart WHERE itemId = %s AND userId = %s", (request_params['itemId'], request_params['userId']))
+                if(len(response) == 0):
+                    sql = "INSERT INTO cart (userId, ItemId, quantity) VALUES (%s, %s, %s);"
+                    params = (session['userId'], )
+                    cartItem = callStatement(sql, params)
+                    print(cartItem)
+                else:
+                    return make_response(jsonify( {"status": "Item already in cart"} ), 409)
+            
+            session['cart'].append({"itemId": request_params['itemId'], "userId": None, "quantity": request_params['quantity']})
+            return make_response(jsonify( {"status": "Item added to cart"} ), 201)
+        return make_response(jsonify( {"status": "Item could not be found"} ), 404)
+    
+    def delete(self): #Used for "checkout" or just general cart clearing
+        if('cart' not in session and 'userId' not in session):
+            return make_response(jsonify( {"status": "No cart to clear"} ), 404)
+        if 'cart' in session:
+            session.pop('cart')
 
+        if 'userId' in session:
+            callStatement("DELETE FROM cart WHERE userId = %s", (session['userId']))
+        return make_response("", 204)
 
-
-
+                
+        
 api = Api(app)
 api.add_resource(root, '/')
 api.add_resource(login, '/login')
@@ -259,6 +320,7 @@ api.add_resource(dev, "/dev")
 api.add_resource(store, "/store")
 api.add_resource(items, "/items")
 api.add_resource(item, "/items/<int:itemId>")
+api.add_resource(cart, "/cart")
 
 #############################################################################
 # xxxxx= last 5 digits of your studentid. If xxxxx > 65535, subtract 30000

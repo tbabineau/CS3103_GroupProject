@@ -1,13 +1,13 @@
 login = function(){
-    let uname = document.getElementById("username").value;
+    let username = document.getElementById("username").value;
     let pwd = document.getElementById("password").value;
 
-    if(uname != null && pwd != null){
+    if(username != null && pwd != null){
         fetch("/login",
             {
                 method: "POST",
                 body: JSON.stringify({
-                    username: uname,
+                    username: username,
                     password: pwd
                 }),
                 headers: {"Content-Type": "application/json; charset = UTF-8"}
@@ -168,6 +168,61 @@ deleteItem = function(){
     .then((Response) => {
         if(Response.status == 204){
             console.log("Item Deleted");
+        }
+        else{
+            return Response.json();
+        }
+    })
+    .then((json) => {
+        if(json != null){
+            console.log(json);
+        }
+    });
+}
+
+addToCart = function(){//don't need userId, held in session
+    let itemId = document.getElementById("ItemId").value;
+    let quantity = document.getElementById("quantity").value;
+    if(quantity == null || quantity < 1){
+        quantity = 1;
+    }
+    fetch("/cart",
+        {
+            method: "POST",
+            body: JSON.stringify({
+
+            }),
+            headers: {"Content-Type": "application/json; charset = UTF-8"}
+        }
+    )
+    .then((Response) => {
+        if(Response.status == 204){
+            console.log("Item Deleted");
+        }
+        else{
+            return Response.json();
+        }
+    })
+    .then((json) => {
+        if(json != null){
+            console.log(json);
+        }
+    });
+}
+
+clearCart = function(){
+    fetch("/cart",
+        {
+            method: "DELETE",
+            body: JSON.stringify({
+
+            }),
+            headers: {"Content-Type": "application/json; charset = UTF-8"}
+        }
+    )
+    .then((Response) => {
+        if(Response.status == 204){
+            console.log("Cart cleared");
         }
         else{
             return Response.json();
