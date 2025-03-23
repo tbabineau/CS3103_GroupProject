@@ -258,6 +258,11 @@ addReview = function(){
     })
     .then((json)=>{
         if(json!=null){
+            console.log(json);
+        }
+    });
+}
+
 updateCartQuantity = function(){
     let itemId = document.getElementById("itemId").value; //for testing, will be taken from endpoint
     let quantity = document.getElementById("quantity").value;
