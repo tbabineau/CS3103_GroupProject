@@ -450,13 +450,11 @@ class cartItem(Resource):
         return(make_response(jsonify( {"status": "Item not in cart"} ), 404))
     
     def delete(self, itemId): #Removing an item from a cart
-        if not request.json:
-            abort(400) #Bad request
         cart.updateCart() #Ensures DB and session carts are synced if logged in
 
         for item in session['cart']:
             if(item['itemId'] == itemId):
-                session['cart'].pop(item)
+                session['cart'].remove(item)
                 if 'userId' in session:
                     sql = "DELETE FROM cart WHERE userId = %s AND itemId = %s;"
                     params = (session['userId'], itemId)
