@@ -289,7 +289,50 @@ class Reviews(Resource):
         params=(request_params['itemId'], session['userId'], request_params['review'], round(request_params['rating'], 1))
         result=callStatement(sql, params)
         return make_response(jsonify({"status": "Review created"}), 201)
+    
+    def get(self, reviewId):
+        if(type(reviewId)!=int):
+            abort(400)
+        getReview = callStatement("select * from reviews where reviewId = %s", (reviewId))
+        if(len(getReview)!=1):
+            return make_response(jsonify({"status": "Review not found"}), 404)
+        else:
+            return make_response(jsonify({"Review": getReview}), 200)
+    
+    def put(self, reviewId):
+        if not request.json or type(reviewId)!=int:
+            abort(400)
+        getReview = callStatement("select * from reviews where reviewId = %s", (reviewId))
+        if(len(getReview)!=1):
+            return make_response(jsonify({"status": "Review not found"}), 404)
         
+        parser = reqparse.RequestParser()
+        try:
+            parser.add_argument('review', type=str, required=True)
+            parser.add_argument('rating', type=float, required=True)
+            request_params=parser.parse_args()
+        except:
+            abort(400)
+        #requires sanitization no parameters
+        sql="update reviews set reviewText = %s, reviewRating = %s where reviewId = %s;"
+        params=(request_params['review'], request_params['rating'], reviewId)
+        result=callStatement(sql, params)
+        if(len(result)==0):
+            make_response(jsonify({"status": "Review updated", "Review": result}), 200)
+        else:
+            abort(500)
+
+    def delete(self, reviewId):
+        if type(reviewId)!=int:
+            abort(400)
+        #logged user of post can delete their post
+        getReview = callStatement("select * from reviews where reviewId = %s", (reviewId))
+        if(len(getReview)!=1):
+            return make_response(jsonify({"status": "Review does not exist :)"}), 404)
+        delReview = callStatement("delete from reviews where reviewId = %s", (reviewId))
+        return make_response(jsonify({}), 204)
+        #response for different user?
+    
 #Cart endpoint, used to communicate with the server on what is in the users cart
 class cart(Resource):
     def updateCart():#Ensures the session and DB cart are in sync if the user is logged in
@@ -431,7 +474,7 @@ api.add_resource(dev, "/dev")
 api.add_resource(store, "/store")
 api.add_resource(items, "/items")
 api.add_resource(item, "/items/<int:itemId>")
-api.add_resource(Reviews, '/reviews')
+api.add_resource(Reviews, '/reviews', '/reviews/<int:reviewId>')
 api.add_resource(cart, "/cart")
 api.add_resource(cartItem, "/cart/<int:itemId>")
 

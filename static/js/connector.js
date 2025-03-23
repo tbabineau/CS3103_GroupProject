@@ -260,6 +260,62 @@ addReview = function(){
     })
     .then((json)=>{
         if(json!=null){
+            console.log(json);
+        }
+    });
+}
+
+updateReview = function(){
+    let reviewId = document.getElementById("reviewId").value; //test case 
+    let review = document.getElementById("review").value;
+    let rating = document.getElementById("rating").value;
+    fetch("/reviews/" + reviewId,
+        {
+            method: "PUT", 
+            body: JSON.stringify({
+                review: review, 
+                rating: rating
+            }), 
+            headers: {"Content-Type": "application/json; charset=UTF-8"}
+        }
+    )
+    .then((Response)=>{
+        if(Response.status==200){
+            console.log("Review Updated");
+        }else{
+            return Response.json();
+        }
+    })
+    .then((Response)=>{
+        if(json!=null){
+            console.log(json);
+        }
+    });
+}
+
+deleteReview = function(){
+    let reviewId = document.getElementById("reviewId").value; //test case 
+    fetch("/reviews/" + reviewId, 
+        {
+            method: "DELETE", 
+            body: "", 
+            headers: {"Content-Type": "application/json; charset=UTF-8"}
+        }
+    )
+    .then((Response)=>{
+        if(Response.status==204){
+            console.log("Review Deleted");
+        }else{
+            return Response.json();
+        }
+    })
+    .then((json)=>{
+        if(json!=null){
+            console.log(json);
+        }
+    });
+}
+
 updateCartQuantity = function(){
     let itemId = document.getElementById("itemId").value; //for testing, will be taken from endpoint
     let quantity = document.getElementById("quantity").value;
