@@ -181,7 +181,7 @@ deleteItem = function(){
 }
 
 addToCart = function(){//don't need userId, held in session
-    let itemId = document.getElementById("ItemId").value;
+    let itemId = document.getElementById("itemId").value;
     let quantity = document.getElementById("quantity").value;
     if(quantity == null || quantity < 1){
         quantity = 1;
@@ -190,7 +190,8 @@ addToCart = function(){//don't need userId, held in session
         {
             method: "POST",
             body: JSON.stringify({
-
+                itemId: itemId,
+                quantity: quantity
             }),
             headers: {"Content-Type": "application/json; charset = UTF-8"}
         }
