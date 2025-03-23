@@ -241,7 +241,7 @@ updateCartQuantity = function(){
     let quantity = document.getElementById("quantity").value;
     fetch("/cart/" + itemId,
         {
-            method: "DELETE",
+            method: "PUT",
             body: JSON.stringify({
                 quantity: quantity
             }),
