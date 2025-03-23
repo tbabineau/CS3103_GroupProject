@@ -36,6 +36,7 @@ def not_found(error):
 def not_found(error):
 	return make_response(jsonify( { 'status': 'Internal server error' } ), 500)
 
+
 ####################################################################################
 #
 # Static Endpoints for humans
@@ -106,6 +107,8 @@ class login(Resource):
     def delete(self):
         if('userId' in session):
             session.pop('userId')
+            if('cart' in session):
+                session.pop('cart')
             return make_response({}, 204)
         else:
             return make_response(jsonify( {"status": "Not logged in"} ), 404)
@@ -249,21 +252,37 @@ class item(Resource):
         
 #Cart endpoint, used to communicate with the server on what is in the users cart
 class cart(Resource):
-    def get(self):
-        if 'cart' not in session or session['expiry'] <= time():
-            session['cart'] = []
-        if 'userId' in session and session['expiry'] > time(): #If the user is logged in, ensure saved cart matches session cart
+    def updateCart():#Ensures the session and DB cart are in sync if the user is logged in
+        if 'userId' in session and session['expiry'] > time():
             cartItems = callStatement("SELECT * FROM cart WHERE userId = %s", (session['userId']))
-            for item in session['cart']:
+            for item in session['cart']: #For adding to DB from session
                 if item['userId'] == None:
                     item['userId'] = session['userId']
-                if item["itemId"] not in cartItems["itemId"]:
+                collision = False
+                for cartItem in cartItems: #For each cart item stored in the database
+                    if(cartItem not in session['cart'] and item["itemId"] == cartItem["itemId"]):
+                        collision = True
+                        #If the items aren't the same, then the quantity is the only thing wrong. Take DB cart to be correct
+                        item["quantity"] = cartItem["quantity"] 
+                        break
+                if(not collision and item not in cartItems):
                     sql = "INSERT INTO cart (userId, ItemId, quantity) VALUES (%s, %s, %s);"
                     params = (session['userId'], item['itemId'], item['quantity'])
                     cartItem = callStatement(sql, params)
-            for item in cartItems:
-                if item not in session['cart']:
+            for item in cartItems: #For each cart item stored in the database
+                collision = False
+                for sessionItem in session['cart']:
+                    if(sessionItem not in cartItems and sessionItem["itemId"] == item["itemId"]):
+                        print("^FLAG^")
+                        collision = True
+                        sessionItem["quantity"] = item["quantity"] 
+                        break
+                if(not collision and item not in session['cart']):
                     session['cart'].append(item)
+    def get(self):
+        if 'cart' not in session or session['expiry'] <= time():
+            session['cart'] = []
+        cart.updateCart()
         return(make_response(jsonify( {"cart": session['cart']} ), 200))
     
     def post(self): #Adding an item to the cart
@@ -279,6 +298,7 @@ class cart(Resource):
         #Adding the cart to the session allows us to save a cart if the user starts shopping before they are logged in
         if 'cart' not in session:
             session['cart'] = []
+        cart.updateCart()
         
         for item in session['cart']:
             if item["itemId"] == request_params["itemId"]:
@@ -286,17 +306,13 @@ class cart(Resource):
         
         response = callStatement("SELECT * FROM storeItems WHERE itemId = %s", (request_params['itemId']))
         if(len(response) != 0):
-            if('userId' in session):
-                response = callStatement("SELECT * FROM cart WHERE itemId = %s AND userId = %s", (request_params['itemId'], request_params['userId']))
-                if(len(response) == 0):
-                    sql = "INSERT INTO cart (userId, ItemId, quantity) VALUES (%s, %s, %s);"
-                    params = (session['userId'], )
-                    cartItem = callStatement(sql, params)
-                    print(cartItem)
-                else:
-                    return make_response(jsonify( {"status": "Item already in cart"} ), 409)
-            
-            session['cart'].append({"itemId": request_params['itemId'], "userId": None, "quantity": request_params['quantity']})
+            if('userId' in session): #If signed in, add to DB cart
+                sql = "INSERT INTO cart (userId, ItemId, quantity) VALUES (%s, %s, %s);"
+                params = (session['userId'], request_params['itemId'], request_params['quantity'])
+                cartItem = callStatement(sql, params)
+                print(cartItem)
+            #Add to session cart as long as the item exists
+            session['cart'].append({"userId": None, "itemId": request_params['itemId'], "quantity": request_params['quantity']})
             return make_response(jsonify( {"status": "Item added to cart"} ), 201)
         return make_response(jsonify( {"status": "Item could not be found"} ), 404)
     
@@ -308,7 +324,7 @@ class cart(Resource):
 
         if 'userId' in session:
             callStatement("DELETE FROM cart WHERE userId = %s", (session['userId']))
-        return make_response("", 204)
+        return make_response({}, 204)
 
                 
         

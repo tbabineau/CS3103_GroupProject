@@ -41,8 +41,8 @@ logout = function(){
         }
     )
     .then((Response) => {
-        if(Response.json()){
-            console.log(json);
+        if(Response.status != 204){
+            console.log(Response.json());
         }
     });
 }
