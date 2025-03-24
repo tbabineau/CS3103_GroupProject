@@ -16,7 +16,6 @@ def sendEmail(recipient, hash, url):
         Sincerely,
         -The CS3103 shop team
     """
-    print(message)
     mail.add_header("From", from_address)
     mail.add_header("To", recipient)
     mail.add_header("Subject", "Please verify your email")
@@ -25,4 +24,3 @@ def sendEmail(recipient, hash, url):
 
     # Quit the SMTP session
     smtpObj.quit()
-sendEmail("tbabine1@unb.ca", "ABCDEF", "https://CS3103.cs.unb.ca:8002/verify")
