@@ -152,10 +152,14 @@ class register(Resource):
             hash = hashlib.sha512()
             hash.update((request_params['password'] + salt).encode("utf-8"))
             hashed_pwd = hash.hexdigest()
-
-            sql = "INSERT INTO users (username, email, fname, lname, password_hash, salt) VALUES (%s, %s, %s, %s, %s, %s);"
-            params = (request_params['username'], request_params['email'], request_params['firstname'], request_params['lastname'], str(hashed_pwd), str(salt))
+            tempTime = gmtime()
+            datetime = f'{tempTime.tm_year}-{tempTime.tm_mon}-{tempTime.tm_mday} {tempTime.tm_hour}:{tempTime.tm_min}:{tempTime.tm_sec}'
+            sql = "INSERT INTO users (username, email, fname, lname, password_hash, salt, last_login) VALUES (%s, %s, %s, %s, %s, %s, %s);"
+            params = (request_params['username'], request_params['email'], request_params['firstname'], request_params['lastname'], str(hashed_pwd), str(salt), datetime)
             result = callStatement(sql, params)
+            session['userId'] = callStatement("SELECT userId FROM users WHERE username = %s;", (request_params['username']))[0]['userId']
+            session['username'] = request_params['username']
+            session['expiry'] = time() + 3600
             return make_response(jsonify( {"status": "Successfully registered"}), 201)
         else:
             return make_response(jsonify( {"status": "Username or email already in use"} ), 409)

@@ -41,7 +41,10 @@ logout = function(){
         }
     )
     .then((Response) => {
-        if(Response.status != 204){
+        if(Response.status == 204){
+            window.location.replace("");
+        }
+        else{
             console.log(Response.json());
         }
     });
