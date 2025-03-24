@@ -319,15 +319,20 @@ class Reviews(Resource):
         sql="select * from reviews where "
         for q in qs:
             if 'itemId=' in q:
-                sql+=f"itemId = {int(q.split('=')[1])} and "
+                if(type(q.split('=')[1]) == int):
+                    sql+=f"itemId = {int(q.split('=')[1])} and "
             if 'userId=' in q:
-                sql+=f"userId = {int(q.split('=')[1])} and "
+                if(type(q.split('=')[1]) == int):
+                    sql+=f"userId = {int(q.split('=')[1])} and "
             if 'rating=' in q:
-                sql+=f"reviewRating = {float(q.split('=')[1])} and "
+                if(type(q.split('=')[1]) == float):
+                    sql+=f"reviewRating = {float(q.split('=')[1])} and "
             if 'maxRating' in q:
-                sql+=f"reviewRating <= {float(q.split('=')[1])} and "
+                if(type(q.split('=')[1]) == float):
+                    sql+=f"reviewRating <= {float(q.split('=')[1])} and "
             if 'minRating' in q:
-                sql+=f"reviewRating >= {float(q.split('=')[1])} and "
+                if(type(q.split('=')[1]) == float):
+                    sql+=f"reviewRating >= {float(q.split('=')[1])} and "
         
         sql+="1=1;"
         itemList = callStatement(sql, [])
