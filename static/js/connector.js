@@ -364,3 +364,13 @@ removeFromCart = function(){
         }
     });
 }
+
+verifyUser = function(){
+    fetch("",
+        {
+            method: "POST",
+            body: "",
+            headers: {"Content-Type": "application/json; charset = UTF-8"}
+        }
+    )
+}

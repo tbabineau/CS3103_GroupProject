@@ -186,8 +186,20 @@ class verify(Resource):
             return make_response(jsonify( {"status": "User already verified"} ), 409)
         return make_response(jsonify( {"status": "User not logged in"} ), 401)
         
-    def post(self):
-        print(request)
+class verifier(Resource):
+    def get(self, hash):
+        return app.send_static_file("verified.html")
+
+    def post(self, hash):
+        result = callStatement('SELECT * FROM verification WHERE verificationHash = %s;', (hash))
+        if(len(result) != 0):
+            result = result[0]
+            session['userId'] = result['userId']
+            callStatement("INSERT INTO verifiedUsers (userId) VALUES (%s);", (session['userId']))
+            callStatement("DELETE FROM verification WHERE userId = %s;", (session['userId']))
+            return make_response(jsonify ( {"status": "user verified"} ), 200)
+        return make_response(jsonify( {"status": "Could not locate hash"} ), 404)
+            
 
 #Items endpoint, no page associated with it
 class items(Resource):
@@ -510,6 +522,7 @@ api.add_resource(root, '/')
 api.add_resource(login, '/login')
 api.add_resource(register, "/register")
 api.add_resource(verify, '/verify')
+api.add_resource(verifier, '/verify/<string:hash>')
 api.add_resource(dev, "/dev")
 api.add_resource(store, "/store")
 api.add_resource(items, "/items")
