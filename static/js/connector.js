@@ -70,7 +70,7 @@ register = function(){
         )
         .then((Response) => {
             if(Response.status == 201){
-                window.Location.replace("/store");
+                window.location.replace("/store");
             }
             else{
                 return Response.json();

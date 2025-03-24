@@ -11,6 +11,7 @@ import ssl
 
 import settings # Our server and db settings, stored in settings.py
 from db_util import callStatement, callProc# Database connection helper
+from emailer import sendEmail
 
 app = Flask(__name__, static_url_path='/static')
 app.secret_key = settings.SECRET_KEY
@@ -60,6 +61,15 @@ class store(Resource):
     
 #Login endpoint
 class login(Resource):
+    def isValid():
+        if 'userId' in session:
+            if session['expiry'] <= time():
+                session.pop['userId']
+                session.pop['expiry']
+                session.pop['username']
+                return False
+            return True
+        return False
     def get(self):
         return app.send_static_file('log_in_page.html')
 
@@ -89,6 +99,7 @@ class login(Resource):
                 hashed_pwd = hash.hexdigest()
                 if(str(hashed_pwd) == user['password_hash']):
                     session['userId'] = user['userId']
+                    session['username'] = user['username']
                     session['expiry'] = time() + 3600 #Setting the session to time out in one hour
                     #Clear login attempts, update last login date using GMT
                     callStatement("UPDATE users SET login_attempts = 0 WHERE userId = %s", (user['userId']))
@@ -148,7 +159,32 @@ class register(Resource):
             return make_response(jsonify( {"status": "Successfully registered"}), 201)
         else:
             return make_response(jsonify( {"status": "Username or email already in use"} ), 409)
+
+#Email verification endpoint
+class verify(Resource):
+    def get(self):
+        if login.isValid():
+            results = callStatement("SELECT * FROM verifiedUsers WHERE userId = %s;", (session['userId']))
+            if(len(results) == 0):
+                results = callStatement("SELECT * FROM verification WHERE userId = %s;", (session['userId']))
+                if(len(results) != 0):
+                    callStatement("DELETE FROM verification WHERE userId = ", (session['userId']))
+                email = callStatement("SELECT email FROM users WHERE userId = %s;", (session['userId']))
+                hash = hashlib.sha512()
+                tempTime = gmtime()
+                hash.update((session['userId'] + session['username'] + email + tempTime[5] + tempTime[4] + tempTime[3]).encode) #Should be enough hashing
+                verifyHash = str(hash.hexdigest())
+                sendEmail(email, verifyHash, settings.APP_HOST+":"+settings.APP_PORT)
+                sql = "INSERT INTO verification (userId, verificationHash) VALUES (%s, %s);"
+                params = (session['userId'], verifyHash)
+                result = callStatement(sql, params)
+                return make_response(jsonify( {"status": "Verification email sent"} ), 200)
+            return make_response(jsonify( {"status": "User already verified"} ), 409)
+        return make_response(jsonify( {"status": "User not logged in"} ), 401)
         
+    def post(self):
+        pass
+
 #Items endpoint, no page associated with it
 class items(Resource):
     def get(self):
@@ -269,7 +305,7 @@ class Reviews(Resource):
         
         sql+="1=1;"
         itemList = callStatement(sql, [])
-        return make_response(jsonify({"Reviews": itemList}, 200))
+        return make_response(jsonify({"Reviews": itemList}), 200)
     
     def post(self):
         if not request.json:
@@ -293,7 +329,7 @@ class Reviews(Resource):
 #Cart endpoint, used to communicate with the server on what is in the users cart
 class cart(Resource):
     def updateCart():#Ensures the session and DB cart are in sync if the user is logged in
-        if 'userId' in session and session['expiry'] > time():
+        if login.isValid():
             cartItems = callStatement("SELECT * FROM cart WHERE userId = %s", (session['userId']))
             for item in session['cart']: #For adding to DB from session
                 if item['userId'] == None:
@@ -379,7 +415,7 @@ class cart(Resource):
         if 'cart' in session:
             session.pop('cart')
 
-        if 'userId' in session:
+        if login.isValid():
             callStatement("DELETE FROM cart WHERE userId = %s", (session['userId']))
         return make_response({}, 204)
 
@@ -398,7 +434,7 @@ class cartItem(Resource):
         for item in session['cart']:
             if(item['itemId'] == itemId):
                 item['quantity'] = request_params['quantity']
-                if 'userId' in session: #Since cart is synced, if the item is in the session cart it will be in the DB cart
+                if login.isValid(): #Since cart is synced, if the item is in the session cart it will be in the DB cart
                     sql = "UPDATE cart SET quantity = %s WHERE itemId = %s AND userId = %s;"
                     params = (request_params['quantity'], itemId, session['userId'])
                     result = callStatement(sql, params)
@@ -412,7 +448,7 @@ class cartItem(Resource):
         for item in session['cart']:
             if(item['itemId'] == itemId):
                 session['cart'].remove(item)
-                if 'userId' in session:
+                if login.isValid():
                     sql = "DELETE FROM cart WHERE userId = %s AND itemId = %s;"
                     params = (session['userId'], itemId)
                     result = callStatement(sql, params)
@@ -425,6 +461,7 @@ api = Api(app)
 api.add_resource(root, '/')
 api.add_resource(login, '/login')
 api.add_resource(register, "/register")
+api.add_resource(verify, '/verify')
 api.add_resource(dev, "/dev")
 api.add_resource(store, "/store")
 api.add_resource(items, "/items")
