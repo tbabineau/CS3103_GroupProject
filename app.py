@@ -346,12 +346,15 @@ class Reviews(Resource):
             request_params=parser.parse_args()
         except:
             abort(400)
-
+        result = callStatement("SELECT * FROM storeItems WHERE itemId = %s;", (request_params['itemId']))
+        if(len(result) == 0):
+            return make_response(jsonify( {"status": "Item not found"} ), 404)
+        
         sql="insert into reviews (itemId, userId, reviewText, reviewRating) values (%s, %s, %s, %s)"
         params=(request_params['itemId'], session['userId'], request_params['review'], round(request_params['rating'], 1))
         result=callStatement(sql, params)
         return make_response(jsonify({"status": "Review created"}), 201)
-    
+        
 class Review(Resource):
     def get(self, reviewId):
         if(type(reviewId)!=int):
