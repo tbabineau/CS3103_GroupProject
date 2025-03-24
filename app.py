@@ -4,7 +4,7 @@ from flask import Flask, jsonify, abort, request, make_response, session, redire
 from flask_restful import Resource, Api, reqparse
 from flask_session import Session
 from secrets import token_hex
-from time import time, gmtime
+from time import time, gmtime, strptime, mktime
 import hashlib
 import json
 import ssl
@@ -165,11 +165,11 @@ class verify(Resource):
     def get(self):
         if login.isValid():
             results = callStatement("SELECT * FROM verifiedUsers WHERE userId = %s;", (session['userId']))
-            if(len(results) == 0):
+            if(len(results) == 0): #ensureing the user isn't already verified
                 results = callStatement("SELECT * FROM verification WHERE userId = %s;", (session['userId']))
-                if(len(results) != 0):
+                if(len(results) != 0): #Checking if there is already a verification hash for the user, deleting it if there is
                     callStatement("DELETE FROM verification WHERE userId = %s", (session['userId']))
-                email = callStatement("SELECT email FROM users WHERE userId = %s;", (session['userId']))[0]['email']
+                email = callStatement("SELECT email FROM users WHERE userId = %s;", (session['userId']))[0]['email'] #Getting the users email
                 hash = hashlib.sha512()
                 tempTime = gmtime()
                 hash.update((session['username']).encode("utf-8"))
@@ -177,10 +177,12 @@ class verify(Resource):
                 hash.update(str(tempTime[5]).encode("utf-8"))
                 hash.update(str(tempTime[4]).encode("utf-8"))
                 hash.update(str(tempTime[3]).encode("utf-8"))
-                verifyHash = str(hash.hexdigest())
+                verifyHash = str(hash.hexdigest()) #Generating verification hash
+                tempTime = gmtime() #Creating gmtime timestamp, giving the user an hour to verify
+                datetime = f'{tempTime.tm_year}-{tempTime.tm_mon}-{tempTime.tm_mday} {tempTime.tm_hour + 1}:{tempTime.tm_min}:{tempTime.tm_sec}'
                 sendEmail(email, verifyHash, settings.APP_HOST+":"+str(settings.APP_PORT))
-                sql = "INSERT INTO verification (userId, verificationHash) VALUES (%s, %s);"
-                params = (session['userId'], verifyHash)
+                sql = "INSERT INTO verification (userId, verificationHash, timeStamp) VALUES (%s, %s, %s);"
+                params = (session['userId'], verifyHash, datetime)
                 result = callStatement(sql, params)
                 return make_response(jsonify( {"status": "Verification email sent"} ), 200)
             return make_response(jsonify( {"status": "User already verified"} ), 409)
@@ -194,6 +196,10 @@ class verifier(Resource):
         result = callStatement('SELECT * FROM verification WHERE verificationHash = %s;', (hash))
         if(len(result) != 0):
             result = result[0]
+            #This takes the datetime from the DB and converts it into seconds since the epoch to check if the verification has expired
+            if(mktime(strptime(str(result['timeStamp']), "%Y-%m-%d %H:%M:%S")) <= time()):
+                callStatement("DELETE FROM verification WHERE userId = %s;", (result['userId']))
+                return make_response(jsonify( {"status": "Time expired"} ), 410)
             session['userId'] = result['userId']
             callStatement("INSERT INTO verifiedUsers (userId) VALUES (%s);", (session['userId']))
             callStatement("DELETE FROM verification WHERE userId = %s;", (session['userId']))
