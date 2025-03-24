@@ -64,9 +64,9 @@ class login(Resource):
     def isValid():
         if 'userId' in session:
             if session['expiry'] <= time():
-                session.pop['userId']
-                session.pop['expiry']
-                session.pop['username']
+                session.pop('userId')
+                session.pop('expiry')
+                session.pop('username')
                 return False
             return True
         return False
@@ -168,13 +168,17 @@ class verify(Resource):
             if(len(results) == 0):
                 results = callStatement("SELECT * FROM verification WHERE userId = %s;", (session['userId']))
                 if(len(results) != 0):
-                    callStatement("DELETE FROM verification WHERE userId = ", (session['userId']))
-                email = callStatement("SELECT email FROM users WHERE userId = %s;", (session['userId']))
+                    callStatement("DELETE FROM verification WHERE userId = %s", (session['userId']))
+                email = callStatement("SELECT email FROM users WHERE userId = %s;", (session['userId']))[0]['email']
                 hash = hashlib.sha512()
                 tempTime = gmtime()
-                hash.update((session['userId'] + session['username'] + email + tempTime[5] + tempTime[4] + tempTime[3]).encode) #Should be enough hashing
+                hash.update((session['username']).encode("utf-8"))
+                hash.update(email.encode("utf-8"))
+                hash.update(str(tempTime[5]).encode("utf-8"))
+                hash.update(str(tempTime[4]).encode("utf-8"))
+                hash.update(str(tempTime[3]).encode("utf-8"))
                 verifyHash = str(hash.hexdigest())
-                sendEmail(email, verifyHash, settings.APP_HOST+":"+settings.APP_PORT)
+                sendEmail(email, verifyHash, settings.APP_HOST+":"+str(settings.APP_PORT))
                 sql = "INSERT INTO verification (userId, verificationHash) VALUES (%s, %s);"
                 params = (session['userId'], verifyHash)
                 result = callStatement(sql, params)
@@ -183,7 +187,7 @@ class verify(Resource):
         return make_response(jsonify( {"status": "User not logged in"} ), 401)
         
     def post(self):
-        pass
+        print(request)
 
 #Items endpoint, no page associated with it
 class items(Resource):
