@@ -72,6 +72,12 @@ class login(Resource):
         return False
     def get(self):
         return app.send_static_file('log_in_page.html')
+    
+    def isManager():
+        if login.isValid():
+            result = callStatement("SELECT * FROM users WHERE userId = %s;", (session['userId']))[0]
+            return(result['manager_flag'] == 1) #If manager_flag = 1, the user is a manager
+        return False
 
     def post(self):
         if not request.json:
