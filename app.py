@@ -545,6 +545,9 @@ class cartItem(Resource):
                 return make_response(jsonify( {} ), 204)
         return make_response(jsonify( {"status": "Item not in cart to remove"} ), 404)
 
+class itemsPage(Resource):
+    def get(self):
+        return app.send_static_file('itemPage.html')
                 
         
 api = Api(app)
@@ -561,6 +564,7 @@ api.add_resource(Reviews, '/reviews')
 api.add_resource(Review, '/reviews/<int:reviewId>')
 api.add_resource(cart, "/cart")
 api.add_resource(cartItem, "/cart/<int:itemId>")
+api.add_resource(itemsPage, '/itemspage')
 
 #############################################################################
 if __name__ == "__main__":

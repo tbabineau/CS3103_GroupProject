@@ -377,3 +377,32 @@ verifyUser = function(){
         }
     )
 }
+
+const jsonData = [
+    {"itemDescription": "yo", "itemId": 2}
+]
+
+var app = new Vue({
+    el: "#app",
+
+    data: {
+        ItemsData: null
+    },
+    mounted(){
+        this.fetchItems();
+    },
+    methods: {
+        //images have to be sent from connector
+        fetchItems() {
+            axios
+            .get("/items")
+            .then(response => {
+                this.ItemsData = response.data.Items;
+            })
+            .catch(e => {
+              alert("Unable to load the item data");
+              console.log(e);
+            });
+        }
+    }
+});

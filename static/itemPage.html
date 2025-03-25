@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>School Service</title>
+  </head>
+  <body>
+    <div class="container-fluid" id="app">
+      <div class="jumbotron jumbotron-fluid text-center">
+        <h1>Welcome to the Shop<sup><small>not a real company!</small></sup></sup></h1>
+        <p><em>View our items</em></p>
+      <div class="text-center">
+        <!--<button type="button" class="btn btn-outline-primary" v-on:click="fetchItems()">List schools</button>-->
+      </div>
+    <div>
+      <div v-if="ItemsData != null" id="itemsList">
+        <ul class="list-group">
+          <div v-for="Items in ItemsData">
+            <li class="list-group-item col-7 mx-auto">
+              <div class="d-flex w-100 justify-content-between">
+                {{Items.itemId}}, 
+                {{Items.itemName}}, 
+                {{Items.itemDescription}}, 
+                {{Items.itemPrice}},
+                {{Items.itemStock}},
+                <img src={{Items.itemPhoto}} alt="item photo">
+              </div>
+            </li>
+          </div>
+        </ul>
+      </div>
+    </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"/>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/static/js/connector.js" ></script>
+  <!--<link rel="stylesheet" href="/static/schools.css"/>-->
+</body>
+</html>
