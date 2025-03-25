@@ -258,11 +258,9 @@ class items(Resource):
             abort(400) #bad request
         
         if(login.isManager()):
-            print(type(request_params['price']))
             sql = "INSERT INTO storeItems (itemName, itemDescription, itemPrice, itemStock, itemPhoto) VALUES (%s, %s, %s, %s, %s)"
             params = (request_params['itemName'], request_params['itemDescript'], round(request_params['price'], 2), request_params['itemStock'], request_params['itemPhoto'])
             result = callStatement(sql, params)
-            print(result)
             return make_response(jsonify( {"status": "Item created"} ), 201)
         else:
             return make_response(jsonify( {"status": "User does not have permission"} ), 401)
@@ -299,7 +297,6 @@ class item(Resource):
         sql = "UPDATE storeItems SET itemName = %s, itemDescription = %s, itemPrice = %s, itemStock = %s, itemPhoto = %s WHERE itemId = %s;"
         params = (request_params['itemName'], request_params['itemDescript'], request_params['price'], request_params['itemStock'], request_params['itemPhoto'], itemId)
         response = callStatement(sql, params)
-        print(response)
         if(len(response) == 0):
             make_response(jsonify( {"status": "Item updated", "Item": response} ), 200)
         else:
@@ -325,20 +322,30 @@ class Reviews(Resource):
         sql="select * from reviews where "
         for q in qs:
             if 'itemId=' in q:
-                if(type(q.split('=')[1]) == int):
+                try:
                     sql+=f"itemId = {int(q.split('=')[1])} and "
+                except:
+                    pass
             if 'userId=' in q:
-                if(type(q.split('=')[1]) == int):
+                try:
                     sql+=f"userId = {int(q.split('=')[1])} and "
+                except:
+                    pass
             if 'rating=' in q:
-                if(type(q.split('=')[1]) == float):
+                try:
                     sql+=f"reviewRating = {float(q.split('=')[1])} and "
+                except:
+                    pass
             if 'maxRating' in q:
-                if(type(q.split('=')[1]) == float):
+                try:
                     sql+=f"reviewRating <= {float(q.split('=')[1])} and "
+                except:
+                    pass
             if 'minRating' in q:
-                if(type(q.split('=')[1]) == float):
+                try:
                     sql+=f"reviewRating >= {float(q.split('=')[1])} and "
+                except:
+                    pass
         
         sql+="1=1;"
         itemList = callStatement(sql, [])
@@ -433,7 +440,6 @@ class cart(Resource):
                 collision = False
                 for sessionItem in session['cart']:
                     if(sessionItem not in cartItems and sessionItem["itemId"] == item["itemId"]):
-                        print("^FLAG^")
                         collision = True
                         sessionItem["quantity"] = item["quantity"] 
                         break
@@ -483,11 +489,12 @@ class cart(Resource):
         
         response = callStatement("SELECT * FROM storeItems WHERE itemId = %s", (request_params['itemId']))
         if(len(response) != 0):
+            if(request_params['quantity'] > response[0]['stock']):
+                return make_response(jsonify( {"status": "Not enough stock"} ), 400)
             if('userId' in session): #If signed in, add to DB cart
                 sql = "INSERT INTO cart (userId, ItemId, quantity) VALUES (%s, %s, %s);"
                 params = (session['userId'], request_params['itemId'], request_params['quantity'])
                 cartItem = callStatement(sql, params)
-                print(cartItem)
             #Add to session cart as long as the item exists
             session['cart'].append({"userId": None, "itemId": request_params['itemId'], "quantity": request_params['quantity']})
             return make_response(jsonify( {"status": "Item added to cart"} ), 201)
@@ -522,7 +529,6 @@ class cartItem(Resource):
                     sql = "UPDATE cart SET quantity = %s WHERE itemId = %s AND userId = %s;"
                     params = (request_params['quantity'], itemId, session['userId'])
                     result = callStatement(sql, params)
-                    print(result)
                 return(make_response(jsonify( {"status": "Cart item updated"} ), 200))
         return(make_response(jsonify( {"status": "Item not in cart"} ), 404))
     
@@ -557,7 +563,6 @@ api.add_resource(cart, "/cart")
 api.add_resource(cartItem, "/cart/<int:itemId>")
 
 #############################################################################
-# xxxxx= last 5 digits of your studentid. If xxxxx > 65535, subtract 30000
 if __name__ == "__main__":
 #    app.run(host="cs3103.cs.unb.ca", port=xxxx, debug=True)
     context = ('cert.pem', 'key.pem')
