@@ -257,7 +257,7 @@ class items(Resource):
         except:
             abort(400) #bad request
         
-        if(True): #Should check for management flag here, currently not implemented
+        if(login.isManager()):
             print(type(request_params['price']))
             sql = "INSERT INTO storeItems (itemName, itemDescription, itemPrice, itemStock, itemPhoto) VALUES (%s, %s, %s, %s, %s)"
             params = (request_params['itemName'], request_params['itemDescript'], round(request_params['price'], 2), request_params['itemStock'], request_params['itemPhoto'])
@@ -308,7 +308,7 @@ class item(Resource):
     def delete(self, itemId):
         if type(itemId) != int:
             abort(400)
-        if(True): #Again, checking for manager status
+        if(login.isManager()):
             retItem = callStatement("SELECT * FROM storeItems WHERE itemId = %s", (itemId))
             if(len(retItem) != 1):
                 return make_response(jsonify( {"status": "Could not find item"} ), 404)
@@ -357,12 +357,15 @@ class Reviews(Resource):
             request_params=parser.parse_args()
         except:
             abort(400)
-
+        result = callStatement("SELECT * FROM storeItems WHERE itemId = %s;", (request_params['itemId']))
+        if(len(result) == 0):
+            return make_response(jsonify( {"status": "Item not found"} ), 404)
+        
         sql="insert into reviews (itemId, userId, reviewText, reviewRating) values (%s, %s, %s, %s)"
         params=(request_params['itemId'], session['userId'], request_params['review'], round(request_params['rating'], 1))
         result=callStatement(sql, params)
         return make_response(jsonify({"status": "Review created"}), 201)
-    
+        
 class Review(Resource):
     def get(self, reviewId):
         if(type(reviewId)!=int):
