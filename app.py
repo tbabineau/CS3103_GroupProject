@@ -241,6 +241,8 @@ class items(Resource):
                 
         sql += "1 = 1;"
         itemList = callStatement(sql, ())
+        for item in itemList: #just to get image binding to work
+            item['itemPhoto'] = "/static/images/" + item['itemPhoto']
         return make_response(jsonify( {"Items": itemList} ), 200)
     
     def post(self):

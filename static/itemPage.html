@@ -22,7 +22,7 @@
                 {{Items.itemDescription}}, 
                 {{Items.itemPrice}},
                 {{Items.itemStock}},
-                <img src={{Items.itemPhoto}} alt="item photo">
+                <img v-bind:src="Items.itemPhoto" height = 150 width = 150 alt="item photo">
               </div>
             </li>
           </div>
