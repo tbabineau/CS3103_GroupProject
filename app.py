@@ -400,6 +400,7 @@ class Review(Resource):
         except:
             abort(400)
         #requires sanitization no parameters
+
         sql="update reviews set reviewText = %s, reviewRating = %s where reviewId = %s;"
         params=(request_params['review'], request_params['rating'], reviewId)
         result=callStatement(sql, params)
@@ -411,13 +412,15 @@ class Review(Resource):
     def delete(self, reviewId):
         if type(reviewId)!=int:
             abort(400)
-        #logged user of post can delete their post
-        getReview = callStatement("select * from reviews where reviewId = %s", (reviewId))
-        if(len(getReview)!=1):
-            return make_response(jsonify({"status": "Review does not exist :)"}), 404)
-        delReview = callStatement("delete from reviews where reviewId = %s", (reviewId))
-        return make_response(jsonify({}), 204)
-        #response for different user?
+        
+        if(login.isValid()):
+            getReview = callStatement("select * from reviews where reviewId = %s", (reviewId))
+            if(len(getReview)!=1):
+                return make_response(jsonify({"status": "Review does not exist :)"}), 404)
+            delReview = callStatement("delete from reviews where reviewId = %s", (reviewId))
+            return make_response(jsonify({}), 204)
+        else:
+            return make_response(jsonify({"status": "Not authorized"}), 401)
     
 #Cart endpoint, used to communicate with the server on what is in the users cart
 class cart(Resource):
