@@ -221,6 +221,7 @@ class verifier(Resource):
 class items(Resource):
     def get(self):
         qs = request.query_string.decode()
+        qs = qs.replace("%20", " ") #certain characters change from URL decoding
         qs = qs.split("&")
         sql = "SELECT * FROM storeItems WHERE "
         for q in qs:
