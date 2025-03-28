@@ -445,7 +445,8 @@ class Review(Resource):
 class cart(Resource):
     def updateCart():#Ensures the session and DB cart are in sync if the user is logged in
         if login.isValid():
-            cartItems = callStatement("SELECT * FROM cart WHERE userId = %s", (session['userId']))
+            sql = "SELECT * FROM cart LEFT JOIN storeItems ON cart.itemId = storeItems.itemId WHERE userId = %s"
+            cartItems = callStatement(sql, (session['userId']))
             for item in session['cart']: #For adding to DB from session
                 if item['userId'] == None:
                     item['userId'] = session['userId']
