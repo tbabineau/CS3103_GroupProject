@@ -228,17 +228,35 @@ class items(Resource):
             if 'search=' in q:
                 sql += "(itemName LIKE '%%"+q.split('=')[1]+"%%'  OR itemDescription LIKE '%%"+q.split('=')[1]+"%%') AND "
             if 'quantity=' in q:
-                sql += f"itemStock = {int(q.split('=')[1])} AND "
+                try:
+                    sql += f"itemStock = {int(q.split('=')[1])} AND "
+                except:
+                    pass
             if 'maxQuantity=' in q:
-                sql += f"itemStock <= {int(q.split('=')[1])} AND "
+                try:
+                    sql += f"itemStock <= {int(q.split('=')[1])} AND "
+                except:
+                    pass
             if 'minQuantity=' in q:
-                sql += f"itemStock >= {int(q.split('=')[1])} AND "
+                try:
+                    sql += f"itemStock >= {int(q.split('=')[1])} AND "
+                except:
+                    pass
             if 'price=' in q:
-                sql += f"itemPrice = {float(q.split('=')[1])} AND "
+                try:
+                    sql += f"itemPrice = {float(q.split('=')[1])} AND "
+                except:
+                    pass
             if 'maxPrice=' in q:
-                sql += f"itemPrice <= {float(q.split('=')[1])} AND "
+                try:
+                    sql += f"itemPrice <= {float(q.split('=')[1])} AND "
+                except:
+                    pass
             if 'minPrice=' in q:
-                sql += f"itemPrice >= {float(q.split('=')[1])} AND "
+                try:
+                    sql += f"itemPrice >= {float(q.split('=')[1])} AND "
+                except:
+                    pass
                 
         sql += "1 = 1;"
         itemList = callStatement(sql, ())
@@ -495,7 +513,7 @@ class cart(Resource):
         
         response = callStatement("SELECT * FROM storeItems WHERE itemId = %s", (request_params['itemId']))
         if(len(response) != 0):
-            if(request_params['quantity'] > response[0]['stock']):
+            if(request_params['quantity'] > response[0]['itemStock']):
                 return make_response(jsonify( {"status": "Not enough stock"} ), 400)
             if('userId' in session): #If signed in, add to DB cart
                 sql = "INSERT INTO cart (userId, ItemId, quantity) VALUES (%s, %s, %s);"
@@ -554,6 +572,10 @@ class cartItem(Resource):
 class itemsPage(Resource):
     def get(self):
         return app.send_static_file('itemPage.html')
+    
+class cartPage(Resource):
+    def get(self):
+        return app.send_static_file('cart.html')
                 
         
 api = Api(app)
@@ -571,6 +593,7 @@ api.add_resource(Review, '/reviews/<int:reviewId>')
 api.add_resource(cart, "/cart")
 api.add_resource(cartItem, "/cart/<int:itemId>")
 api.add_resource(itemsPage, '/itemspage')
+api.add_resource(cartPage, '/cartpage')
 
 #############################################################################
 if __name__ == "__main__":

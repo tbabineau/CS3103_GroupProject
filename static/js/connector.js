@@ -386,10 +386,13 @@ var app = new Vue({
     el: "#app",
 
     data: {
-        ItemsData: null
+        ItemsData: null,
+        cartData: null,
+        ItemData: null
     },
     mounted(){
         this.fetchItems();
+        this.fetchCart();
     },
     methods: {
         //images have to be sent from connector
@@ -402,6 +405,38 @@ var app = new Vue({
             .catch(e => {
               alert("Unable to load the item data");
               console.log(e);
+            });
+        },
+
+        fetchCart() {
+            axios
+            .get("/cart")
+            //call separate function here to get items for cart
+            .then(response => {
+                this.cartData = response.data.cart;
+                //html is not calling a list of items
+                //this calls get for items *could be in random order depending on request*
+                //need html to update upon single get then update with next item until done?
+                /*
+                for(let i=0; i<this.cartData.length; i++){
+                    setTimeout(() => {
+                    axios
+                    .get("/items/"+this.cartData[i].itemId)
+                    .then(response=>{
+                        //returns last get
+                        this.ItemData = response.data.Item;
+                        console.log(this.ItemData);
+                    })
+                    .catch(e=>{
+                        console.log(e);
+                    });
+                    }, 2000);
+                }
+                */
+            })
+            .catch(e => {
+                alert("Unable to load cart data");
+                console.log(e);
             });
         }
     }

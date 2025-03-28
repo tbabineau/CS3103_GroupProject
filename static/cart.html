@@ -6,23 +6,19 @@
   <body>
     <div class="container-fluid" id="app">
       <div class="jumbotron jumbotron-fluid text-center">
-        <h1>Welcome to the Shop<sup><small>not a real company!</small></sup></sup></h1>
-        <p><em>View our items</em></p>
+        <h1>Cart<sup><small>Crash out?</small></sup></sup></h1>
+        <p><em>View your items</em></p>
       <div class="text-center">
         <!--<button type="button" class="btn btn-outline-primary" v-on:click="fetchItems()">List schools</button>-->
       </div>
     <div>
-      <div v-if="ItemsData != null" id="itemsList">
+      <div v-if="cartData != null" id="cartList">
         <ul class="list-group">
-          <div v-for="Items in ItemsData">
+          <div v-for="cart in cartData">
             <li class="list-group-item col-7 mx-auto">
-              <div class="d-flex w-100 justify-content-between">
-                {{Items.itemId}}, 
-                {{Items.itemName}}, 
-                {{Items.itemDescription}}, 
-                <p>$</p>{{Items.itemPrice}},
-                {{Items.itemStock}},
-                <img v-bind:src="Items.itemPhoto" height = 150 width = 150 alt="item photo">
+              <div class="d-flex w-30 justify-content-between">
+                <p>Items id</p>{{cart.itemId}}, 
+                <p>quantity</p>{{cart.quantity}}
               </div>
             </li>
           </div>
