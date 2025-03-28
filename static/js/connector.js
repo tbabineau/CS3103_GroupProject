@@ -96,6 +96,7 @@ addItem = function(){
     let pic = document.getElementById("itemPhoto").value;
     let cost = document.getElementById("price").value;
     let stock = document.getElementById("itemStock").value;
+    let image = document.getElementById("itemImage").value;
     fetch("/items",
         {
             method: "POST",
@@ -104,7 +105,8 @@ addItem = function(){
                 itemDescript: desc,
                 itemPhoto: pic,
                 price: cost,
-                itemStock: stock
+                itemStock: stock,
+                itemPhoto: photo
             }),
             headers: {"Content-Type": "application/json; charset = UTF-8"}
         }
