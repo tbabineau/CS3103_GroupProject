@@ -279,6 +279,9 @@ class items(Resource):
             abort(400) #bad request
         
         if(login.isManager()):
+            imageFile = open("11.jpg", "x")
+            imageFile.write(request_params['itemPhoto'])
+            imageFile.close()
             sql = "INSERT INTO storeItems (itemName, itemDescription, itemPrice, itemStock, itemPhoto) VALUES (%s, %s, %s, %s, %s)"
             params = (request_params['itemName'], request_params['itemDescript'], round(request_params['price'], 2), request_params['itemStock'], request_params['itemPhoto'])
             result = callStatement(sql, params)

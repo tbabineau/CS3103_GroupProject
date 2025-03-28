@@ -93,17 +93,22 @@ register = function(){
 addItem = function(){
     let name = document.getElementById("itemName").value;
     let desc = document.getElementById("itemDescript").value;
-    let pic = document.getElementById("itemPhoto").value;
     let cost = document.getElementById("price").value;
     let stock = document.getElementById("itemStock").value;
-    let image = document.getElementById("itemImage").value;
+    let photo = document.getElementById("photo").value;
+    const file = document.querySelector('#photo').files[0];
+    var reader = new FileReader()
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+        localStorage.setItem("image", reader.result);
+        document.getElementById("photo").setAttribute("src", localStorage.getItem("image"));
+    };
     fetch("/items",
         {
             method: "POST",
             body: JSON.stringify({
                 itemName: name,
                 itemDescript: desc,
-                itemPhoto: pic,
                 price: cost,
                 itemStock: stock,
                 itemPhoto: photo
