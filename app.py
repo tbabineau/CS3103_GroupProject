@@ -474,11 +474,11 @@ class Review(Resource):
 class cart(Resource):
     def updateCart():#Ensures the session and DB cart are in sync if the user is logged in
         if 'expiry' not in session:
-            session['expiry'] = time() + 3600 #Expiry is also for checking whether the cart should be kepy
+            session['expiry'] = time() + 3600 #Expiry is also for checking whether the cart should be kept
         if 'cart' not in session or session['expiry'] >= time():
             session['cart'] = [] #if no cart exists, add one. If cart expired, clear it
         if login.isValid():
-            sql = "SELECT * FROM cart LEFT JOIN storeItems ON cart.itemId = storeItems.itemId WHERE userId = %s"
+            sql = "SELECT * FROM cart LEFT JOIN storeItems ON cart.itemId = storeItems.itemId WHERE userId = %s;"
             cartItems = callStatement(sql, (session['userId']))
             for item in session['cart']: #For adding to DB from session
                 if item['userId'] == None:
@@ -502,7 +502,8 @@ class cart(Resource):
                         sessionItem["quantity"] = item["quantity"] 
                         break
                 if(not collision and item not in session['cart']):
-                    session['cart'].append(item)
+                    session['cart'].append({"userId": session['userId'], "itemId": item['itemId'], "quantity": item['quantity'], 
+                                    "itemName": item['itemName'], "itemDescription": item['itemDescription'], "itemPrice": item['itemPrice'], "itemStock": item['itemStock'], "itemPhoto": item['itemPhoto']})
     def get(self):
         cart.updateCart()
         #Allows users to search in cart
@@ -529,6 +530,7 @@ class cart(Resource):
                     except:
                         pass
             return True
+        print(session['cart'])
         toDisplay = list(filter(selector, session['cart']))
                 
         return(make_response(jsonify( {"cart": toDisplay} ), 200))
