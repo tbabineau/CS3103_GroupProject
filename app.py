@@ -530,7 +530,6 @@ class cart(Resource):
                     except:
                         pass
             return True
-        print(session['cart'])
         toDisplay = list(filter(selector, session['cart']))
                 
         return(make_response(jsonify( {"cart": toDisplay} ), 200))
