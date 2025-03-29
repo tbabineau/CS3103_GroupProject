@@ -46,10 +46,10 @@ def not_found(error):
 #root endpoint
 class root(Resource):
     def get(self):
-        if('userId' in session and session['expiry'] > time()):
-            return app.send_static_file("storefront.html")
+        if login.isValid():
+            return redirect('/store')
         else:
-            return app.send_static_file("log_in_page.html")
+            return redirect('/login')
 #API endpoint
 class dev(Resource):
     def get(self):
@@ -58,7 +58,14 @@ class dev(Resource):
 #store page endpoint
 class store(Resource):
     def get(self):
-        return app.send_static_file("storefront.html")
+        return app.send_static_file("itemPage.html")
+    
+class account(Resource):
+    def get(self):
+        if login.isValid():
+            return app.send_static_file("account.html")
+        else:
+            return redirect("/login")
     
 #Login endpoint
 class login(Resource):
@@ -68,18 +75,22 @@ class login(Resource):
                 session.pop('userId')
                 session.pop('expiry')
                 session.pop('username')
+                session.pop('manager')
                 return False
+            session['expiry'] = time() + 3600 #Updates expiry each time that the user does anything
             return True
         return False
-    def get(self):
-        return app.send_static_file('log_in_page.html')
     
     def isManager():
         if login.isValid():
-            result = callStatement("SELECT * FROM users WHERE userId = %s;", (session['userId']))[0]
-            return(result['manager_flag'] == 1) #If manager_flag = 1, the user is a manager
+            return session['manager'] == 1
         return False
-
+    
+    def get(self):
+        if(login.isValid()):
+            return redirect("/store")
+        return app.send_static_file('log_in_page.html')
+    
     def post(self):
         if not request.json:
             abort(400) #bad request
@@ -91,8 +102,7 @@ class login(Resource):
         except:
             abort(400) #bad request
         #Checking if the user is already logged in
-        if('userId' in session and session['expiry'] > time()):
-            session['expiry'] = time() + 3600 #Updating session expiry if user is already logged in
+        if(login.isValid()):
             return make_response(jsonify( {"status": "Logged in"} ), 200)
         
         sql = "SELECT * FROM users WHERE username = %s;"
@@ -108,6 +118,8 @@ class login(Resource):
                     session['userId'] = user['userId']
                     session['username'] = user['username']
                     session['expiry'] = time() + 3600 #Setting the session to time out in one hour
+                    session['manager'] = user['manager_flag'] == 1 #True if user is a manager, false if not
+                    cart.updateCart() #Updating the cart when the user logs in
                     #Clear login attempts, update last login date using GMT
                     callStatement("UPDATE users SET login_attempts = 0 WHERE userId = %s", (user['userId']))
                     tempTime = gmtime()
@@ -118,15 +130,14 @@ class login(Resource):
                     #Increase login_attempts by 1
                     callStatement("UPDATE users SET login_attempts = login_attempts + 1 WHERE userId = %s", (user['userId']))
                     return make_response(jsonify( {"status": "Incorrect credentials"} ), 400)
-
-                
         return make_response(jsonify( {"status": "Incorrect credentials"} ), 400)
     
     def delete(self):
         if('userId' in session):
             session.pop('userId')
-            if('cart' in session):
-                session.pop('cart')
+            session.pop('cart')
+            session.pop('manager')
+            session.pop('expiry')
             return make_response({}, 204)
         else:
             return make_response(jsonify( {"status": "Not logged in"} ), 404)
@@ -204,18 +215,20 @@ class verifier(Resource):
         return app.send_static_file("verified.html")
 
     def post(self, hash):
-        result = callStatement('SELECT * FROM verification WHERE verificationHash = %s;', (hash))
-        if(len(result) != 0):
-            result = result[0]
-            #This takes the datetime from the DB and converts it into seconds since the epoch to check if the verification has expired
-            if(mktime(strptime(str(result['timeStamp']), "%Y-%m-%d %H:%M:%S")) <= time()):
-                callStatement("DELETE FROM verification WHERE userId = %s;", (result['userId']))
-                return make_response(jsonify( {"status": "Time expired"} ), 410)
-            session['userId'] = result['userId']
-            callStatement("INSERT INTO verifiedUsers (userId) VALUES (%s);", (session['userId']))
-            callStatement("DELETE FROM verification WHERE userId = %s;", (session['userId']))
-            return make_response(jsonify ( {"status": "user verified"} ), 200)
-        return make_response(jsonify( {"status": "Could not locate hash"} ), 404)
+        if(login.isValid()):
+            result = callStatement('SELECT * FROM verification WHERE verificationHash = %s;', (hash))
+            if(len(result) != 0):
+                result = result[0]
+                #This takes the datetime from the DB and converts it into seconds since the epoch to check if the verification has expired
+                if(mktime(strptime(str(result['timeStamp']), "%Y-%m-%d %H:%M:%S")) <= time()):
+                    callStatement("DELETE FROM verification WHERE userId = %s;", (result['userId']))
+                    return make_response(jsonify( {"status": "Time expired"} ), 410)
+                session['userId'] = result['userId']
+                callStatement("INSERT INTO verifiedUsers (userId) VALUES (%s);", (session['userId']))
+                callStatement("DELETE FROM verification WHERE userId = %s;", (session['userId']))
+                return make_response(jsonify ( {"status": "user verified"} ), 200)
+            return make_response(jsonify( {"status": "Could not locate hash"} ), 404)
+        return make_response(jsonify( {"status": "User not logged in"} ), 401)
             
 
 #Items endpoint, no page associated with it
@@ -460,6 +473,10 @@ class Review(Resource):
 #Cart endpoint, used to communicate with the server on what is in the users cart
 class cart(Resource):
     def updateCart():#Ensures the session and DB cart are in sync if the user is logged in
+        if 'expiry' not in session:
+            session['expiry'] = time() + 3600 #Expiry is also for checking whether the cart should be kepy
+        if 'cart' not in session or session['expiry'] >= time():
+            session['cart'] = [] #if no cart exists, add one. If cart expired, clear it
         if login.isValid():
             sql = "SELECT * FROM cart LEFT JOIN storeItems ON cart.itemId = storeItems.itemId WHERE userId = %s"
             cartItems = callStatement(sql, (session['userId']))
@@ -487,8 +504,6 @@ class cart(Resource):
                 if(not collision and item not in session['cart']):
                     session['cart'].append(item)
     def get(self):
-        if 'cart' not in session or session['expiry'] <= time():
-            session['cart'] = []
         cart.updateCart()
         #Allows users to search in cart
         def selector(item):
@@ -496,14 +511,23 @@ class cart(Resource):
             qs = qs.split("&")
             for q in qs:
                 if 'quantity=' in q:
-                    if(item['quantity'] != int(q.split("=")[1])):
-                        return False
+                    try:
+                        if(item['quantity'] != int(q.split("=")[1])):
+                            return False
+                    except:
+                        pass
                 if 'maxQuantity=' in q:
-                    if(item['quantity'] > int(q.split("=")[1])):
-                        return False
+                    try:
+                        if(item['quantity'] > int(q.split("=")[1])):
+                            return False
+                    except:
+                        pass
                 if 'minQuantity=' in q:
-                    if(item['quantity'] < int(q.split("=")[1])):
-                        return False
+                    try:
+                        if(item['quantity'] < int(q.split("=")[1])):
+                            return False
+                    except:
+                        pass
             return True
         toDisplay = list(filter(selector, session['cart']))
                 
@@ -520,8 +544,6 @@ class cart(Resource):
         except:
             abort(400) #Bad request
         #Adding the cart to the session allows us to save a cart if the user starts shopping before they are logged in
-        if 'cart' not in session:
-            session['cart'] = []
         cart.updateCart()
         
         for item in session['cart']:
@@ -532,20 +554,24 @@ class cart(Resource):
         if(len(response) != 0):
             if(request_params['quantity'] > response[0]['itemStock']):
                 return make_response(jsonify( {"status": "Not enough stock"} ), 400)
+            uID = None
             if('userId' in session): #If signed in, add to DB cart
+                uID = session['userId']
                 sql = "INSERT INTO cart (userId, ItemId, quantity) VALUES (%s, %s, %s);"
                 params = (session['userId'], request_params['itemId'], request_params['quantity'])
-                cartItem = callStatement(sql, params)
+                callStatement(sql, params)
             #Add to session cart as long as the item exists
-            session['cart'].append({"userId": None, "itemId": request_params['itemId'], "quantity": request_params['quantity']})
+            item = response[0]
+            session['cart'].append({"userId": uID, "itemId": request_params['itemId'], "quantity": request_params['quantity'], 
+                                    "itemName": item['itemName'], "itemDescription": item['itemDescription'], "itemPrice": item['itemPrice'], "itemStock": item['itemStock'], "itemPhoto": item['itemPhoto']}) #Saving item info in session cart
             return make_response(jsonify( {"status": "Item added to cart"} ), 201)
         return make_response(jsonify( {"status": "Item could not be found"} ), 404)
     
     def delete(self): #Used for "checkout" or just general cart clearing
-        if('cart' not in session and 'userId' not in session):
-            return make_response(jsonify( {"status": "No cart to clear"} ), 404)
         if 'cart' in session:
             session.pop('cart')
+        else:
+            return make_response(jsonify( {"status": "No cart to clear"} ), 404)
 
         if login.isValid():
             callStatement("DELETE FROM cart WHERE userId = %s", (session['userId']))
@@ -599,6 +625,7 @@ api = Api(app)
 api.add_resource(root, '/')
 api.add_resource(login, '/login')
 api.add_resource(register, "/register")
+api.add_resource(account, '/account')
 api.add_resource(verify, '/verify')
 api.add_resource(verifier, '/verify/<string:hash>')
 api.add_resource(dev, "/dev")
