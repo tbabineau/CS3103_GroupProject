@@ -5,6 +5,7 @@ from flask_restful import Resource, Api, reqparse
 from flask_session import Session
 from secrets import token_hex
 from time import time, gmtime, strptime, mktime
+from base64 import b64decode
 import hashlib
 import json
 import ssl
@@ -279,12 +280,24 @@ class items(Resource):
             abort(400) #bad request
         
         if(login.isManager()):
-            imageFile = open("11.jpg", "x")
-            imageFile.write(request_params['itemPhoto'])
+            sql = "addItem"
+            params = [request_params['itemName'], request_params['itemDescript'], round(request_params['price'], 2), request_params['itemStock']]
+            result = callProc(sql, params)
+            pID = result[0]['LAST_INSERT_ID()'] #Gets the photoId to store the photo as itemId(.png/.jpg)
+            photodata = request_params['itemPhoto'].split(',') #Splits the base64 string into the filetype and the image code
+            photoFN = f"{pID}."
+            #This finds the extension that the photo should be saved as
+            #The filetype portion is 'data:image/jpeg;base64', so we start after the / and go until we hit the semicolon
+            for char in photodata[0][11:]:
+                if(char == ';'):#Stop on the semicolon
+                    break
+                else:
+                    photoFN += char #otherwise, keep going
+    
+            imageFile = open("static/images/" + photoFN, "wb")
+            imageFile.write(b64decode(photodata[1])) #Write the decoded binary into the image
             imageFile.close()
-            sql = "INSERT INTO storeItems (itemName, itemDescription, itemPrice, itemStock, itemPhoto) VALUES (%s, %s, %s, %s, %s)"
-            params = (request_params['itemName'], request_params['itemDescript'], round(request_params['price'], 2), request_params['itemStock'], request_params['itemPhoto'])
-            result = callStatement(sql, params)
+            callStatement("UPDATE storeItems SET itemPhoto = %s WHERE itemId = %s;", (photoFN, pID))
             return make_response(jsonify( {"status": "Item created"} ), 201)
         else:
             return make_response(jsonify( {"status": "User does not have permission"} ), 401)

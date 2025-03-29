@@ -95,40 +95,38 @@ addItem = function(){
     let desc = document.getElementById("itemDescript").value;
     let cost = document.getElementById("price").value;
     let stock = document.getElementById("itemStock").value;
-    let photo = document.getElementById("photo").value;
-    const file = document.querySelector('#photo').files[0];
-    var reader = new FileReader()
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-        localStorage.setItem("image", reader.result);
-        document.getElementById("photo").setAttribute("src", localStorage.getItem("image"));
-    };
-    fetch("/items",
-        {
-            method: "POST",
-            body: JSON.stringify({
-                itemName: name,
-                itemDescript: desc,
-                price: cost,
-                itemStock: stock,
-                itemPhoto: photo
-            }),
-            headers: {"Content-Type": "application/json; charset = UTF-8"}
-        }
-    )
-    .then((Response) => {
-        if(Response.status == 201){
-            console.log("Item Created");
-        }
-        else{
-            return Response.json();
-        }
-    })
-    .then((json) => {
-        if(json != null){
-            console.log(json);
-        }
-    });
+    const photo = document.querySelector('#photo').files[0];
+    const reader = new FileReader();
+    reader.onload = ()=>{
+        let picData = reader.result;
+        fetch("/items",
+            {
+                method: "POST",
+                body: JSON.stringify({
+                    itemName: name,
+                    itemDescript: desc,
+                    price: cost,
+                    itemStock: stock,
+                    itemPhoto: picData
+                }),
+                headers: {"Content-Type": "application/json; charset = UTF-8"}
+            }
+        )
+        .then((Response) => {
+            if(Response.status == 201){
+                console.log("Item Created");
+            }
+            else{
+                return Response.json();
+            }
+        })
+        .then((json) => {
+            if(json != null){
+                console.log(json);
+            }
+        });
+    }
+    reader.readAsDataURL(photo);
 }
 
 updateItem = function(){
@@ -136,6 +134,7 @@ updateItem = function(){
     let name = document.getElementById("itemName").value;
     let desc = document.getElementById("itemDescript").value;
     let pic = document.getElementById("itemPhoto").value;
+    console.log(pic.src);
     let cost = document.getElementById("price").value;
     let stock = document.getElementById("itemStock").value;
     fetch("/items/" + itemId,
