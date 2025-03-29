@@ -2,7 +2,7 @@ login = function(){
     let username = document.getElementById("username").value;
     let pwd = document.getElementById("password").value;
 
-    if(username != null && pwd != null){
+    if(username != null && pwd != null && username != "" && pwd != ""){
         fetch("/login",
             {
                 method: "POST",
@@ -57,7 +57,8 @@ register = function(){
     let uname = document.getElementById("username").value;
     let pwd = document.getElementById("password").value;
 
-    if(fname != null && lname != null && mail != null && uname != null && pwd != null){
+    if(fname != null && lname != null && mail != null && uname != null && pwd != null &&
+        fname != "" && lname != "" && mail != "" && uname != "" && pwd != ""){
         fetch("/register",
             {
                 method: "POST",
