@@ -496,14 +496,23 @@ class cart(Resource):
             qs = qs.split("&")
             for q in qs:
                 if 'quantity=' in q:
-                    if(item['quantity'] != int(q.split("=")[1])):
-                        return False
+                    try:
+                        if(item['quantity'] != int(q.split("=")[1])):
+                            return False
+                    except:
+                        pass
                 if 'maxQuantity=' in q:
-                    if(item['quantity'] > int(q.split("=")[1])):
-                        return False
+                    try:
+                        if(item['quantity'] > int(q.split("=")[1])):
+                            return False
+                    except:
+                        pass
                 if 'minQuantity=' in q:
-                    if(item['quantity'] < int(q.split("=")[1])):
-                        return False
+                    try:
+                        if(item['quantity'] < int(q.split("=")[1])):
+                            return False
+                    except:
+                        pass
             return True
         toDisplay = list(filter(selector, session['cart']))
                 

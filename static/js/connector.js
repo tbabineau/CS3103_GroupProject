@@ -384,9 +384,9 @@ verifyUser = function(){
     )
 }
 
-const jsonData = [
-    {"itemDescription": "yo", "itemId": 2}
-]
+ Vue.component("modal", {
+    template: "#modal-template"
+ });
 
 var app = new Vue({
     el: "#app",
@@ -394,14 +394,84 @@ var app = new Vue({
     data: {
         ItemsData: null,
         cartData: null,
-        ItemData: null
+        editModal: false,
+        addModal: false,
+        selectedItem: {
+            itemId: "",
+            itemDescription: "",
+            itemName: "",
+            itemPhoto: "",
+            itemPrice: "",
+            itemStock: ""
+        }
     },
     mounted(){
         this.fetchItems();
         this.fetchCart();
     },
     methods: {
-        //images have to be sent from connector
+        addItem(){
+            let name = document.getElementById("itemName").value;
+            let desc = document.getElementById("itemDescript").value;
+            let cost = document.getElementById("price").value;
+            let stock = document.getElementById("itemStock").value;
+            const photo = document.querySelector('#photo').files[0];
+            const reader = new FileReader();
+            reader.onload = ()=>{
+                let picData = reader.result;
+                fetch("/items",
+                    {
+                        method: "POST",
+                        body: JSON.stringify({
+                            itemName: name,
+                            itemDescript: desc,
+                            price: cost,
+                            itemStock: stock,
+                            itemPhoto: picData
+                        }),
+                        headers: {"Content-Type": "application/json; charset = UTF-8"}
+                    }
+                )
+                .then((Response) => {
+                    if(Response.status == 201){
+                        console.log("Item Created");
+                    }
+                    else{
+                        return Response.json();
+                    }
+                })
+                .then((json) => {
+                    if(json != null){
+                        console.log(json);
+                    }
+                });
+            }
+            reader.readAsDataURL(photo);
+        },
+
+        deleteItem(itemId){
+            
+            fetch("/items/" + itemId,
+                {
+                    method: "DELETE",
+                    body: "",
+                    headers: {"Content-Type": "application/json; charset = UTF-8"}
+                }
+            )
+            .then((Response) => {
+                if(Response.status == 204){
+                    console.log("Item Deleted");
+                }
+                else{
+                    return Response.json();
+                }
+            })
+            .then((json) => {
+                if(json != null){
+                    console.log(json);
+                }
+            });
+        },
         fetchItems() {
             axios
             .get("/items")
@@ -417,33 +487,42 @@ var app = new Vue({
         fetchCart() {
             axios
             .get("/cart")
-            //call separate function here to get items for cart
             .then(response => {
                 this.cartData = response.data.cart;
-                //html is not calling a list of items
-                //this calls get for items *could be in random order depending on request*
-                //need html to update upon single get then update with next item until done?
-                /*
-                for(let i=0; i<this.cartData.length; i++){
-                    setTimeout(() => {
-                    axios
-                    .get("/items/"+this.cartData[i].itemId)
-                    .then(response=>{
-                        //returns last get
-                        this.ItemData = response.data.Item;
-                        console.log(this.ItemData);
-                    })
-                    .catch(e=>{
-                        console.log(e);
-                    });
-                    }, 2000);
-                }
-                */
             })
             .catch(e => {
                 alert("Unable to load cart data");
                 console.log(e);
             });
+        },
+
+        createItem(){
+            this.showAddModal();
+        },
+
+        selectItem(itemId){
+            this.showEditModal();
+            for(i in this.ItemsData){
+                if(this.ItemsData[i].itemId == itemId){
+                    this.selectedItem = this.ItemsData[i];
+                }
+            }
+        },
+
+        showEditModal(){
+            this.editModal = true;
+        },
+
+        hideEditModal(){
+            this.editModal = false;
+        },
+
+        showAddModal(){
+            this.addModal = true;
+        },
+
+        hideAddModal(){
+            this.addModal = false;
         }
     }
 });

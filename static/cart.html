@@ -16,9 +16,8 @@
         <ul class="list-group">
           <div v-for="cart in cartData">
             <li class="list-group-item col-7 mx-auto">
-              <div class="d-flex w-30 justify-content-between">
-                <p>Items id</p>{{cart.itemId}}, 
-                <p>quantity</p>{{cart.quantity}}
+              <div class="d-flex w-30">
+                <p>Item name: {{cart.itemName}}, quantity: {{cart.quantity}}</p>
               </div>
             </li>
           </div>
