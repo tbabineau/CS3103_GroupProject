@@ -683,6 +683,40 @@ var app = new Vue({
                 }
             }
         },
+
+        fetchUserInfo(){
+            axios
+            .get("/account/info")
+            .then((response) => {
+                this.userData = response.data;
+            })
+            .catch(e => {
+                console.log(e);
+            });
+        },
+
+        updateUser(){
+            let email = document.getElementById("email").value;
+            let pwd = document.getElementById("password").value;
+            let fname = document.getElementById("fname").value;
+            let lname = document.getElementById("lname").value;
+            fetch("/account/info",
+                {
+                    method: "POST",
+                    body: JSON.stringify({
+                        email: email,
+                        password: pwd,
+                        fname: fname,
+                        lname: lname
+                    }),
+                    headers: {"Content-Type": "application/json; charset = UTF-8"}
+                }
+            ).then(()=>{
+                this.fetchUserInfo();
+                this.hideAccountModal();
+            });
+        },
+
         /* show/hide methods */
         showEditModal(){
             this.editModal = true;
@@ -714,17 +748,6 @@ var app = new Vue({
 
         hideAccountModal(){
             this.accountModal = false;
-        },
-
-        fetchUserInfo(){
-            axios
-            .get("/account/info")
-            .then((response) => {
-                this.userData = response.data;
-            })
-            .catch(e => {
-                console.log(e);
-            });
         }
     }
 });

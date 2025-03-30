@@ -76,6 +76,42 @@ class accountInfo(Resource):
             return make_response(jsonify( {"Username": session['username'], "Email": user['email'], "fname": user['fname'], "lname" : user['lname'], "manager": user['manager_flag'], "verified": len(verified) == 1} ))
         return make_response(jsonify( {"status": "User not logged in"} ), 401)
     
+    def post(self):
+        if not request.json:
+            abort(400) #bad request
+        if not login.isValid():
+            return make_response(jsonify( {"status": "User not logged in"} ), 401)
+        parser = reqparse.RequestParser()
+        try:
+            parser.add_argument('email', type=str, required=False)
+            parser.add_argument('password', type=str, required=False)
+            parser.add_argument('fname', type=str, required=False)
+            parser.add_argument('lname', type=str, required=False)
+            request_params = parser.parse_args()
+        except:
+            abort(400) #bad request
+        
+        user = callStatement("SELECT * FROM users WHERE userId = %s;", (session['userId']))[0]
+        email = user['email']
+        pwd = user['password_hash']
+        salt = user['salt']
+        fname = user['fname']
+        lname = user['lname']
+
+        if('email' in request_params and request_params['email'] != "" and request_params['email'] != None):
+            email = request_params['email']
+            callStatement("DELETE FROM verifiedUsers WHERE userId = %s;", (session['userId']))
+            callStatement("DELETE FROM verification WHERE userId = %s;", (session['userId']))
+        if('password' in request_params and request_params['password'] != "" and request_params['password'] != None):
+            salt = token_hex(32)
+            pwd = login.hashPwd(request_params['password'], salt)
+        if('fname' in request_params and request_params['fname'] != "" and request_params['fname'] != None):
+            fname = request_params['fname']
+        if('lname' in request_params and request_params['lname'] != "" and request_params['lname'] != None):
+            lname = request_params['lname']
+        callStatement("UPDATE users SET email = %s, password_hash = %s, salt = %s, fname = %s, lname = %s WHERE userId = %s", (email, pwd, salt, fname, lname, session['userId']))
+        return make_response(jsonify( {"status": "User info updated successfullt"} ), 200)
+    
 #Login endpoint
 class login(Resource):
     def isValid():
@@ -84,7 +120,7 @@ class login(Resource):
                 session.pop('userId')
                 session.pop('expiry')
                 session.pop('username')
-                #session.pop('manager')
+                session.pop('manager')
                 return False
             session['expiry'] = time() + 3600 #Updates expiry each time that the user does anything
             return True
@@ -95,6 +131,10 @@ class login(Resource):
             return session['manager'] == 1
         return False
     
+    def hashPwd(pwd, salt):
+        hash = hashlib.sha512()
+        hash.update((pwd + salt).encode("utf-8"))
+        return hash.hexdigest()
     def get(self):
         if(login.isValid()):
             return redirect("/store")
@@ -120,9 +160,7 @@ class login(Resource):
         if(len(matching) != 0): #Checking if there were any rows returned
             for user in matching: #Incase there are duplicate usernames, but there shouldn't be
                 #Hashing the inputted password with the salt from the database
-                hash = hashlib.sha512()
-                hash.update((pwd + user['salt']).encode("utf-8"))
-                hashed_pwd = hash.hexdigest()
+                hashed_pwd = login.hashPwd(pwd, user['salt'])
                 if(str(hashed_pwd) == user['password_hash']):
                     session['userId'] = user['userId']
                     session['username'] = user['username']
@@ -370,7 +408,9 @@ class item(Resource):
             if(len(retItem) != 1):
                 return make_response(jsonify( {"status": "Could not find item"} ), 404)
             os.remove(f"static/images/{retItem[0]['itemPhoto']}")
-            response = callStatement("DELETE FROM storeItems WHERE itemId = %s", (itemId))
+            callStatement("DELETE FROM reviews WHERE itemId = %s;", (itemId))
+            callStatement("DELETE FROM cart WHERE itemId = %s;", (itemId))
+            response = callStatement("DELETE FROM storeItems WHERE itemId = %s;", (itemId))
 
             return make_response(jsonify( {} ), 204)
         else:
