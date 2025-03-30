@@ -233,6 +233,8 @@ class register(Resource):
 #Email verification endpoint
 class verify(Resource):
     def get(self):
+        return api.send_static_file("verificationSent.html")
+    def post(self):
         if login.isValid():
             results = callStatement("SELECT * FROM verifiedUsers WHERE userId = %s;", (session['userId']))
             if(len(results) == 0): #ensureing the user isn't already verified
@@ -249,7 +251,7 @@ class verify(Resource):
                 hash.update(str(tempTime[3]).encode("utf-8"))
                 verifyHash = str(hash.hexdigest()) #Generating verification hash
                 tempTime = gmtime() #Creating gmtime timestamp, giving the user an hour to verify
-                datetime = f'{tempTime.tm_year}-{tempTime.tm_mon}-{tempTime.tm_mday} {tempTime.tm_hour + 1}:{tempTime.tm_min}:{tempTime.tm_sec}'
+                datetime = f'{tempTime.tm_year}-{tempTime.tm_mon}-{tempTime.tm_mday} {(tempTime.tm_hour + 1)%24}:{tempTime.tm_min}:{tempTime.tm_sec}'
                 sendEmail(email, verifyHash, settings.APP_HOST+":"+str(settings.APP_PORT))
                 sql = "INSERT INTO verification (userId, verificationHash, timeStamp) VALUES (%s, %s, %s);"
                 params = (session['userId'], verifyHash, datetime)
