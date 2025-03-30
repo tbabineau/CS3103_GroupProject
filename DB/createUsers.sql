@@ -9,6 +9,6 @@ CREATE TABLE users (
   salt varchar(64) NOT NULL,
   login_attempts INT NOT NULL DEFAULT(0),
   last_login datetime,
-  manager_flag BOOLEAN,
+  manager_flag BOOLEAN DEFAULT(0),
   PRIMARY KEY (userId)
 );

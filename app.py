@@ -6,6 +6,7 @@ from flask_session import Session
 from secrets import token_hex
 from time import time, gmtime, strptime, mktime
 from base64 import b64decode
+import os
 import hashlib
 import json
 import ssl
@@ -179,7 +180,7 @@ class register(Resource):
             hashed_pwd = hash.hexdigest()
             tempTime = gmtime()
             datetime = f'{tempTime.tm_year}-{tempTime.tm_mon}-{tempTime.tm_mday} {tempTime.tm_hour}:{tempTime.tm_min}:{tempTime.tm_sec}'
-            sql = "INSERT INTO users (username, email, fname, lname, password_hash, salt, last_login) VALUES (%s, %s, %s, %s, %s, %s, %s);"
+            sql = "INSERT INTO users (username, email, fname, lname, password_hash, salt, last_login, manager_flag) VALUES (%s, %s, %s, %s, %s, %s, %s, 0);"
             params = (request_params['username'], request_params['email'], request_params['firstname'], request_params['lastname'], str(hashed_pwd), str(salt), datetime)
             result = callStatement(sql, params)
             session['userId'] = callStatement("SELECT userId FROM users WHERE username = %s;", (request_params['username']))[0]['userId']
@@ -366,8 +367,9 @@ class item(Resource):
             retItem = callStatement("SELECT * FROM storeItems WHERE itemId = %s", (itemId))
             if(len(retItem) != 1):
                 return make_response(jsonify( {"status": "Could not find item"} ), 404)
-            
+            os.remove(f"static/images/{retItem[0]['itemPhoto']}")
             response = callStatement("DELETE FROM storeItems WHERE itemId = %s", (itemId))
+
             return make_response(jsonify( {} ), 204)
         else:
             return make_response(jsonify( {"status": "Unauthorized user"} ), 401)

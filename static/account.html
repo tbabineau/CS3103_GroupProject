@@ -3,7 +3,6 @@
     <head>
         <meta charset="utf-8">
         <title>Account Page</title>
-        <script src = "/static/js/connector.js" type = "application/JavaScript"></script>
         <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"/>
@@ -12,30 +11,15 @@
     </head>
     <body>
         <div class = "container-fluid" id="app">
-            <p>Username: {{userData.Username}}</p>
+            <div v-if="userData != null" id = "user">
+                <p>Username: {{userData.Username}}</p>
+                <p>Email: {{userData.Email}}</p>
+                <p>Name: {{userData.fname}} {{userData.lname}}</p>
+                <div v-if="userData.manager == 1">
+                    <p>You are a manager</p>
+                </div>
+            </div>
         </div>
-        <script>
-            var vm = new Vue({
-              el: '#app',
-              data: {
-                userData: null
-              },
-              created: function() { // Notice the lifecycle hook
-                this.loadUser();
-              },
-              methods: {
-                loadUser: function(){
-                  var vm = this;
-                  axios.get('/account/info')
-                  .then(function(response) {
-                    vm.userData = response.data;
-                  })
-                  .catch(function(error){
-                    console.log("oops");
-                  });
-                }
-              }
-            });
-            </script>
+        <script src = "/static/js/connector.js" type = "application/JavaScript"></script>
     </body>
 </html>
