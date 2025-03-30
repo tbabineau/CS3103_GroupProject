@@ -63,9 +63,17 @@ class store(Resource):
 class account(Resource):
     def get(self):
         if login.isValid():
-            return app.send_static_file("account.html")
+            app.send_static_file("account.html")
+            return make_response(jsonify( {"TEST": session}), 200)
         else:
             return redirect("/login")
+        
+class accountInfo(Resource):
+    def get(self):
+        if login.isValid():
+            user = callStatement("SELECT * FROM users WHERE userId = %s;", (session['userId']))[0]
+            return make_response(jsonify( {"Username": session['username'], "Email": user['email'], "fname": user['fname'], "lname" : user['lname'], "manager": user['manager_flag']} ))
+        return make_response(jsonify( {"status": "User not logged in"} ), 401)
     
 #Login endpoint
 class login(Resource):

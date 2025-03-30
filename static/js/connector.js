@@ -524,6 +524,17 @@ var app = new Vue({
 
         hideAddModal(){
             this.addModal = false;
+        },
+
+        fetchUserInfo(){
+            fetch("/items/" + itemId,
+                {
+                    method: "DELETE",
+                    body: "",
+                    headers: {"Content-Type": "application/json; charset = UTF-8"}
+                }
+            )
+            .then((Response) => {this.user = Response.data});
         }
     }
 });

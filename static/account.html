@@ -3,13 +3,16 @@
     <head>
         <meta charset="utf-8">
         <title>Account Page</title>
+        <script src = "/static/js/connector.js" type = "application/JavaScript"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js" type = "application/JavaScript"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js" type = "application/JavaScript"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"/>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" type = "application/JavaScript"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" type = "application/JavaScript"></script>
     </head>
     <body>
-        <input type="button" value="Log Out">
-        <h2>Store</h2>
-        <p>First Name + Last Name</p>
-        <p>Status: either customer/management</p>
-        <h3>Cart</h3>
-        <input type="button" value="Account">
+        <div class = "container-fluid" id="app">
+            Username: {{user.username}}
+        </div>
     </body>
 </html>
