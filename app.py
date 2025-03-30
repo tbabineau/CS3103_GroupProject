@@ -72,7 +72,8 @@ class accountInfo(Resource):
     def get(self):
         if login.isValid():
             user = callStatement("SELECT * FROM users WHERE userId = %s;", (session['userId']))[0]
-            return make_response(jsonify( {"Username": session['username'], "Email": user['email'], "fname": user['fname'], "lname" : user['lname'], "manager": user['manager_flag']} ))
+            verified = callStatement("SELECT * FROM verifiedUsers WHERE userId = %s;", (session['userId']))
+            return make_response(jsonify( {"Username": session['username'], "Email": user['email'], "fname": user['fname'], "lname" : user['lname'], "manager": user['manager_flag'], "verified": len(verified) == 1} ))
         return make_response(jsonify( {"status": "User not logged in"} ), 401)
     
 #Login endpoint
@@ -186,6 +187,7 @@ class register(Resource):
             session['userId'] = callStatement("SELECT userId FROM users WHERE username = %s;", (request_params['username']))[0]['userId']
             session['username'] = request_params['username']
             session['expiry'] = time() + 3600
+            session['manager'] = False
             return make_response(jsonify( {"status": "Successfully registered"}), 201)
         else:
             return make_response(jsonify( {"status": "Username or email already in use"} ), 409)
