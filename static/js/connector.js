@@ -396,6 +396,7 @@ var app = new Vue({
         ItemsData: null,
         cartData: null,
         editModal: false,
+        userData: null,
         addModal: false,
         selectedItem: {
             itemId: "",
@@ -409,6 +410,7 @@ var app = new Vue({
     mounted(){
         this.fetchItems();
         this.fetchCart();
+        this.fetchUserInfo();
     },
     methods: {
         addItem(){
@@ -527,14 +529,16 @@ var app = new Vue({
         },
 
         fetchUserInfo(){
-            fetch("/items/" + itemId,
-                {
-                    method: "DELETE",
-                    body: "",
-                    headers: {"Content-Type": "application/json; charset = UTF-8"}
-                }
-            )
-            .then((Response) => {this.user = Response.data});
+            axios
+            .get("/account/info")
+            .then((response) => {
+                this.userData = response.data;
+                console.log(this.userData);
+            })
+            .catch(e => {
+              alert("Unable to load the user data");
+              console.log(e);
+            });
         }
     }
 });

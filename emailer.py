@@ -16,7 +16,7 @@ def sendEmail(recipient, hash, url):
                 Hello!<br><br>
 
                 Thank you for signing up for our store!<br>
-                Please click <a href = "https://{url}/verify/{hash}">here</a> to veryify your email.<br><br>
+                Please click <a href = "https://{url}/verify/{hash}">here</a> to verify your email.<br><br>
 
                 Sincerely,<br>
                 -The CS3103 shop team
