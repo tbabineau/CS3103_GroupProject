@@ -22,7 +22,7 @@
                 <h3>Name: {{userData.fname}} {{userData.lname}}</h3>
                 <h3 v-if="userData.manager == 1">You are a manager</h3>
                 <a href = "/store"><input type = "button" class = "btn-primary" value = "Back to Store"></a>
-                <a href = "/cart"><input type = "button" class = "btn-primary" value = "To Cart"></a>
+                <a href = "/cartpage"><input type = "button" class = "btn-primary" value = "To Cart"></a>
                 <input type = "button" class = "btn-warning" value = "Edit account info" v-on:click = "showAccountModal()">
                 <input type = "button" class = "btn-danger" value = "Log Out" onClick = "logout()">
             </div>
