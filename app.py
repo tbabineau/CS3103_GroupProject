@@ -82,7 +82,7 @@ class login(Resource):
                 session.pop('userId')
                 session.pop('expiry')
                 session.pop('username')
-                session.pop('manager')
+                #session.pop('manager')
                 return False
             session['expiry'] = time() + 3600 #Updates expiry each time that the user does anything
             return True

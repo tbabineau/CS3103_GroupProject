@@ -12,16 +12,38 @@
         <!--<button type="button" class="btn btn-outline-primary" v-on:click="fetchItems()">List schools</button>-->
       </div>
     <div>
-      <div v-if="cartData != null" id="cartList">
+      <div v-if="cartData != null && !cartModal" id="cartList">
         <ul class="list-group">
           <div v-for="cart in cartData">
             <li class="list-group-item col-7 mx-auto">
               <div class="d-flex w-30">
                 <p>Item name: {{cart.itemName}}, quantity: {{cart.quantity}}</p>
+                <div call="btn-group-xs">
+                  <button class="utilityBtn text-success" v-on:click="selectCartItem(cart.itemId)">Change quantity</button>
+                  <button class="utilityBtn text-danger" v-on:click="removeFromCart(cart.itemId)">Remove item</button>
+                </div>
               </div>
             </li>
           </div>
         </ul>
+      </div>
+    </div>
+    <div v-if="!cartModal">
+      <button class="btn-outline-danger" v-on:click="clearCart()">Clear cart</button>
+    </div>
+    <div v-if="cartModal" @close="hideCartModal">
+      <div slot="header" class="modal-header">
+        Change quantity
+      </div>
+      <div slot="body">
+        <div class="form-group col-6">
+          <label for="quantity">Quantity</label>
+          <input type="number" id="quantity" name="quantity"><br>
+          <button class="utilityBtn text-success" v-on:click="updateCartQuantity(selectedCart.itemId)">Change quantity</button> 
+        </div>
+        <div slot="footer">
+          <button type="button" class="btn btn-secondary" v-on:click="hideCartModal()">Close</button>
+        </div>
       </div>
     </div>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>

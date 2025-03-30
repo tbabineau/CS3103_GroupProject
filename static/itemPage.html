@@ -13,7 +13,7 @@
       </div>
     <div>
       <!--hide item page upon edit click-->
-      <div v-if="ItemsData != null && !editModal && !addModal" id="itemsList">
+      <div v-if="ItemsData != null && !editModal && !addModal && !cartModal" id="itemsList">
         <ul class="list-group">
           <div v-for="Items in ItemsData">
             <li class="list-group-item col-7 mx-auto">
@@ -29,7 +29,7 @@
                 <div class="btn-group-xs">
                   <button class="utilityBtn text-success" v-on:click="createItem()">Add item</button>
                   <button class="utilityBtn text-success" v-on:click="selectItem(Items.itemId)">edit</button>
-                  <button class="utilityBtn text-success" v-on:click="addToCart(Items.itemId)">add to cart</button>
+                  <button class="utilityBtn text-success" v-on:click="selectCart(Items.itemId)">add to cart</button>
                   <button class="utilityBtn text-danger" v-on:click="deleteItem(Items.itemId)">remove</button>
                 </div>
               </div>
@@ -61,7 +61,8 @@
         </div>
       </div>
     </div>
-    <div v-if="editModal" @close="hideModal">
+    <!--function not working in app and connector!-->
+    <div v-if="editModal" @close="hideEditModal">
       <div slot="header" class="modal-header">
         Edit item data
       </div>
@@ -69,18 +70,35 @@
         <div class="form-group col-6">
           <!--finish when photo changes arrive-->
           <label for="itemName">Item Name</label>
-          <input type="text" id="itemName" name="itemName"><br>
+          <input type="text" id="itemName" v-model="selectItem.itemName" name="itemName"><br>
           <label for="itemDescript">Item Description</label>
           <input type="text" id="itemDescript" name="itemDescript"><br>
           <label for="price">Price</label>
           <input type="number" id="price" name="price"><br>
           <label for="itemStock">Stock</label>
           <input type="number" id="itemStock" name="itemStock"><br>
-          <input type="file" id="photo" name="photo" accept="image/png, image/jpeg" /><br>
-          <button class="utilityBtn text-success" v-on:click="updateItem(Items.itemId)">update</button> 
+          <!--<input type="file" id="photo" name="photo" accept="image/png, image/jpeg" /><br>-->
+          <input type="text" id="itemPhoto" name="itemPhoto">
+          
+          <button class="utilityBtn text-success" v-on:click="updateItem(selectedItem.itemId)">update</button> 
         </div>
         <div slot="footer">
           <button type="button" class="btn btn-secondary" v-on:click="hideEditModal()">Close</button>
+        </div>
+      </div>
+    </div>
+    <div v-if="cartModal" @close="hideCartModal">
+      <div slot="header" class="modal-header">
+        Add to cart
+      </div>
+      <div slot="body">
+        <div class="form-group col-6">
+          <label for="quantity">Quantity</label>
+          <input type="number" id="quantity" name="quantity"><br>
+          <button class="utilityBtn text-success" v-on:click="addToCart(selectedItem.itemId)">add to cart</button> 
+        </div>
+        <div slot="footer">
+          <button type="button" class="btn btn-secondary" v-on:click="hideCartModal()">Close</button>
         </div>
       </div>
     </div>
