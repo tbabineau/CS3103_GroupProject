@@ -63,8 +63,7 @@ class store(Resource):
 class account(Resource):
     def get(self):
         if login.isValid():
-            app.send_static_file("account.html")
-            return make_response(jsonify( {"TEST": session}), 200)
+            return app.send_static_file("account.html")
         else:
             return redirect("/login")
         
@@ -635,6 +634,7 @@ api.add_resource(root, '/')
 api.add_resource(login, '/login')
 api.add_resource(register, "/register")
 api.add_resource(account, '/account')
+api.add_resource(accountInfo, '/account/info')
 api.add_resource(verify, '/verify')
 api.add_resource(verifier, '/verify/<string:hash>')
 api.add_resource(dev, "/dev")
