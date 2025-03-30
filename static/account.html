@@ -42,7 +42,7 @@
                         <input type = "text" id = "lname" name = "lname"><br>
                     </div>
                     <div slot="footer">
-                        <input type = button class = "btn btn-warning" onClick="updateUser()" value = "Update account info">
+                        <input type = button class = "btn btn-warning" v-on:click="updateUser()" value = "Update account info">
                         <input type = "button" class = "btn btn-secondary" v-on:click="hideAccountModal()" value = "close">
                     </div>
                 </div>
