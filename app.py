@@ -562,6 +562,9 @@ class cart(Resource):
             qs = request.query_string.decode()
             qs = qs.split("&")
             for q in qs:
+                if 'search=' in q:
+                    if(q.split("=")[1] not in item['itemName']):
+                        return False
                 if 'quantity=' in q:
                     try:
                         if(item['quantity'] != int(q.split("=")[1])):
@@ -580,6 +583,25 @@ class cart(Resource):
                             return False
                     except:
                         pass
+                if 'price=' in q:
+                    try:
+                        if(item['itemPrice'] != float(q.split("=")[1])):
+                            return False
+                    except:
+                        pass
+                if 'maxPrice=' in q:
+                    try:
+                        if(item['itemPrice'] > float(q.split("=")[1])):
+                            return False
+                    except:
+                        pass
+                if 'minPrice=' in q:
+                    try:
+                        if(item['itemPrice'] < float(q.split("=")[1])):
+                            return False
+                    except:
+                        pass
+
             return True
         toDisplay = list(filter(selector, session['cart']))
                 
