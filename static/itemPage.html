@@ -16,7 +16,8 @@
       </div>
     <div>
       <!--hide item page upon edit click-->
-      <div v-if="ItemsData != null && !editModal && !addModal && !cartModal" id="itemsList">
+      <div v-if="ItemsData != null && !editModal && !addModal && !cartModal && !reviewModal 
+      && !addReviewModal" id="itemsList">
         <ul class="list-group">
           <div v-for="Items in ItemsData">
             <li class="list-group-item col-7 mx-auto">
@@ -33,6 +34,8 @@
                   <button class="utilityBtn text-success" v-on:click="createItem()">Add item</button>
                   <button class="utilityBtn text-success" v-on:click="selectItem(Items.itemId)">edit</button>
                   <button class="utilityBtn text-success" v-on:click="selectCart(Items.itemId)">add to cart</button>
+                  <button class="utilityBtn text-success" v-on:click="selectReviewItem(Items.itemId)">Add review</button>
+                  <button class="utilityBtn text-success" v-on:click="fetchReviews(Items.itemId)">reviews</button>
                   <button class="utilityBtn text-danger" v-on:click="deleteItem(Items.itemId)">remove</button>
                 </div>
               </div>
@@ -102,6 +105,71 @@
         </div>
         <div slot="footer">
           <button type="button" class="btn btn-secondary" v-on:click="hideCartModal()">Close</button>
+        </div>
+      </div>
+    </div>
+    <div v-if="addReviewModal" @close="hideAddReviewModal">
+      <div slot="header" class="modal-header">
+        add review
+      </div>
+      <div slot="body">
+        <div class="form-group col-6">
+          <label for="review">review</label>
+          <input type="text" id="review" name="review"><br>
+          <label for="rating">rating (0-5)</label>
+          <input type="number" id="rating" name="rating"><br>
+          <button class="utilityBtn text-success" v-on:click="addReview(selectedItem.itemId)">add review</button> 
+        </div>
+        <div slot="footer">
+          <button type="button" class="btn btn-secondary" v-on:click="hideAddReviewModal()">Close</button>
+        </div>
+      </div>
+    </div>
+    <div v-if="reviewModal && !editReviewModal" @close="hideReviewModal">
+      <div class="header" class="modal-header">
+        Reviews
+      </div>
+      <div slot="body">
+        <div class="form-group col-6">
+          <div v-if="reviewData != null" id="reviewData">
+            <ul class="list-group">
+              <div v-for="Reviews in reviewData">
+                <li class="list-group-item col-7 mx-auto">
+                  <div class="d-flex w-300 justify-content-between">
+                    <p>
+                    User Id: {{Reviews.userId}}<br>
+                    User review: {{Reviews.reviewText}}<br>
+                    Item Rating: {{Reviews.reviewRating}}<br>
+                    </p>
+                    <div>
+                      <button class="utilityBtn text-success" v-on:click="selectReview(Reviews.reviewId)">Update review</button>
+                      <button class="utilityBtn text-danger" v-on:click="deleteReview(Reviews.reviewId)">Remove review</button>
+                    </div>
+                  </div>
+                </li>
+              </div>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div slot="footer">
+        <button type="button" class="btn btn-secondary" v-on:click="hideReviewModal()">Close</button>
+      </div>
+    </div>
+    <div v-if="editReviewModal" @close="hideEditReviewModal">
+      <div slot="header" class="modal-header">
+        update review
+      </div>
+      <div slot="body">
+        <div class="form-group col-6">
+          <label for="review">Change review</label>
+          <input type="text" id="review" name="review"><br>
+          <label for="rating"> Change rating (0-5)</label>
+          <input type="number" id="rating" name="rating"><br>
+          <button class="utilityBtn text-success" v-on:click="updateReview(selectedReview.reviewId)">Update review</button> 
+        </div>
+        <div slot="footer">
+          <button type="button" class="btn btn-secondary" v-on:click="hideEditReviewModal()">Close</button>
         </div>
       </div>
     </div>

@@ -511,8 +511,12 @@ class Review(Resource):
     def delete(self, reviewId):
         if type(reviewId)!=int:
             abort(400)
-        
+        #need to check user id 
         if(login.isValid()):
+            valid = callStatement("select * from reviews where reviewId = %s and userId = %s", 
+                                  (reviewId, session['userId']))
+            if(len(valid)!=1):
+                return make_response(jsonify({"status": "Not authorized"}), 401)
             getReview = callStatement("select * from reviews where reviewId = %s", (reviewId))
             if(len(getReview)!=1):
                 return make_response(jsonify({"status": "Review does not exist :)"}), 404)
