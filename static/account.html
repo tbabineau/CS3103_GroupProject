@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>Account Page</title>
+        <title>Account</title>
         <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"/>
@@ -11,12 +11,40 @@
     </head>
     <body>
         <div class = "container-fluid" id="app">
-            <div v-if="userData != null" id = "user">
-                <p>Username: {{userData.Username}}</p>
-                <p>Email: {{userData.Email}}</p>
-                <p>Name: {{userData.fname}} {{userData.lname}}</p>
-                <div v-if="userData.manager == 1">
-                    <p>You are a manager</p>
+            <div class = "jumbotron jumbotron-fluid text-center">
+                <h1>Account</h1>
+            </div>
+            <div v-if="userData != null && !accountModal" id = "user">
+                <h3>Username: {{userData.Username}}</h3>
+                <h3>Email: {{userData.Email}}</h3>
+                <h3 v-if="userData.verified">Email is verified!</h3>
+                <h3 v-else>Please click <a href = "/verify">here</a> to verify your email</h3>
+                <h3>Name: {{userData.fname}} {{userData.lname}}</h3>
+                <h3 v-if="userData.manager == 1">You are a manager</h3>
+                <a href = "/store"><input type = "button" class = "btn-primary" value = "Back to store"></a>
+                <input type = "button" class = "btn-warning" value = "Edit account info" v-on:click = "showAccountModal()">
+                <input type = "button" class = "btn-danger" value = "Log Out" onClick = "logout()">
+            </div>
+            <div v-if="accountModal" @close = "hideAccountModal">
+                <div slot = "header" class = "modal-header">
+                    Edit Account Info
+                </div>
+                <div slot = "body">
+                    <div class="form-group col-6">
+                        <strong>Anything left blank will not change</strong></br>
+                        <label for = "email">New email</label>
+                        <input type = "text" id = "email" name = "email"><br>
+                        <label for = "password">New password</label>
+                        <input type = "password" id = "password" name = "password"><br>
+                        <label for = "fname">New first name</label>
+                        <input type = "text" id = "fname" name = "fname"><br>
+                        <label for = "email">New last name</label>
+                        <input type = "text" id = "lname" name = "lname"><br>
+                    </div>
+                    <div slot="footer">
+                        <input type = button class = "btn btn-warning" onClick="updateUser()" value = "Update account info">
+                        <input type = "button" class = "btn btn-secondary" v-on:click="hideAccountModal()" value = "close">
+                    </div>
                 </div>
             </div>
         </div>

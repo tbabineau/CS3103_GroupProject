@@ -401,6 +401,7 @@ var app = new Vue({
         editModal: false,
         addModal: false,
         cartModal: false,
+        accountModal: false,
         selectedItem: {
             itemId: "",
             itemDescription: "",
@@ -674,7 +675,6 @@ var app = new Vue({
                 }
             }
         },
-
         selectCart(itemId){
             this.showCartModal();
             for(i in this.ItemsData){
@@ -708,15 +708,21 @@ var app = new Vue({
             this.cartModal = false;
         },
 
+        showAccountModal(){
+            this.accountModal = true;
+        },
+
+        hideAccountModal(){
+            this.accountModal = false;
+        },
+
         fetchUserInfo(){
             axios
             .get("/account/info")
             .then((response) => {
                 this.userData = response.data;
-                console.log(this.userData);
             })
             .catch(e => {
-                alert("Unable to load the user data");
                 console.log(e);
             });
         }
