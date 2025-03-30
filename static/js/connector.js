@@ -402,6 +402,9 @@ var app = new Vue({
         addModal: false,
         cartModal: false,
         accountModal: false,
+        reviewModal: false,
+        addReviewModal: false,
+        editReviewModal: false,
         selectedItem: {
             itemId: "",
             itemDescription: "",
@@ -652,10 +655,11 @@ var app = new Vue({
         },
         //or? should work now
         fetchReviews(itemId){
+            this.showReviewModal();
             axios
-            .get("/reviews/"+itemId)
+            .get("/reviews?itemId="+itemId)
             .then(response => {
-                this.reviewData = response.data.cart;
+                this.reviewData = response.data.Reviews;
             })
             .catch(e =>{
                 alert("unable to load review data");
@@ -663,8 +667,89 @@ var app = new Vue({
             });
         },
 
+        addReview(itemId){
+            let review = document.getElementById("review").value;
+            let rating = document.getElementById("rating").value;
+            fetch("/reviews",
+                {
+                    method: "POST", 
+                    body: JSON.stringify({
+                        itemId: itemId, 
+                        review: review, 
+                        rating: rating
+                    }),
+                    headers: {"Content-Type": "application/json; charset=UTF-8"}
+                }
+            )
+            .then((Response)=>{
+                if(Response.status == 201){
+                    console.log("Review Created");
+                }else{
+                    return Response.json();
+                }
+            })
+            .then((json)=>{
+                if(json!=null){
+                    console.log(json);
+                }
+            });
+        },
+        
+        updateReview(reviewId){ 
+            let review = document.getElementById("review").value;
+            let rating = document.getElementById("rating").value;
+            fetch("/reviews/" + reviewId,
+                {
+                    method: "PUT", 
+                    body: JSON.stringify({
+                        review: review, 
+                        rating: rating
+                    }), 
+                    headers: {"Content-Type": "application/json; charset=UTF-8"}
+                }
+            )
+            .then((Response)=>{
+                if(Response.status==200){
+                    console.log("Review Updated");
+                }else{
+                    return Response.json();
+                }
+            })
+            .then((json)=>{
+                if(json!=null){
+                    console.log(json);
+                }
+            });
+        },
+
+        deleteReview(reviewId){ 
+            fetch("/reviews/" + reviewId, 
+                {
+                    method: "DELETE", 
+                    body: "", 
+                    headers: {"Content-Type": "application/json; charset=UTF-8"}
+                }
+            )
+            .then((Response)=>{
+                if(Response.status==204){
+                    console.log("Review Deleted");
+                }else{
+                    return Response.json();
+                }
+            })
+            .then((json)=>{
+                if(json!=null){
+                    console.log(json);
+                }
+            });
+        },
+
         createItem(){
             this.showAddModal();
+        },
+
+        createReview(){
+            this.showAddReviewModal();
         },
 
         selectItem(itemId){
@@ -717,6 +802,23 @@ var app = new Vue({
             });
         },
 
+        selectReview(reviewId){
+            this.showEditReviewModal();
+            for(i in this.reviewData){
+                if(this.reviewData[i].reviewId == reviewId){
+                    this.selectedReview = this.reviewData[i];
+                }
+            }
+        },
+
+        selectReviewItem(itemId){
+            this.showAddReviewModal();
+            for(i in this.ItemsData){
+                if(this.ItemsData[i].itemId == itemId){
+                    this.selectedItem = this.ItemsData[i];
+                }
+            }
+        },
         /* show/hide methods */
         showEditModal(){
             this.editModal = true;
@@ -748,6 +850,43 @@ var app = new Vue({
 
         hideAccountModal(){
             this.accountModal = false;
+        },
+        
+        showReviewModal(){
+            this.reviewModal = true;
+        },
+
+        hideReviewModal(){
+            this.reviewModal = false;
+        },
+
+        showAddReviewModal(){
+            this.addReviewModal = true;
+        },
+
+        hideAddReviewModal(){
+            this.addReviewModal = false;
+        },
+
+        showEditReviewModal(){
+            this.editReviewModal = true;
+        },
+
+        hideEditReviewModal(){
+            this.editReviewModal = false;
+        },
+
+        fetchUserInfo(){
+            axios
+            .get("/account/info")
+            .then((response) => {
+                this.userData = response.data;
+                console.log(this.userData);
+            })
+            .catch(e => {
+                alert("Unable to load the user data");
+                console.log(e);
+            });
         }
     }
 });
