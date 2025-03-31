@@ -18,18 +18,16 @@ login = function(){
             if(Response.status == 200){
                 window.location.replace("/store"); //Sends the user to the store page if properly logged in
             }
+            else if(Response.status == 400){
+                document.getElementById("response").innerHTML = "Incorrect Credentials"
+            }
             else{
-                return Response.json();
+                document.getElementById("response").innerHTML = "Issue loggin in, please try again later"
             }
         })
-        .then((json) => {
-            if(json != null){
-                console.log(json);
-            }
-        });
     }
     else{
-        console.log("WOMP WOMP");
+        document.getElementById("response").innerHTML = "All fields must be filled out"
     }
 }
 
@@ -77,8 +75,14 @@ register = function(){
             if(Response.status == 201){
                 window.location.replace("/store");
             }
+            else if(Response.status == 409){
+                document.getElementById("response").innerHTML = "Email already in use"
+            }
+            else if(Response.status == 400){
+                document.getElementById("response").innerHTML = "All credential fields must be filled out"
+            }
             else{
-                return Response.json();
+                document.getElementById("response").innerHTML = "Issue registering, please try again later"
             }
         })
         .then((json) => {
@@ -88,7 +92,7 @@ register = function(){
         });
     }
     else{
-        console.log("WOMP WOMP");
+        document.getElementById("response").innerHTML = "All credential fields must be filled out"
     }
 }
 
@@ -508,7 +512,6 @@ var app = new Vue({
                 this.ItemsData = response.data.Items;
             })
             .catch(e => {
-              alert("Unable to load the item data");
               console.log(e);
             });
         },
@@ -592,7 +595,6 @@ var app = new Vue({
                 this.cartData = response.data.cart;
             })
             .catch(e => {
-                alert("Unable to load cart data");
                 console.log(e);
             });
         },
@@ -614,7 +616,6 @@ var app = new Vue({
                 this.reviewData = response.data.Reviews;
             })
             .catch(e =>{
-                alert("unable to load review data");
                 console.log(e);
             });
         },
@@ -818,7 +819,6 @@ var app = new Vue({
                 console.log(this.userData);
             })
             .catch(e => {
-                alert("Unable to load the user data");
                 console.log(e);
             });
         }
