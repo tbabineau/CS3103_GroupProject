@@ -588,7 +588,7 @@ class cart(Resource):
                         break
                 if(not collision and item not in session['cart']):
                     session['cart'].append({"userId": session['userId'], "itemId": item['itemId'], "quantity": item['quantity'], 
-                                    "itemName": item['itemName'], "itemDescription": item['itemDescription'], "itemPrice": item['itemPrice'], "itemStock": item['itemStock'], "itemPhoto": item['itemPhoto']})
+                                    "itemName": item['itemName'], "itemDescription": item['itemDescription'], "itemPrice": item['itemPrice'], "itemStock": item['itemStock'], "itemPhoto": '/static/images' + item['itemPhoto']})
     def get(self):
         cart.updateCart()
         #Allows users to search in cart
