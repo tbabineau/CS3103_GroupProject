@@ -798,7 +798,7 @@ var app = new Vue({
             let lname = document.getElementById("lname").value;
             fetch("/account/info",
                 {
-                    method: "POST",
+                    method: "PUT",
                     body: JSON.stringify({
                         email: email,
                         password: pwd,

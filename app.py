@@ -74,9 +74,9 @@ class accountInfo(Resource):
             user = callStatement("SELECT * FROM users WHERE userId = %s;", (session['userId']))[0]
             verified = callStatement("SELECT * FROM verifiedUsers WHERE userId = %s;", (session['userId']))
             return make_response(jsonify( {"Username": session['username'], "Email": user['email'], "fname": user['fname'], "lname" : user['lname'], "manager": user['manager_flag'], "verified": len(verified) == 1} ))
-        return make_response(jsonify( {"status": "User not logged in"} ), 401)
+        return app.send_static_file("401.html")
     
-    def post(self):
+    def put(self):
         if not request.json:
             abort(400) #bad request
         if not login.isValid():
