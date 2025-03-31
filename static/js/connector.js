@@ -817,7 +817,6 @@ var app = new Vue({
             .get("/account/info")
             .then((response) => {
                 this.userData = response.data;
-                console.log(this.userData);
             })
             .catch(e => {
                 console.log(e);
