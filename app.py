@@ -423,7 +423,7 @@ class item(Resource):
             imageFile.close()
 
         sql = "UPDATE storeItems SET itemName = %s, itemDescription = %s, itemPrice = %s, itemStock = %s, itemPhoto = %s WHERE itemId = %s;"
-        params = (name, desc, price, stock, itemFN, itemId)
+        params = (name, desc, price, stock, photoFN, itemId)
         response = callStatement(sql, params)
         if(len(response) == 0):
             make_response(jsonify( {"status": "Item updated", "Item": response} ), 200)
