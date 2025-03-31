@@ -424,6 +424,7 @@ var app = new Vue({
         this.fetchUserInfo();
     },
     methods: {
+        //no jank
         addItem(){
             let name = document.getElementById("itemName").value;
             let desc = document.getElementById("itemDescript").value;
@@ -446,52 +447,15 @@ var app = new Vue({
                         headers: {"Content-Type": "application/json; charset = UTF-8"}
                     }
                 )
-                .then((Response) => {
-                    if(Response.status == 201){
-                        console.log("Item Created");
-                    }
-                    else{
-                        return Response.json();
-                    }
-                })
-                .then((json) => {
-                    if(json != null){
-                        console.log(json);
-                    }
+                .then(()=>{
+                    this.fetchItems();
                 });
             }
             reader.readAsDataURL(photo);
         },
-
+        //no jank
         updateItem(itemId){
-            put = function(picData){
-                fetch("/items/" + itemId,
-                    {
-                        method: "PUT",
-                        body: JSON.stringify({
-                            itemName: name,
-                            itemDescript: desc,
-                            price: cost,
-                            itemStock: stock,
-                            itemPhoto: picData
-                        }),
-                    headers: {"Content-Type": "application/json; charset = UTF-8"}
-                    }
-                )
-                .then((Response) => {
-                    if(Response.status == 200){
-                        console.log("Item updated");
-                    }
-                    else{
-                        return Response.json();
-                    }
-                })
-                .then((json) => {
-                    if(json != null){
-                        console.log(json);
-                    }
-                });
-            }
+            put = function(pic){
             let name = document.getElementById("itemName").value;
             let desc = document.getElementById("itemDescript").value;
             let cost = document.getElementById("price").value;
@@ -507,8 +471,26 @@ var app = new Vue({
             else{
                 reader.readAsDataURL(photo);
             }
+            console.log(itemId);
+            fetch("/items/" + itemId,
+                {
+                    method: "PUT",
+                    body: JSON.stringify({
+                        itemName: name,
+                        itemDescript: desc,
+                        itemPhoto: pic,
+                        price: cost,
+                        itemStock: stock
+                    }),
+                    headers: {"Content-Type": "application/json; charset = UTF-8"}
+                }
+            )
+            .then(()=>{
+                this.fetchItems();
+            });
+            }
         },
-
+        //no jank
         deleteItem(itemId){
             
             fetch("/items/" + itemId,
@@ -518,18 +500,8 @@ var app = new Vue({
                     headers: {"Content-Type": "application/json; charset = UTF-8"}
                 }
             )
-            .then((Response) => {
-                if(Response.status == 204){
-                    console.log("Item Deleted");
-                }
-                else{
-                    return Response.json();
-                }
-            })
-            .then((json) => {
-                if(json != null){
-                    console.log(json);
-                }
+            .then(()=>{
+                this.fetchItems();
             });
         },
 
@@ -543,7 +515,7 @@ var app = new Vue({
               console.log(e);
             });
         },
-
+        //no jank
         addToCart(itemId){
             let quantity = document.getElementById("quantity").value;
             if(quantity == null || quantity < 1){
@@ -573,7 +545,7 @@ var app = new Vue({
                 }
             });
         },
-
+        //no jank
         clearCart(){
             fetch("/cart",
                 {
@@ -582,21 +554,11 @@ var app = new Vue({
                     headers: {"Content-Type": "application/json; charset = UTF-8"}
                 }
             )
-            .then((Response) => {
-                if(Response.status == 204){
-                    console.log("Cart cleared");
-                }
-                else{
-                    return Response.json();
-                }
-            })
-            .then((json) => {
-                if(json != null){
-                    console.log(json);
-                }
+            .then(()=>{
+                this.fetchCart();
             });
         },
-
+        //no jank
         updateCartQuantity(itemId){
             let quantity = document.getElementById("quantity").value;
             fetch("/cart/" + itemId,
@@ -608,21 +570,11 @@ var app = new Vue({
                     headers: {"Content-Type": "application/json; charset = UTF-8"}
                 }
             )
-            .then((Response) => {
-                if(Response.status == 200){
-                    console.log("Item Updated");
-                }
-                else{
-                    return Response.json();
-                }
-            })
-            .then((json) => {
-                if(json != null){
-                    console.log(json);
-                }
+            .then(()=>{
+                this.fetchCart();
             });
         },
-        
+        //no jank
         removeFromCart(itemId){
             fetch("/cart/" + itemId,
                 {
@@ -631,18 +583,8 @@ var app = new Vue({
                     headers: {"Content-Type": "application/json; charset = UTF-8"}
                 }
             )
-            .then((Response) => {
-                if(Response.status == 204){
-                    console.log("Item removed");
-                }
-                else{
-                    return Response.json();
-                }
-            })
-            .then((json) => {
-                if(json != null){
-                    console.log(json);
-                }
+            .then(()=>{
+                this.fetchCart();
             });
         },
         
@@ -677,7 +619,7 @@ var app = new Vue({
                 console.log(e);
             });
         },
-
+        //no jank
         addReview(itemId){
             let review = document.getElementById("review").value;
             let rating = document.getElementById("rating").value;
@@ -705,7 +647,7 @@ var app = new Vue({
                 }
             });
         },
-        
+        //buggy
         updateReview(reviewId){ 
             let review = document.getElementById("review").value;
             let rating = document.getElementById("rating").value;
@@ -719,20 +661,9 @@ var app = new Vue({
                     headers: {"Content-Type": "application/json; charset=UTF-8"}
                 }
             )
-            .then((Response)=>{
-                if(Response.status==200){
-                    console.log("Review Updated");
-                }else{
-                    return Response.json();
-                }
-            })
-            .then((json)=>{
-                if(json!=null){
-                    console.log(json);
-                }
-            });
+            
         },
-
+        //buggy
         deleteReview(reviewId){ 
             fetch("/reviews/" + reviewId, 
                 {
@@ -741,18 +672,7 @@ var app = new Vue({
                     headers: {"Content-Type": "application/json; charset=UTF-8"}
                 }
             )
-            .then((Response)=>{
-                if(Response.status==204){
-                    console.log("Review Deleted");
-                }else{
-                    return Response.json();
-                }
-            })
-            .then((json)=>{
-                if(json!=null){
-                    console.log(json);
-                }
-            });
+            
         },
 
         createItem(){
@@ -862,7 +782,7 @@ var app = new Vue({
         hideAccountModal(){
             this.accountModal = false;
         },
-        
+
         showReviewModal(){
             this.reviewModal = true;
         },
@@ -885,6 +805,10 @@ var app = new Vue({
 
         hideEditReviewModal(){
             this.editReviewModal = false;
+        },
+
+        reloadPage(){
+            window.location.reload();
         },
 
         fetchUserInfo(){
