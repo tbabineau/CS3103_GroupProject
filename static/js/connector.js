@@ -456,6 +456,24 @@ var app = new Vue({
         //no jank
         updateItem(itemId){
             put = function(pic){
+                fetch("/items/" + itemId,
+                    {
+                        method: "PUT",
+                        body: JSON.stringify({
+                            itemName: name,
+                            itemDescript: desc,
+                            itemPhoto: pic,
+                            price: cost,
+                            itemStock: stock
+                        }),
+                        headers: {"Content-Type": "application/json; charset = UTF-8"}
+                    }
+                )
+                .then(()=>{
+                    this.fetchItems();
+                });
+            }
+
             let name = document.getElementById("itemName").value;
             let desc = document.getElementById("itemDescript").value;
             let cost = document.getElementById("price").value;
@@ -465,29 +483,12 @@ var app = new Vue({
             reader.onload = ()=>{
                 put(reader.result);
             }
+
             if(photo == null){
                 put("");
             }
             else{
                 reader.readAsDataURL(photo);
-            }
-            console.log(itemId);
-            fetch("/items/" + itemId,
-                {
-                    method: "PUT",
-                    body: JSON.stringify({
-                        itemName: name,
-                        itemDescript: desc,
-                        itemPhoto: pic,
-                        price: cost,
-                        itemStock: stock
-                    }),
-                    headers: {"Content-Type": "application/json; charset = UTF-8"}
-                }
-            )
-            .then(()=>{
-                this.fetchItems();
-            });
             }
         },
         //no jank
