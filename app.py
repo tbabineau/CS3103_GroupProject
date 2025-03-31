@@ -661,7 +661,7 @@ class cart(Resource):
         response = callStatement("SELECT * FROM storeItems WHERE itemId = %s", (request_params['itemId']))
         if(len(response) != 0):
             if(request_params['quantity'] > response[0]['itemStock']):
-                return make_response(jsonify( {"status": "Not enough stock"} ), 400)
+                return make_response(jsonify( {"status": "Not enough stock"} ), 406)
             uID = None
             if('userId' in session): #If signed in, add to DB cart
                 uID = session['userId']
