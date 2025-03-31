@@ -7,7 +7,7 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"/>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
-        <title>Verified!</title>
+        <title>Verification Sent!</title>
     </head>
     <body>
         <script>
@@ -19,16 +19,10 @@
             }
         ).then((Response) => {
             if(Response.status == 200){
-                document.getElementById("verifyText").innerHTML = "Email Verified!"
-            }
-            else if(Response.status == 401){
-                document.getElementById("verifyText").innerHTML = "Could not verify email, not logged in"
-            }
-            else if(Response.status == 404 || Response.status == 410){
-                document.getElementById("verifyText").innerHTML = "Could not verify email, Hash expired. Please request a new one"
+                document.getElementById("verifyText").innerHTML = "Verification email sent!"
             }
             else{
-                document.getElementById("verifyText").innerHTML = "Could not verify email, please try again"
+                document.getElementById("verifyText").innerHTML = "Issue with sending email, please try again"
             }
         });
         </script>
@@ -37,7 +31,6 @@
                 <h1 id = "verifyText">Loading...</h1>
             </div>
             <a href = "/store"><input type = "button" value = "Back to store"></a>
-            <a href = "/account"><input type = "button" value = "Account"></a>
         </div>
     </body>
 </html>

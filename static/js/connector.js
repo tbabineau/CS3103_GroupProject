@@ -460,39 +460,49 @@ var app = new Vue({
         },
 
         updateItem(itemId){
+            put = function(picData){
+                fetch("/items/" + itemId,
+                    {
+                        method: "PUT",
+                        body: JSON.stringify({
+                            itemName: name,
+                            itemDescript: desc,
+                            price: cost,
+                            itemStock: stock,
+                            itemPhoto: picData
+                        }),
+                    headers: {"Content-Type": "application/json; charset = UTF-8"}
+                    }
+                )
+                .then((Response) => {
+                    if(Response.status == 200){
+                        console.log("Item updated");
+                    }
+                    else{
+                        return Response.json();
+                    }
+                })
+                .then((json) => {
+                    if(json != null){
+                        console.log(json);
+                    }
+                });
+            }
             let name = document.getElementById("itemName").value;
             let desc = document.getElementById("itemDescript").value;
-            let pic = document.getElementById("itemPhoto").value;
-            console.log(pic.src);
             let cost = document.getElementById("price").value;
             let stock = document.getElementById("itemStock").value;
-            console.log(itemId);
-            fetch("/items/" + itemId,
-                {
-                    method: "PUT",
-                    body: JSON.stringify({
-                        itemName: name,
-                        itemDescript: desc,
-                        itemPhoto: pic,
-                        price: cost,
-                        itemStock: stock
-                    }),
-                    headers: {"Content-Type": "application/json; charset = UTF-8"}
-                }
-            )
-            .then((Response) => {
-                if(Response.status == 200){
-                    console.log("Item updated");
-                }
-                else{
-                    return Response.json();
-                }
-            })
-            .then((json) => {
-                if(json != null){
-                    console.log(json);
-                }
-            });
+            const photo = document.querySelector('#photo').files[0];
+            const reader = new FileReader();
+            reader.onload = ()=>{
+                put(reader.result);
+            }
+            if(photo == null){
+                put("");
+            }
+            else{
+                reader.readAsDataURL(photo);
+            }
         },
 
         deleteItem(itemId){

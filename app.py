@@ -233,7 +233,7 @@ class register(Resource):
 #Email verification endpoint
 class verify(Resource):
     def get(self):
-        return api.send_static_file("verificationSent.html")
+        return app.send_static_file("verificationSent.html")
     def post(self):
         if login.isValid():
             results = callStatement("SELECT * FROM verifiedUsers WHERE userId = %s;", (session['userId']))
@@ -393,9 +393,37 @@ class item(Resource):
             request_params = parser.parse_args()
         except:
             abort(400) #bad request
+        item = callStatement("SELECT * from storeItems WHERE itemId = %s;", (itemId))[0]
+        name = item['itemName']
+        desc = item['itemDescription']
+        price = item['itemPrice']
+        stock = item['itemStock']
+        photoFN = item['itemPhoto']
+
+        if 'itemName' in request_params and request_params['itemName'] != None and request_params['itemName'] != "":
+            name = request_params['itemName']
+        if 'itemDescript' in request_params and request_params['itemDescript'] != None and request_params['itemDescript'] != "":
+            desc = request_params['itemDescript']
+        if 'price' in request_params and request_params['price'] != None and request_params['price'] != 0:
+            price = request_params['price']
+        if 'itemStock' in request_params and request_params['itemStock'] != None and request_params['itemStock'] != 0:
+            stock = request_params['itemStock']
+        if 'itemPhoto' in request_params and request_params['itemPhoto'] != "":
+            os.remove(f"static/images/{photoFN}")
+            photodata = request_params['itemPhoto'].split(',')
+            photoFN = f"{itemId}."
+            for char in photodata[0][11:]:
+                if(char == ';'):#Stop on the semicolon
+                    break
+                else:
+                    photoFN += char #otherwise, keep going
+    
+            imageFile = open("static/images/" + photoFN, "wb")
+            imageFile.write(b64decode(photodata[1])) #Write the decoded binary into the image
+            imageFile.close()
 
         sql = "UPDATE storeItems SET itemName = %s, itemDescription = %s, itemPrice = %s, itemStock = %s, itemPhoto = %s WHERE itemId = %s;"
-        params = (request_params['itemName'], request_params['itemDescript'], request_params['price'], request_params['itemStock'], request_params['itemPhoto'], itemId)
+        params = (name, desc, price, stock, itemFN, itemId)
         response = callStatement(sql, params)
         if(len(response) == 0):
             make_response(jsonify( {"status": "Item updated", "Item": response} ), 200)
