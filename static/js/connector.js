@@ -342,18 +342,8 @@ updateCartQuantity = function(){
         }
     )
     .then((Response) => {
-        if(Response.status == 200){
-            console.log("Item Updated");
-        }
-        else{
-            return Response.json();
-        }
-    })
-    .then((json) => {
-        if(json != null){
-            console.log(json);
-        }
-    });
+            document.getElementById("quantityFeedback").innerHTML = Response.json().status;
+        });
 }
 
 removeFromCart = function(){
@@ -455,7 +445,7 @@ var app = new Vue({
         },
         //no jank
         updateItem(itemId){
-            put = function(pic){
+            put = function(pic, func){
                 fetch("/items/" + itemId,
                     {
                         method: "PUT",
@@ -469,8 +459,17 @@ var app = new Vue({
                         headers: {"Content-Type": "application/json; charset = UTF-8"}
                     }
                 )
-                .then(()=>{
-                    this.fetchItems();
+                .then((Response)=>{
+                    if(Response.status == 200){
+                        func();
+                        document.getElementById("editItemResponse").innerHTML = "Item edited successfully";
+                    }
+                    else if(Response.status == 400){
+                        document.getElementById("editItemResponse").innerHTML = "Please fill out all fields and attach an image";
+                    }
+                    else{
+                        document.getElementById("editItemResponse").innerHTML = "Issue editing item, please try again later";
+                    }
                 });
             }
 
@@ -481,11 +480,11 @@ var app = new Vue({
             const photo = document.querySelector('#photo').files[0];
             const reader = new FileReader();
             reader.onload = ()=>{
-                put(reader.result);
+                put(reader.result, this.fetchItems);
             }
 
             if(photo == null){
-                put("");
+                put("", this.fetchItems);
             }
             else{
                 reader.readAsDataURL(photo);
@@ -534,15 +533,19 @@ var app = new Vue({
             )
             .then((Response) => {
                 if(Response.status == 201){
-                    console.log("Item added to cart");
+                    document.getElementById("addCartResponse").innerHTML = "Item added to cart";
+                }
+                else if(Response.status == 400){
+                    document.getElementById("addCartResponse").innerHTML = "Please fill out all fields";
+                }
+                else if(Response.status == 406){
+                    document.getElementById("addCartResponse").innerHTML = "Larger quantity than current item stock";
+                }
+                else if(Response.status == 409){
+                    document.getElementById("addCartResponse").innerHTML = "Item already in cart";
                 }
                 else{
-                    return Response.json();
-                }
-            })
-            .then((json) => {
-                if(json != null){
-                    console.log(json);
+                    document.getElementById("addCartResponse").innerHTML = "Issue adding item to cart, please try again later";
                 }
             });
         },
@@ -571,8 +574,18 @@ var app = new Vue({
                     headers: {"Content-Type": "application/json; charset = UTF-8"}
                 }
             )
-            .then(()=>{
+            .then((Response)=>{
+                if(Response.status == 200){
+                    document.getElementById("quantityResponse").innerHTML = "Quantity updated successfully";
+                }
+                else if(Response.status == 400){
+                    document.getElementById("quantityResponse").innerHTML = "Please fill out all fields";
+                }
+                else{
+                    document.getElementById("quantityResponse").innerHTML = "Issue updating cart quantity, please try again later";
+                }
                 this.fetchCart();
+                return Response.json()
             });
         },
         //no jank
