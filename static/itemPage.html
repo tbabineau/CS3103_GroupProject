@@ -10,6 +10,7 @@
         <p><em>View our items</em></p>
         <a href = "/account"><button class="utilityBtn text-success">Go To Account</button></a>
         <a href = "/cartpage"><button class="utilityBtn text-success">To Cart</button></a>
+        <button class="utilityBtn text-success" v-if="userData != null && userData.manager == 1" v-on:click="createItem()">Add item</button>
         <button class="utilityBtn text-danger" onClick="logout()">Log Out</button>
       <div class="text-center">
         <!--<button type="button" class="btn btn-outline-primary" v-on:click="fetchItems()">List schools</button>-->
@@ -31,12 +32,11 @@
                 </p>
                 <img v-bind:src="Items.itemPhoto" height = 150 width = 150 alt="item photo">
                 <div class="btn-group-xs">
-                  <button class="utilityBtn text-success" v-on:click="createItem()">Add item</button>
-                  <button class="utilityBtn text-success" v-on:click="selectItem(Items.itemId)">edit</button>
+                  <button class="utilityBtn text-success" v-if="userData != null && userData.manager == 1" v-on:click="selectItem(Items.itemId)">edit</button>
                   <button class="utilityBtn text-success" v-on:click="selectCart(Items.itemId)">add to cart</button>
                   <button class="utilityBtn text-success" v-on:click="selectReviewItem(Items.itemId)">Add review</button>
                   <button class="utilityBtn text-success" v-on:click="fetchReviews(Items.itemId)">reviews</button>
-                  <button class="utilityBtn text-danger" v-on:click="deleteItem(Items.itemId)">remove</button>
+                  <button class="utilityBtn text-danger" v-if="userData != null && userData.manager == 1" v-on:click="deleteItem(Items.itemId)">remove</button>
                 </div>
               </div>
             </li>
