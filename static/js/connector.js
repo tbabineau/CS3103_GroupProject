@@ -677,6 +677,7 @@ var app = new Vue({
             )
             .then(()=>{
                 this.fetchReviews(itemId);
+                this.showReviewModal();
             });
         },
         //buggy
@@ -690,6 +691,7 @@ var app = new Vue({
             )
             .then(()=>{
                 this.fetchReviews(itemId);
+                this.showReviewModal();
             });
         },
 
