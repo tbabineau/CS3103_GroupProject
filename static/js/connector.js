@@ -662,7 +662,7 @@ var app = new Vue({
             });
         },
         //buggy
-        updateReview(reviewId){ 
+        updateReview(reviewId, itemId){ 
             let review = document.getElementById("review").value;
             let rating = document.getElementById("rating").value;
             fetch("/reviews/" + reviewId,
@@ -675,10 +675,12 @@ var app = new Vue({
                     headers: {"Content-Type": "application/json; charset=UTF-8"}
                 }
             )
-            
+            .then(()=>{
+                this.fetchReviews(itemId);
+            });
         },
         //buggy
-        deleteReview(reviewId){ 
+        deleteReview(reviewId, itemId){ 
             fetch("/reviews/" + reviewId, 
                 {
                     method: "DELETE", 
@@ -686,7 +688,9 @@ var app = new Vue({
                     headers: {"Content-Type": "application/json; charset=UTF-8"}
                 }
             )
-            
+            .then(()=>{
+                this.fetchReviews(itemId);
+            });
         },
 
         createItem(){

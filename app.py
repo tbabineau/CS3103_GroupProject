@@ -528,15 +528,21 @@ class Review(Resource):
             request_params=parser.parse_args()
         except:
             abort(400)
-        #requires sanitization no parameters
-
-        sql="update reviews set reviewText = %s, reviewRating = %s where reviewId = %s;"
-        params=(request_params['review'], request_params['rating'], reviewId)
-        result=callStatement(sql, params)
-        if(len(result)==0):
-            make_response(jsonify({"status": "Review updated", "Review": result}), 200)
+        
+        if(login.isValid()):
+            valid = callStatement("select * from reviews where reviewId = %s and userId = %s", 
+                                    (reviewId, session['userId']))
+            if(len(valid)!=1):
+                return make_response(jsonify({"status": "Not authorized"}), 401)
+            sql="update reviews set reviewText = %s, reviewRating = %s where reviewId = %s;"
+            params=(request_params['review'], request_params['rating'], reviewId)
+            result=callStatement(sql, params)
+            if(len(result)==0):
+                make_response(jsonify({"status": "Review updated", "Review": result}), 200)
+            else:
+                abort(500)
         else:
-            abort(500)
+            return make_response(jsonify({"status": "Not authorized"}), 401)
 
     def delete(self, reviewId):
         if type(reviewId)!=int:

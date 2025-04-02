@@ -145,7 +145,7 @@
                     </p>
                     <div>
                       <button class="utilityBtn text-success" v-on:click="selectReview(Reviews.reviewId)">Update review</button>
-                      <button class="utilityBtn text-danger" v-on:click="deleteReview(Reviews.reviewId)">Remove review</button>
+                      <button class="utilityBtn text-danger" v-on:click="deleteReview(Reviews.reviewId, Reviews.itemId)">Remove review</button>
                     </div>
                   </div>
                 </li>
@@ -168,7 +168,7 @@
           <input type="text" id="review" name="review"><br>
           <label for="rating"> Change rating (0-5)</label>
           <input type="number" id="rating" name="rating"><br>
-          <button class="utilityBtn text-success" v-on:click="updateReview(selectedReview.reviewId)">Update review</button> 
+          <button class="utilityBtn text-success" v-on:click="updateReview(selectedReview.reviewId, selectedReview.itemId)">Update review</button> 
         </div>
         <div slot="footer">
           <button type="button" class="btn btn-secondary" v-on:click="hideEditReviewModal()">Close</button>
