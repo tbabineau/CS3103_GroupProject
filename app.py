@@ -341,6 +341,9 @@ class items(Resource):
             request_params = parser.parse_args()
         except:
             abort(400) #bad request
+
+        if(request_params['itemStock']<0 or request_params['price']<0):
+            abort(400)
         
         if(login.isManager()):
             sql = "addItem"
@@ -393,6 +396,10 @@ class item(Resource):
             request_params = parser.parse_args()
         except:
             abort(400) #bad request
+
+        if(request_params['itemStock']<0 or request_params['price']<0):
+            abort(400)
+
         item = callStatement("SELECT * from storeItems WHERE itemId = %s;", (itemId))[0]
         name = item['itemName']
         desc = item['itemDescription']
@@ -704,12 +711,19 @@ class cartItem(Resource):
             abort(400) #Bad request
         parser = reqparse.RequestParser()
         try:
-            parser.add_argument('quantity')
+            parser.add_argument('quantity', type=int, required=True)
             request_params = parser.parse_args()
         except:
             abort(400) #Bad request
         cart.updateCart() #Ensures DB and session cart are synced if logged in
 
+        #quick fixes
+        response = callStatement("SELECT * FROM storeItems WHERE itemId = %s", (itemId))
+        if(request_params['quantity'] > response[0]['itemStock']):
+            return make_response(jsonify( {"status": "Not enough stock"} ), 406)
+        if(request_params['quantity']<=0):
+            abort(400)
+        
         for item in session['cart']:
             if(item['itemId'] == itemId):
                 item['quantity'] = request_params['quantity']

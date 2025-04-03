@@ -441,6 +441,9 @@ var app = new Vue({
                     if(Response.status == 201){
                         document.getElementById("addItemResponse").innerHTML = "Item created";
                     }
+                    else if(cost<0 || stock<0){
+                        document.getElementById("addItemResponse").innerHTML = "No negative values";
+                    }
                     else if(Response.status == 400){
                         document.getElementById("addItemResponse").innerHTML = "Please fill out all fields";
                     }
@@ -472,6 +475,9 @@ var app = new Vue({
                     if(Response.status == 200){
                         func();
                         document.getElementById("editItemResponse").innerHTML = "Item edited successfully";
+                    }
+                    else if(cost<0 || stock<0){
+                        document.getElementById("editItemResponse").innerHTML = "No negative values";
                     }
                     else if(Response.status == 400){
                         document.getElementById("editItemResponse").innerHTML = "Please fill out all fields and attach an image";
@@ -589,6 +595,9 @@ var app = new Vue({
                 }
                 else if(Response.status == 400){
                     document.getElementById("quantityResponse").innerHTML = "Please fill out all fields";
+                }
+                else if(Response.status == 406 || quantity<=0){
+                    document.getElementById("quantityResponse").innerHTML = "Unacceptable quantity amount";
                 }
                 else{
                     document.getElementById("quantityResponse").innerHTML = "Issue updating cart quantity, please try again later";
