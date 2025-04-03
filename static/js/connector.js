@@ -57,7 +57,8 @@ register = function(){
     let pwd = document.getElementById("password").value;
 
     if(fname != null && lname != null && mail != null && uname != null && pwd != null &&
-        fname != "" && lname != "" && mail != "" && uname != "" && pwd != ""){
+        fname != "" && lname != "" && mail != "" && uname != "" && pwd != ""
+        && email.match("^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$")){
         fetch("/register",
             {
                 method: "POST",
@@ -90,6 +91,9 @@ register = function(){
                 console.log(json);
             }
         });
+    }
+    else if(!email.match("^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$")){
+        document.getElementById("response").innerHTML = "Please enter a valid email (ex Test@store.ca)";
     }
     else{
         document.getElementById("response").innerHTML = "All credential fields must be filled out"
