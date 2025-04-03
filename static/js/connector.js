@@ -58,7 +58,7 @@ register = function(){
 
     if(fname != null && lname != null && mail != null && uname != null && pwd != null &&
         fname != "" && lname != "" && mail != "" && uname != "" && pwd != ""
-        && email.match("^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$")){
+        && email.match("^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$") != null){
         fetch("/register",
             {
                 method: "POST",
@@ -92,7 +92,7 @@ register = function(){
             }
         });
     }
-    else if(!email.match("^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$")){
+    else if(email.match("^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$") == null){
         document.getElementById("response").innerHTML = "Please enter a valid email (ex Test@store.ca)";
     }
     else{
