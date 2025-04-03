@@ -437,7 +437,16 @@ var app = new Vue({
                         headers: {"Content-Type": "application/json; charset = UTF-8"}
                     }
                 )
-                .then(()=>{
+                .then((Response)=>{
+                    if(Response.status == 201){
+                        document.getElementById("addItemResponse").innerHTML = "Item created";
+                    }
+                    else if(Response.status == 400){
+                        document.getElementById("addItemResponse").innerHTML = "Please fill out all fields";
+                    }
+                    else{
+                        document.getElementById("addItemResponse").innerHTML = "Issue creating item, try again later";
+                    }
                     this.fetchItems();
                 });
             }
@@ -648,17 +657,20 @@ var app = new Vue({
                     headers: {"Content-Type": "application/json; charset=UTF-8"}
                 }
             )
-            .then((Response)=>{
+            .then((Response) => {
                 if(Response.status == 201){
-                    console.log("Review Created");
-                }else{
-                    return Response.json();
+                    document.getElementById("addReviewResponse").innerHTML = "Review added";
                 }
-            })
-            .then((json)=>{
-                if(json!=null){
-                    console.log(json);
+                else if(rating>5 || rating<0){
+                    document.getElementById("addReviewResponse").innerHTML = "Assign proper rating (0-5)";
                 }
+                else if(Response.status == 400){
+                    document.getElementById("addReviewResponse").innerHTML = "Please assign rating for review";
+                }
+                else{
+                    document.getElementById("addReviewResponse").innerHTML = "Issue adding review";
+                }
+                return Response.json();
             });
         },
         //buggy
@@ -675,7 +687,22 @@ var app = new Vue({
                     headers: {"Content-Type": "application/json; charset=UTF-8"}
                 }
             )
-            .then(()=>{
+            .then((Response)=>{
+                if(Response.status == 200){
+                    document.getElementById("updateReviewResponse").innerHTML = "Review updated";
+                }
+                else if(Response.status == 401){
+                    document.getElementById("updateReviewResponse").innerHTML = "Unauthorized action";
+                }
+                else if(rating>5 || rating<0){
+                    document.getElementById("updateReviewResponse").innerHTML = "Assign proper rating (0-5)";
+                }
+                else if(Response.status == 400){
+                    document.getElementById("updateReviewResponse").innerHTML = "Please assign rating";
+                }
+                else{
+                    document.getElementById("updateReviewResponse").innerHTML = "Issue updating review";
+                }
                 this.fetchReviews(itemId);
                 this.showReviewModal();
             });

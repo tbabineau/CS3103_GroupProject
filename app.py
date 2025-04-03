@@ -499,6 +499,9 @@ class Reviews(Resource):
         if(len(result) == 0):
             return make_response(jsonify( {"status": "Item not found"} ), 404)
         
+        if(request_params['rating']>5 or request_params['rating']<0):
+            abort(400)
+        
         sql="insert into reviews (itemId, userId, reviewText, reviewRating) values (%s, %s, %s, %s)"
         params=(request_params['itemId'], session['userId'], request_params['review'], round(request_params['rating'], 1))
         result=callStatement(sql, params)
@@ -534,6 +537,10 @@ class Review(Resource):
                                     (reviewId, session['userId']))
             if(len(valid)!=1):
                 return make_response(jsonify({"status": "Not authorized"}), 401)
+            
+            if(request_params['rating']>5 or request_params['rating']<0):
+                abort(400)
+
             sql="update reviews set reviewText = %s, reviewRating = %s where reviewId = %s;"
             params=(request_params['review'], request_params['rating'], reviewId)
             result=callStatement(sql, params)
