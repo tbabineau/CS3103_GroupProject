@@ -55,10 +55,11 @@ register = function(){
     let mail = document.getElementById("email").value;
     let uname = document.getElementById("username").value;
     let pwd = document.getElementById("password").value;
+    let emailReg = new RegExp("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")
 
     if(fname != null && lname != null && mail != null && uname != null && pwd != null &&
         fname != "" && lname != "" && mail != "" && uname != "" && pwd != ""
-        && email.match("^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$") != null){
+        && mail.match(emailReg) != null){
         fetch("/register",
             {
                 method: "POST",
@@ -92,7 +93,7 @@ register = function(){
             }
         });
     }
-    else if(email.match("^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$") == null){
+    else if(mail.match(emailReg) == null){
         document.getElementById("response").innerHTML = "Please enter a valid email (ex Test@store.ca)";
     }
     else{
