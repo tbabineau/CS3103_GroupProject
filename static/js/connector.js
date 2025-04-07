@@ -526,8 +526,61 @@ var app = new Vue({
         },
 
         fetchItems() {
+            let search = "";
+            let minPrice = "";
+            let maxPrice = "";
+            let minStock = "";
+            let maxStock = "";
+            if(document.getElementById("searchBar") != null){
+                search = document.getElementById("searchBar").value;
+                minPrice = document.getElementById("minPrice").value;
+                maxPrice = document.getElementById("maxPrice").value;
+                minStock = document.getElementById("minStock").value;
+                maxStock = document.getElementById("maxStock").value;
+            }
+            let qs = "";
+            if(search != ""){
+                qs += `?search=${search}`;
+            }
+            if(minPrice != ""){
+                if(qs.length < 1){
+                    qs += "?"
+                }
+                else{
+                    qs += "&"
+                }
+                qs += `minPrice=${minPrice}`;
+            }
+            if(maxPrice != ""){
+                if(qs.length < 1){
+                    qs += "?"
+                }
+                else{
+                    qs += "&"
+                }
+                qs += `maxPrice=${maxPrice}`;
+            }
+            if(minStock != ""){
+                if(qs.length < 1){
+                    qs += "?"
+                }
+                else{
+                    qs += "&"
+                }
+                qs += `minQuantity=${minStock}`;
+            }
+            if(maxStock != ""){
+                if(qs.length < 1){
+                    qs += "?"
+                }
+                else{
+                    qs += "&"
+                }
+                qs += `maxQuantity=${maxStock}`;
+            }
+
             axios
-            .get("/items")
+            .get("/items" + qs)
             .then(response => {
                 this.ItemsData = response.data.Items;
             })

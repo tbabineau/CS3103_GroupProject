@@ -11,7 +11,19 @@
         <a href = "/account"><button class="utilityBtn text-success">Go To Account</button></a>
         <a href = "/cartpage"><button class="utilityBtn text-success">To Cart</button></a>
         <button class="utilityBtn text-success" v-if="userData != null && userData.manager == 1" v-on:click="createItem()">Add item</button>
-        <button class="utilityBtn text-danger" onClick="logout()">Log Out</button>
+        <button class="utilityBtn text-danger" onClick="logout()">Log Out</button><br><br>
+        <h3>Search Filters</h3>
+        <label class = "form-label" for = "searchBar">Item name</label>
+        <input type = "search" id = "searchBar"><br>
+        <label class = "form-label" for = "minPrice">Show items from a minimum price </label>
+        <input type = "number" id = "minPrice">
+        <label class = "form-label" for = "maxPrice"> to a maximum price </label>
+        <input type = "number" id = "maxPrice"><br>
+        <label class = "form-label" for = "minStock">Show items from a minimum availability </label>
+        <input type = "number" id = "minStock">
+        <label class = "form-label" for = "maxStock"> to a maximum availability </label>
+        <input type = "number" id = "maxStock"><br><br>
+        <button class = "utilityBtn btn-lg" v-on:click = "fetchItems()">Search</button><br><br>
       <div class="text-center">
         <!--<button type="button" class="btn btn-outline-primary" v-on:click="fetchItems()">List schools</button>-->
       </div>
