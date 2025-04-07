@@ -735,21 +735,26 @@ var app = new Vue({
             let pwd = document.getElementById("password").value;
             let fname = document.getElementById("fname").value;
             let lname = document.getElementById("lname").value;
-            fetch("/account/info",
-                {
-                    method: "PUT",
-                    body: JSON.stringify({
-                        email: email,
-                        password: pwd,
-                        fname: fname,
-                        lname: lname
-                    }),
-                    headers: {"Content-Type": "application/json; charset = UTF-8"}
-                }
-            ).then(()=>{
-                this.fetchUserInfo();
-                this.hideAccountModal();
-            });
+            if(mail.match(emailReg) != null){
+                fetch("/account/info",
+                    {
+                        method: "PUT",
+                        body: JSON.stringify({
+                            email: email,
+                            password: pwd,
+                            fname: fname,
+                            lname: lname
+                        }),
+                        headers: {"Content-Type": "application/json; charset = UTF-8"}
+                    }
+                ).then(()=>{
+                    this.fetchUserInfo();
+                    this.hideAccountModal();
+                });
+            }
+            else{
+                document.getElementById("response").innerHTML = "Please enter a valid email (ex Test@store.ca)";
+            }
         },
 
         selectReview(reviewId){

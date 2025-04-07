@@ -6,6 +6,7 @@ from flask_session import Session
 from secrets import token_hex
 from time import time, gmtime, strptime, mktime
 from base64 import b64decode
+import re
 import os
 import hashlib
 import json
@@ -90,6 +91,9 @@ class accountInfo(Resource):
             request_params = parser.parse_args()
         except:
             abort(400) #bad request
+        
+        if not re.match(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$", user["email"]):
+            abort(400)
         
         user = callStatement("SELECT * FROM users WHERE userId = %s;", (session['userId']))[0]
         email = user['email']
@@ -207,6 +211,9 @@ class register(Resource):
             request_params = parser.parse_args()
         except:
             abort(400) #bad request
+
+        if not re.match(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$", request_params["email"]):
+            abort(400)
         
         #Check if username or email is in use
         sql = "SELECT * FROM users WHERE username = %s OR email = %s;"
