@@ -830,7 +830,8 @@ var app = new Vue({
             let pwd = document.getElementById("password").value;
             let fname = document.getElementById("fname").value;
             let lname = document.getElementById("lname").value;
-            if(mail.match(emailReg) != null){
+            let emailReg = new RegExp("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$");
+            if(email == "" || email.match(emailReg) != null){
                 fetch("/account/info",
                     {
                         method: "PUT",

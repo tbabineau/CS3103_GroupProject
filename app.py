@@ -92,9 +92,6 @@ class accountInfo(Resource):
         except:
             abort(400) #bad request
         
-        if not re.match(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$", user["email"]):
-            abort(400)
-        
         user = callStatement("SELECT * FROM users WHERE userId = %s;", (session['userId']))[0]
         email = user['email']
         pwd = user['password_hash']
@@ -102,8 +99,9 @@ class accountInfo(Resource):
         fname = user['fname']
         lname = user['lname']
 
-        if('email' in request_params and request_params['email'] != "" and request_params['email'] != None):
+        if('email' in request_params and request_params['email'] != "" and request_params['email'] != None and re.match(r"^[\w.]+@([\w]+.)+[\w]{2,4}$", user["email"])):
             email = request_params['email']
+            print("EMAIL")
             callStatement("DELETE FROM verifiedUsers WHERE userId = %s;", (session['userId']))
             callStatement("DELETE FROM verification WHERE userId = %s;", (session['userId']))
         if('password' in request_params and request_params['password'] != "" and request_params['password'] != None):
@@ -212,8 +210,8 @@ class register(Resource):
         except:
             abort(400) #bad request
 
-        if not re.match(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$", request_params["email"]):
-            abort(400)
+        if not re.match(r"^[\w.]+@([\w]+.)+[\w]{2,4}$", request_params["email"]):
+            abort(400) #email doesn't match
         
         #Check if username or email is in use
         sql = "SELECT * FROM users WHERE username = %s OR email = %s;"
