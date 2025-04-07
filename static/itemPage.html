@@ -11,7 +11,7 @@
         <a href = "/account"><button class="utilityBtn text-success">Go To Account</button></a>
         <a href = "/cartpage"><button class="utilityBtn text-success">To Cart</button></a>
         <button class="utilityBtn text-success" v-if="userData != null && userData.manager == 1" v-on:click="createItem()">Add item</button>
-        <button class="utilityBtn text-danger" onClick="logout()">Log Out</button><br><br>
+        <button class="utilityBtn text-danger" v-if="userData != null" onClick="logout()">Log Out</button><br><br>
         <h3>Search Filters</h3>
         <label class = "form-label" for = "searchBar">Item name</label>
         <input type = "search" id = "searchBar"><br>

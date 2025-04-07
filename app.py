@@ -34,7 +34,7 @@ def not_found(error):
 
 @app.errorhandler(404) # decorators to add to 404 response
 def not_found(error):
-    return make_response(jsonify( { "status": "Resource not found" } ), 404) #Can edit this to make the app return a 404 page
+    return app.send_static_file("404.html")
 
 @app.errorhandler(500) # decorators to add to 500 response
 def not_found(error):
