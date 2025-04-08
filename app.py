@@ -93,11 +93,11 @@ class accountInfo(Resource):
             abort(400) #bad request
         
         user = callStatement("SELECT * FROM users WHERE userId = %s;", (session['userId']))[0]
-        email = user['email']
-        pwd = user['password_hash']
-        salt = user['salt']
-        fname = user['fname']
-        lname = user['lname']
+        email = "".join(user['email'].split())
+        pwd = "".join(user['password_hash'].split())
+        salt = "".join(user['salt'].split())
+        fname = "".join(user['fname'].split())
+        lname = "".join(user['lname'].split())
 
         if('email' in request_params and request_params['email'] != "" and request_params['email'] != None and re.match(r"^[\w.]+@([\w]+.)+[\w]{2,4}$", user["email"])):
             email = request_params['email']
@@ -156,9 +156,11 @@ class login(Resource):
         if(login.isValid()):
             return make_response(jsonify( {"status": "Logged in"} ), 200)
         
+        username = "".join(request_params['username'].split())
+        pwd = "".join(request_params['password'].split())
+        
         sql = "SELECT * FROM users WHERE username = %s;"
-        matching = callStatement(sql, (request_params['username']))
-        pwd = request_params['password']
+        matching = callStatement(sql, (username))
         if(len(matching) != 0): #Checking if there were any rows returned
             for user in matching: #Incase there are duplicate usernames, but there shouldn't be
                 #Hashing the inputted password with the salt from the database
@@ -209,26 +211,35 @@ class register(Resource):
             request_params = parser.parse_args()
         except:
             abort(400) #bad request
+            
+        email = "".join(request_params['email'].split())
+        username = "".join(request_params['username'].split())
+        fname = "".join(request_params['firstname'].split())
+        lname = "".join(request_params['lastname'].split())
+        pwd = "".join(request_params['password'].split())
 
-        if not re.match(r"^[\w.]+@([\w]+.)+[\w]{2,4}$", request_params["email"]):
+        if not re.match(r"^[\w.]+@([\w]+.)+[\w]{2,4}$", email):
             abort(400) #email doesn't match
+        if(username == "" or fname == "" or lname == "" or pwd == ""):
+            abort(400)
         
         #Check if username or email is in use
+        
         sql = "SELECT * FROM users WHERE username = %s OR email = %s;"
-        result = callStatement(sql, (request_params['username'], request_params['email']))
+        result = callStatement(sql, (username, email))
         if(len(result) == 0):
             #Creating 32 byte salt and hashing password with sha512
             salt = token_hex(32)
             hash = hashlib.sha512()
-            hash.update((request_params['password'] + salt).encode("utf-8"))
+            hash.update((pwd + salt).encode("utf-8"))
             hashed_pwd = hash.hexdigest()
             tempTime = gmtime()
             datetime = f'{tempTime.tm_year}-{tempTime.tm_mon}-{tempTime.tm_mday} {tempTime.tm_hour}:{tempTime.tm_min}:{tempTime.tm_sec}'
             sql = "INSERT INTO users (username, email, fname, lname, password_hash, salt, last_login, manager_flag) VALUES (%s, %s, %s, %s, %s, %s, %s, 0);"
-            params = (request_params['username'], request_params['email'], request_params['firstname'], request_params['lastname'], str(hashed_pwd), str(salt), datetime)
+            params = (username, email, fname, lname, str(hashed_pwd), str(salt), datetime)
             result = callStatement(sql, params)
-            session['userId'] = callStatement("SELECT userId FROM users WHERE username = %s;", (request_params['username']))[0]['userId']
-            session['username'] = request_params['username']
+            session['userId'] = callStatement("SELECT userId FROM users WHERE username = %s;", (username))[0]['userId']
+            session['username'] = username
             session['expiry'] = time() + 3600
             session['manager'] = False
             return make_response(jsonify( {"status": "Successfully registered"}), 201)
