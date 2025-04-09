@@ -400,6 +400,7 @@ var app = new Vue({
         cartData: null,
         userData: null,
         reviewData: null,
+        currReviewItem: null,
         editModal: false,
         addModal: false,
         cartModal: false,
@@ -702,6 +703,9 @@ var app = new Vue({
         },
         //or? should work now
         fetchReviews(itemId){
+            if(itemId > 0){
+                this.currReviewItem = itemId
+            }
             let minRating = "";
             let maxRating = ""
             if(document.getElementById("minRating") != null){
@@ -717,7 +721,7 @@ var app = new Vue({
             }
             this.showReviewModal();
             axios
-            .get("/reviews?itemId="+itemId+qs)
+            .get("/reviews?itemId="+this.currReviewItem+qs)
             .then(response => {
                 this.reviewData = response.data.Reviews;
             })
