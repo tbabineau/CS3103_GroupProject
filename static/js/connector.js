@@ -43,6 +43,9 @@ logout = function(){
         if(Response.status == 204){
             window.location.replace("/");
         }
+        else if(Response.status == 404){
+            alert("Must be logged in to log out");
+        }
         else{
             console.log(Response.json());
         }
@@ -831,7 +834,12 @@ var app = new Vue({
             axios
             .get("/account/info")
             .then((response) => {
-                this.userData = response.data;
+                if(response.data.length() > 500000){
+                    this.userData = response.data;
+                }
+                else{
+                    this.userData = null;
+                }
             })
             .catch(e => {
                 console.log(e);
