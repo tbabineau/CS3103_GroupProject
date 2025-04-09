@@ -699,9 +699,22 @@ var app = new Vue({
         },
         //or? should work now
         fetchReviews(itemId){
+            let minRating = "";
+            let maxRating = ""
+            if(document.getElementById("minRating") != null){
+                minRating = document.getElementById("minRating").value;
+                maxRating = document.getElementById("maxRating").value;
+            }
+            let qs = ""
+            if(minRating != ""){
+                qs += `&minRating=${minRating}`;
+            }
+            if(maxRating != ""){
+                qs += `&maxRating=${maxRating}`;
+            }
             this.showReviewModal();
             axios
-            .get("/reviews?itemId="+itemId)
+            .get("/reviews?itemId="+itemId+qs)
             .then(response => {
                 this.reviewData = response.data.Reviews;
             })
