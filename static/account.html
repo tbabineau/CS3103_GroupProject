@@ -25,6 +25,7 @@
                 <a href = "/cartpage"><input type = "button" class = "btn-primary" value = "To Cart"></a>
                 <input type = "button" class = "btn-warning" value = "Edit account info" v-on:click = "showAccountModal()">
                 <input type = "button" class = "btn-danger" value = "Log Out" onClick = "logout()">
+                <a href = "/API"><input type = "button" class = "btn-primary" value = "To API"></a>
             </div>
             <div v-if="accountModal" @close = "hideAccountModal">
                 <div slot = "header" class = "modal-header">
