@@ -10,7 +10,7 @@
         <p><em>View our items</em></p>
         <a href = "/account"><button class="utilityBtn text-success">Go To Account</button></a>
         <a href = "/cartpage"><button class="utilityBtn text-success">To Cart</button></a>
-        <a href = "/API"><button class="utilityBtn text-success">API></button></a>
+        <a href = "/API"><button class="utilityBtn text-success">API</button></a>
         <button class="utilityBtn text-success" v-if="userData != null && userData.manager == 1" v-on:click="createItem()">Add item</button>
         <button class="utilityBtn text-danger" v-if="userData != null" onClick="logout()">Log Out</button><br><br>
         <div v-if="!editModal && !addModal && !cartModal && !reviewModal">
