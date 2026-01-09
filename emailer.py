@@ -1,11 +1,12 @@
-from smtplib import SMTP
+from smtplib import SMTP_SSL
 import email
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 def sendEmail(recipient, hash, url):
-    smtpObj = SMTP("smtp.unb.ca", 25)
+    smtpObj = SMTP_SSL("smtp.gmail.com", 465)
     smtpObj.ehlo()
+    smtpObj.login('tylerkbabineau@gmail.com', 'nrdfizifvapawvnj')
 
     mail = MIMEMultipart("alternative")
     from_address = 'no-reply_CS3103shop@unb.ca'
